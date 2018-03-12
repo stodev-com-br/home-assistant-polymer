@@ -9,11 +9,11 @@
         white-space: nowrap;
       }
       paper-icon-button {
-        color: var(--primary-text-color);
+        color: var(--paper-icon-button-inactive-color, var(--primary-text-color));
         transition: color .5s;
       }
       paper-icon-button[state-active] {
-        color: var(--primary-color);
+        color: var(--paper-icon-button-active-color, var(--primary-color));
       }
       paper-toggle-button {
         cursor: pointer;
@@ -24,8 +24,8 @@
     </style>
 
     <template is='dom-if' if='[[stateObj.attributes.assumed_state]]'>
-      <paper-icon-button icon="mdi:flash-off" on-tap="turnOff" state-active$='[[!isOn]]'></paper-icon-button>
-      <paper-icon-button icon="mdi:flash" on-tap="turnOn" state-active$='[[isOn]]'></paper-icon-button>
+      <paper-icon-button icon="mdi:flash-off" on-click="turnOff" state-active$='[[!isOn]]'></paper-icon-button>
+      <paper-icon-button icon="mdi:flash" on-click="turnOn" state-active$='[[isOn]]'></paper-icon-button>
     </template>
     <template is='dom-if' if='[[!stateObj.attributes.assumed_state]]'>
       <paper-toggle-button
@@ -62,7 +62,7 @@ class HaEntityToggle extends Polymer.Element {
 
   ready() {
     super.ready();
-    this.addEventListener('tap', ev => this.onTap(ev));
+    this.addEventListener('click', ev => this.onTap(ev));
     this.forceStateChange();
   }
 

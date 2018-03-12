@@ -34,11 +34,11 @@
       }
 
       .version {
-        @apply(--paper-font-headline);
+        @apply --paper-font-headline;
       }
 
       .develop {
-        @apply(--paper-font-subhead);
+        @apply --paper-font-subhead;
       }
 
       .about a {
@@ -54,7 +54,7 @@
       }
 
       .error-log {
-        @apply(--paper-font-code1)
+        @apply --paper-font-code)
         clear: both;
         white-space: pre-wrap;
       }
@@ -75,7 +75,7 @@
       }
 
       .header {
-        @apply(--paper-font-title);
+        @apply --paper-font-title;
       }
 
       paper-dialog {
@@ -99,8 +99,8 @@
       }
 
       .loading-container {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         height: 100px;
        }
     </style>
@@ -140,6 +140,19 @@
             <a href='https://www.polymer-project.org' target='_blank'>Polymer [[polymerVersion]]</a>,
             Icons by <a href='https://www.google.com/design/icons/' target='_blank'>Google</a> and <a href='https://MaterialDesignIcons.com' target='_blank'>MaterialDesignIcons.com</a>.
           </p>
+          <p>
+            Frontend JavaScript version: [[jsVersion]]
+            <template is='dom-if' if='[[customUiList.length]]'>
+              <div>
+                Custom UIs:
+                <template is='dom-repeat' items='[[customUiList]]'>
+                  <div>
+                    <a href='[[item.url]]' target='_blank'>[[item.name]]</a>: [[item.version]]
+                  </div>
+                </template>
+              </div>
+            </template>
+          </p>
         </div>
 
         <div class="system-log-intro">
@@ -154,7 +167,7 @@
                 <div class='card-content'>There are no new issues!</div>
               </template>
               <template is='dom-repeat' items='[[items]]'>
-                <paper-item on-tap='openLog'>
+                <paper-item on-click='openLog'>
                   <paper-item-body two-line>
                     <div class="row">
                       [[item.message]]
@@ -173,7 +186,7 @@
                  service='clear'
                  >Clear</ha-call-service-button>
                 <ha-progress-button
-                 on-tap='_fetchData'
+                 on-click='_fetchData'
                  >Refresh</ha-progress-button>
               </div>
             </template>
@@ -181,7 +194,7 @@
         </div>
         <p class='error-log-intro'>
           Press the button to load the full Home Assistant log.
-          <paper-icon-button icon='mdi:refresh' on-tap='refreshErrorLog'></paper-icon-button>
+          <paper-icon-button icon='mdi:refresh' on-click='refreshErrorLog'></paper-icon-button>
         </p>
         <div class='error-log'>[[errorLog]]</div>
       </div>
@@ -208,9 +221,7 @@ class HaPanelDevInfo extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
       narrow: {
         type: Boolean,
@@ -242,8 +253,16 @@ class HaPanelDevInfo extends Polymer.Element {
         value: [],
       },
 
-      selectedItem: {
-        type: Object,
+      selectedItem: Object,
+
+      jsVersion: {
+        type: String,
+        value: window.HASS_BUILD,
+      },
+
+      customUiList: {
+        type: Array,
+        value: window.CUSTOM_UI_LIST || [],
       },
     };
   }
@@ -251,6 +270,12 @@ class HaPanelDevInfo extends Polymer.Element {
   ready() {
     super.ready();
     this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+    // Fix for overlay showing on top of dialog.
+    this.$.showlog.addEventListener('iron-overlay-opened', (ev) => {
+      if (ev.target.withBackdrop) {
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+      }
+    });
   }
 
   serviceCalled(ev) {

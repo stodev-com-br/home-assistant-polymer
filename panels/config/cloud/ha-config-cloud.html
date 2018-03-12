@@ -11,11 +11,6 @@
 
 <dom-module id="ha-config-cloud">
   <template>
-    <style>
-      iron-pages {
-        height: 100%;
-      }
-    </style>
     <app-route
       route='[[route]]'
       pattern='/cloud/:page'
@@ -23,7 +18,7 @@
       tail="{{_routeTail}}"
     ></app-route>
 
-    <template is='dom-if' if='[[account]]' restamp>
+    <template is='dom-if' if='[[_equals(_routeData.page, "account")]]' restamp>
       <ha-config-cloud-account
         hass='[[hass]]'
         account='[[account]]'
@@ -31,39 +26,47 @@
       ></ha-config-cloud-account>
     </template>
 
-    <template is='dom-if' if='[[!account]]' restamp>
-      <template is='dom-if' if='[[_equals(_routeData.page, "login")]]' restamp>
-        <ha-config-cloud-login
-          page-name='login'
-          hass='[[hass]]'
-          is-wide='[[isWide]]'
-          email='{{_loginEmail}}'
-        ></ha-config-cloud-login>
-      </template>
+    <template is='dom-if' if='[[_equals(_routeData.page, "login")]]' restamp>
+      <ha-config-cloud-login
+        page-name='login'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+        email='{{_loginEmail}}'
+        flash-message='{{_flashMessage}}'
+      ></ha-config-cloud-login>
+    </template>
 
-      <template is='dom-if' if='[[_equals(_routeData.page, "register")]]' restamp>
-        <ha-config-cloud-register
-          page-name='register'
-          hass='[[hass]]'
-          is-wide='[[isWide]]'
-          email='{{_loginEmail}}'
-        ></ha-config-cloud-register>
-      </template>
+    <template is='dom-if' if='[[_equals(_routeData.page, "register")]]' restamp>
+      <ha-config-cloud-register
+        page-name='register'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+        email='{{_loginEmail}}'
+      ></ha-config-cloud-register>
+    </template>
 
-      <template is='dom-if' if='[[_equals(_routeData.page, "forgot-password")]]' restamp>
-        <ha-config-cloud-forgot-password
-          page-name='forgot-password'
-          hass='[[hass]]'
-          is-wide='[[isWide]]'
-          email='{{_loginEmail}}'
-        ></ha-config-cloud-forgot-password>
-      </template>
+    <template is='dom-if' if='[[_equals(_routeData.page, "forgot-password")]]' restamp>
+      <ha-config-cloud-forgot-password
+        page-name='forgot-password'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+        email='{{_loginEmail}}'
+      ></ha-config-cloud-forgot-password>
     </template>
   </template>
 </dom-module>
 
 <script>
 {
+  const LOGGED_IN_URLS = [
+    '/cloud/account',
+  ];
+  const NOT_LOGGED_IN_URLS = [
+    '/cloud/login',
+    '/cloud/register',
+    '/cloud/forgot-password',
+  ];
+
   class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
     static get is() { return 'ha-config-cloud'; }
 
@@ -77,7 +80,10 @@
         },
         account: {
           type: Object,
-          value: null,
+        },
+        _flashMessage: {
+          type: String,
+          value: '',
         },
 
         route: Object,
@@ -94,15 +100,28 @@
       ];
     }
 
-    _checkRoute(route, account) {
+    ready() {
+      super.ready();
+      this.addEventListener('cloud-done', (ev) => {
+        this._flashMessage = ev.detail.flashMessage;
+        this.navigate('/config/cloud/login');
+      });
+    }
+
+    _checkRoute(route) {
       if (!route || route.path.substr(0, 6) !== '/cloud') return;
 
-      if (!account && ['/cloud/forgot-password', '/cloud/register'].indexOf(route.path) === -1) {
-        this.navigate('/config/cloud/login', true);
-      } else if (account &&
-                 ['/cloud/login', '/cloud/register', '/cloud/forgot-password'].indexOf(route.path) !== -1) {
-        this.navigate('/config/cloud/account', true);
-      }
+      this._debouncer = Polymer.Debouncer.debounce(
+        this._debouncer,
+        Polymer.Async.timeOut.after(0),
+        () => {
+          if (!this.account && !NOT_LOGGED_IN_URLS.includes(route.path)) {
+            this.navigate('/config/cloud/login', true);
+          } else if (this.account && !LOGGED_IN_URLS.includes(route.path)) {
+            this.navigate('/config/cloud/account', true);
+          }
+        }
+      );
     }
 
     _equals(a, b) {

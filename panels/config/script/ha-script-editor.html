@@ -86,7 +86,7 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='backTapped'
+            on-click='backTapped'
           ></paper-icon-button>
           <div main-title>Script [[name]]</div>
         </app-toolbar>
@@ -102,7 +102,7 @@
         dirty$='[[dirty]]'
         icon='mdi:content-save'
         title='Save'
-        on-tap='saveScript'
+        on-click='saveScript'
       ></paper-fab>
     </ha-app-layout>
 
@@ -110,7 +110,10 @@
 </dom-module>
 
 <script>
-class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaScriptEditor extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-script-editor'; }
 
   static get properties() {
@@ -194,7 +197,7 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.config = config;
     this.errors = null;
     this.dirty = true;
-    this._updateComponent(config);
+    this._updateComponent();
   }
 
   scriptChanged(newVal, oldVal) {
@@ -207,7 +210,7 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
       return;
     }
     this.hass.callApi('get', 'config/script/config/' + window.hassUtil.computeObjectId(newVal))
-      .then(function (config) {
+      .then((config) => {
         // Normalize data: ensure sequence is a list
         // Happens when people copy paste their scripts into the config
         var value = config.sequence;
@@ -218,7 +221,10 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
         this.dirty = false;
         this.config = config;
         this._updateComponent();
-      }.bind(this));
+      }, () => {
+        alert('Only scripts inside scripts.yaml are editable.');
+        history.back();
+      });
   }
 
   creatingNewChanged(newVal) {
@@ -253,6 +259,7 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
         onChange: this.configChanged,
         isWide: this.isWide,
         hass: this.hass,
+        localize: this.localize,
       }, this._rendered);
       this._renderScheduled = false;
     });
@@ -260,17 +267,16 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   saveScript() {
     var id = this.creatingNew ? '' + Date.now() : window.hassUtil.computeObjectId(this.script);
-    this.hass.callApi('post', 'config/script/config/' + id, this.config).then(function () {
+    this.hass.callApi('post', 'config/script/config/' + id, this.config).then(() => {
       this.dirty = false;
 
       if (this.creatingNew) {
-        history.replaceState(null, null, '/config/script/edit/' + id);
-        this.fire('location-changed');
+        this.navigate(`/config/script/edit/${id}`, true);
       }
-    }.bind(this), function (errors) {
+    }, (errors) => {
       this.errors = errors.body.message;
       throw errors;
-    }.bind(this));
+    });
   }
 
   computeName(script) {

@@ -46,8 +46,9 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
 };
 
 window.hassUtil.relativeTime = function (dateObj) {
-  var delta = Math.abs(new Date() - dateObj) / 1000;
-  var format = new Date() > dateObj ? '%s ago' : 'in %s';
+  var delta = (new Date() - dateObj) / 1000;
+  var format = delta >= 0 ? '%s ago' : 'in %s';
+  delta = Math.abs(delta);
   var tests = window.hassUtil.relativeTime.tests;
   var i;
 
@@ -242,6 +243,8 @@ window.hassUtil.binarySensorIcon = function (state) {
       return activated ? 'mdi:thermometer' : 'mdi:fire';
     case 'light':
       return activated ? 'mdi:brightness-5' : 'mdi:brightness-7';
+    case 'lock':
+      return activated ? 'mdi:lock' : 'mdi:lock-open';
     case 'moisture':
       return activated ? 'mdi:water-off' : 'mdi:water';
     case 'motion':

@@ -29,7 +29,8 @@
         overflow-x: hidden;
       }
 
-      .zone-card {
+      ha-card-chooser {
+        display: block;
         margin-left: 8px;
         margin-bottom: 8px;
       }
@@ -39,7 +40,7 @@
           padding-right: 0;
         }
 
-        .zone-card {
+        ha-card-chooser {
           margin-left: 0;
         }
       }
@@ -66,10 +67,8 @@
         <template is='dom-repeat' items='[[cards.columns]]' as='column'>
           <div class='column flex-1'>
             <template is='dom-repeat' items='[[column]]' as='card'>
-              <div class='zone-card'>
-                <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
-                ></ha-card-chooser>
-              </div>
+              <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
+              ></ha-card-chooser>
             </template>
           </div>
         </template>
@@ -164,7 +163,7 @@
           value: false,
         },
 
-        orderedGroups: Array,
+        orderedGroupEntities: Array,
 
         cards: Object,
       };
@@ -172,7 +171,7 @@
 
     static get observers() {
       return [
-        'updateCards(columns, states, panelVisible, viewVisible, orderedGroups)',
+        'updateCards(columns, states, panelVisible, viewVisible, orderedGroupEntities)',
       ];
     }
 
@@ -181,7 +180,7 @@
       states,
       panelVisible,
       viewVisible,
-      orderedGroups
+      orderedGroupEntities
     ) {
       if (!panelVisible || !viewVisible) {
         if (this.$.main.parentNode) {
@@ -198,7 +197,7 @@
         () => {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, orderedGroups);
+            this.cards = this.computeCards(columns, states, orderedGroupEntities);
           }
         }
       );
@@ -212,7 +211,7 @@
       };
     }
 
-    computeCards(columns, states, orderedGroups) {
+    computeCards(columns, states, orderedGroupEntities) {
       const hass = this.hass;
 
       const cards = this.emptyCards();
@@ -285,9 +284,9 @@
       }
 
       const splitted = window.HAWS.splitByGroups(states);
-      if (orderedGroups) {
-        splitted.groups.sort((gr1, gr2) => orderedGroups[gr1.entity_id] -
-          orderedGroups[gr2.entity_id]);
+      if (orderedGroupEntities) {
+        splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id] -
+          orderedGroupEntities[gr2.entity_id]);
       } else {
         splitted.groups.sort((gr1, gr2) => gr1.attributes.order - gr2.attributes.order);
       }
@@ -327,9 +326,20 @@
         coll[domain].states.push(state);
       });
 
-      iterateDomainSorted(badgesColl, (domain) => {
-        cards.badges.push.apply(cards.badges, domain.states);
-      });
+      if (orderedGroupEntities) {
+        Object.keys(badgesColl)
+          .map(key => badgesColl[key])
+          .forEach((domain) => {
+            cards.badges.push.apply(cards.badges, domain.states);
+          });
+
+        cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
+          orderedGroupEntities[e2.entity_id]);
+      } else {
+        iterateDomainSorted(badgesColl, (domain) => {
+          cards.badges.push.apply(cards.badges, domain.states);
+        });
+      }
 
       iterateDomainSorted(beforeGroupColl, (domain) => {
         addEntitiesCard(domain.domain, domain.states);

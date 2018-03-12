@@ -27,7 +27,7 @@
       }
 
       .content {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
         padding: 16px;
       }
 
@@ -36,7 +36,7 @@
       }
 
       .header {
-        @apply(--paper-font-title);
+        @apply --paper-font-title;
       }
     </style>
 
@@ -57,7 +57,7 @@
           <div class='ha-form'>
             <paper-input label="Event Type" autofocus required value='{{eventType}}'></paper-input>
             <paper-textarea label="Event Data (JSON, optional)" value='{{eventData}}'></paper-textarea>
-            <paper-button on-tap='fireEvent' raised>Fire Event</paper-button>
+            <paper-button on-click='fireEvent' raised>Fire Event</paper-button>
           </div>
         </div>
 

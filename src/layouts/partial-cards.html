@@ -62,7 +62,7 @@
           >
             <paper-tab
               data-entity=''
-              on-tap='scrollToTop'
+              on-click='scrollToTop'
             >
               <template is='dom-if' if='[[!defaultView]]'>
                 Home
@@ -88,7 +88,7 @@
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
                 data-entity$='[[item.entity_id]]'
-                on-tap='scrollToTop'
+                on-click='scrollToTop'
               >
                 <template is='dom-if' if='[[item.attributes.icon]]'>
                   <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
@@ -113,7 +113,7 @@
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
-          ordered-groups='[[orderedGroups]]'
+          ordered-group-entities='[[orderedGroupEntities]]'
         ></ha-cards>
 
         <template is='dom-repeat' items='[[views]]'>
@@ -123,7 +123,7 @@
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
-            ordered-groups='[[orderedGroups]]'
+            ordered-group-entities='[[orderedGroupEntities]]'
           ></ha-cards>
         </template>
 
@@ -138,7 +138,8 @@
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  class PartialCards extends window.hassMixins.EventsMixin(Polymer.Element) {
+  // eslint-disable-next-line
+  class PartialCards extends window.hassMixins.EventsMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
     static get is() { return 'partial-cards'; }
 
     static get properties() {
@@ -198,9 +199,9 @@
           computed: 'computeViewStates(currentView, hass, defaultView)',
         },
 
-        orderedGroups: {
+        orderedGroupEntities: {
           type: Array,
-          computed: 'computeOrderedGroups(currentView, hass, defaultView)',
+          computed: 'computeOrderedGroupEntities(currentView, hass, defaultView)',
         },
 
         showTabs: {
@@ -210,27 +211,24 @@
       };
     }
 
-    constructor() {
-      super();
+    ready() {
       this.handleWindowChange = this.handleWindowChange.bind(this);
-      this.mqls = [300, 600, 900, 1200].map(function (width) {
-        var mql = window.matchMedia('(min-width: ' + width + 'px)');
-        mql.addListener(this.handleWindowChange);
-        return mql;
-      }.bind(this));
+      this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
+      super.ready();
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+      this.mqls.forEach(mql => mql.addListener(this.handleWindowChange));
     }
 
     disconnectedCallback() {
       super.disconnectedCallback();
-      this.mqls.forEach((mql) => {
-        mql.removeListener(this.handleWindowChange);
-      });
+      this.mqls.forEach(mql => mql.removeListener(this.handleWindowChange));
     }
 
     handleWindowChange() {
-      var matchColumns = this.mqls.reduce(function (cols, mql) {
-        return cols + mql.matches;
-      }, 0);
+      const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
       // Do -1 column if the menu is docked and open
       this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
     }
@@ -279,16 +277,14 @@
     }
 
     handleViewSelected(ev) {
-      var view = ev.detail.item.getAttribute('data-entity') || null;
-      var current = this.currentView;
+      const view = ev.detail.item.getAttribute('data-entity') || null;
 
-      if (view !== current) {
-        var path = '/states';
+      if (view !== this.currentView) {
+        let path = '/states';
         if (view) {
           path += '/' + view;
         }
-        history.pushState(null, null, path);
-        this.fire('location-changed');
+        this.navigate(path);
       }
     }
 
@@ -372,19 +368,19 @@
     /*
       Compute the ordered list of groups for this view
     */
-    computeOrderedGroups(currentView, hass, defaultView) {
+    computeOrderedGroupEntities(currentView, hass, defaultView) {
       if (!this.isView(currentView, defaultView)) {
         return null;
       }
 
-      var orderedGroups = {};
+      var orderedGroupEntities = {};
       var entitiesList = hass.states[currentView || DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
 
       for (var i = 0; i < entitiesList.length; i++) {
-        orderedGroups[entitiesList[i]] = i;
+        orderedGroupEntities[entitiesList[i]] = i;
       }
 
-      return orderedGroups;
+      return orderedGroupEntities;
     }
   }
 
