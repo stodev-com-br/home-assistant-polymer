@@ -9,7 +9,7 @@
     <style>
     :host {
       @apply --paper-font-body1;
-      min-width: 150px;
+      min-width: 120px;
       white-space: nowrap;
     }
 
@@ -31,13 +31,12 @@
       line-height: 20px;
     }
 
-    .time-ago, ::slotted(*) {
+    .time-ago, .extra-info, .extra-info > * {
       @apply --paper-font-common-nowrap;
       color: var(--secondary-text-color);
     }
     </style>
 
-    <div>
       <state-badge state-obj='[[stateObj]]'></state-badge>
 
       <div class='info'>
@@ -49,10 +48,11 @@
           </div>
         </template>
         <template is='dom-if' if='[[!inDialog]]'>
-          <slot>
+          <div class='extra-info'>
+            <slot>
+          </div>
         </template>
       </div>
-    </div>
   </template>
 </dom-module>
 

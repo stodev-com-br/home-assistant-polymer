@@ -173,8 +173,8 @@ class HomeAssistant extends Polymer.Element {
       themes: null,
       panelUrl: this.panelUrl,
 
-      // If language and resources are already loaded, don't discard them
-      language: (this.hass && this.hass.language) || null,
+      language: window.getActiveTranslation(),
+      // If resources are already loaded, don't discard them
       resources: (this.hass && this.hass.resources) || null,
 
       translationMetadata: window.translationMetadata,
@@ -244,11 +244,21 @@ class HomeAssistant extends Polymer.Element {
 
     this.hass.callApi('get', 'themes').then((themes) => {
       this._updateHass({ themes: themes });
-      window.hassUtil.applyThemesOnElement(this, themes, this.hass.selectedTheme, true);
+      window.hassUtil.applyThemesOnElement(
+        document.documentElement,
+        themes,
+        this.hass.selectedTheme,
+        true
+      );
     });
     conn.subscribeEvents((event) => {
       this._updateHass({ themes: event.data });
-      window.hassUtil.applyThemesOnElement(this, event.data, this.hass.selectedTheme, true);
+      window.hassUtil.applyThemesOnElement(
+        document.documentElement,
+        event.data,
+        this.hass.selectedTheme,
+        true
+      );
     }, 'themes_updated').then(function (unsub) {
       unsubThemes = unsub;
     });
@@ -314,7 +324,12 @@ class HomeAssistant extends Polymer.Element {
 
   setTheme(event) {
     this._updateHass({ selectedTheme: event.detail });
-    window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
+    window.hassUtil.applyThemesOnElement(
+      document.documentElement,
+      this.hass.themes,
+      this.hass.selectedTheme,
+      true
+    );
     this.$.storage.storeState();
   }
 

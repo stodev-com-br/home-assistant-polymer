@@ -104,7 +104,7 @@ window.hassUtil.domainIcon = function (domain, state) {
       return 'mdi:video';
 
     case 'climate':
-      return 'mdi:nest-thermostat';
+      return 'mdi:thermostat';
 
     case 'configurator':
       return 'mdi:settings';
@@ -128,7 +128,7 @@ window.hassUtil.domainIcon = function (domain, state) {
       return 'mdi:google-circles-communities';
 
     case 'homeassistant':
-      return 'mdi:home';
+      return 'mdi:home-assistant';
 
     case 'image_processing':
       return 'mdi:image-filter-frames';
@@ -196,6 +196,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'updater':
       return 'mdi:cloud-upload';
+
+    case 'vacuum':
+      return 'mdi:robot-vacuum';
 
     case 'weblink':
       return 'mdi:open-in-new';
@@ -269,7 +272,7 @@ window.hassUtil.binarySensorIcon = function (state) {
 };
 
 window.hassUtil.coverIcon = function (state) {
-  var open = state.state && state.state === 'open';
+  var open = state.state && state.state !== 'closed';
   switch (state.attributes.device_class) {
     case 'garage':
       return open ? 'mdi:garage-open' : 'mdi:garage';
@@ -365,7 +368,10 @@ window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, up
       styles[prefixedKey] = theme[key];
     });
   }
-  element.updateStyles(styles);
+  // implement updateStyles() method of Polemer elements
+  if (window.ShadyCSS) {
+    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */(element), styles);
+  }
 
   if (!updateMeta) return;
 

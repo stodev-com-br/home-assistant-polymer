@@ -149,9 +149,9 @@
             "configured": "skonfigurowany"
         },
         "cover": {
-            "open": "Otwórz",
+            "open": "Otwarta",
             "opening": "otwieranie",
-            "closed": "zamknięty",
+            "closed": "Zamknięta",
             "closing": "zamykanie",
             "stopped": "zatrzymany"
         },
@@ -168,7 +168,7 @@
             "on": "włączony",
             "home": "w domu",
             "not_home": "poza domem",
-            "open": "otwórz",
+            "open": "otwarta",
             "opening": "otwieranie",
             "closed": "zamknięte",
             "closing": "zamykanie",
@@ -403,7 +403,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa",
                                     "event": "Zdarzenie",
                                     "enter": "Wprowadź",
@@ -451,7 +451,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
                                 }
                             }
@@ -483,7 +483,7 @@
                                     "label": "Warunek"
                                 },
                                 "event": {
-                                    "label": "Spalenie zdarzenia",
+                                    "label": "Uruchom zdarzenie",
                                     "event": "Zdarzenie:",
                                     "service_data": "Dane usługi"
                                 }
@@ -530,7 +530,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Jednostka"
+                    "entity": "Encja"
                 }
             },
             "service-picker": {

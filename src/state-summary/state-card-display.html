@@ -8,29 +8,40 @@
 
 <dom-module id="state-card-display">
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
+
+      :host {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+        @apply(--layout-baseline);
+      }
+
+      state-info {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
       .state {
         @apply --paper-font-body1;
         color: var(--primary-text-color);
-
         margin-left: 16px;
         text-align: right;
-        line-height: 40px;
+        max-width: 40%;
+        flex: 0 0 auto;
       }
       .state.has-unit_of_measurement {
         white-space: nowrap;
       }
     </style>
 
-    <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class$='[[computeClassNames(stateObj)]]'>[[computeStateDisplay(localize, stateObj, language)]]</div>
-    </div>
+    <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+    <div class$='[[computeClassNames(stateObj)]]'>[[computeStateDisplay(localize, stateObj, language)]]</div>
   </template>
 </dom-module>
 
 <script>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
 class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-card-display'; }
 

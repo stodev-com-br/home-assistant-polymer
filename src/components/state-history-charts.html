@@ -9,11 +9,21 @@
     <style>
     :host {
       display: block;
+      /* height of single timeline chart = 58px */
+      min-height: 58px;
+    }
+    .info {
+      text-align: center;
+      line-height: 58px;
+      color: var(--secondary-text-color);
     }
     </style>
+    <template is='dom-if' class='info' if='[[_computeIsLoading(isLoadingData)]]'>
+      <div class='info'>Loading state history...</div>
+    </template>
 
-    <template is='dom-if' if='[[_computeIsEmpty(historyData)]]'>
-      No state history found.
+    <template is='dom-if' class='info' if='[[_computeIsEmpty(isLoadingData, historyData)]]'>
+      <div class='info'>No state history found.</div>
     </template>
 
     <template is='dom-if' if='[[historyData.timeline.length]]'>
@@ -30,6 +40,7 @@
         data='[[item.data]]'
         identifier='[[item.identifier]]'
         is-single-device='[[_computeIsSingleLineChart(item.data, noSingle)]]'
+        is-zoomable='[[isZoomable]]'
         end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'>
       </state-history-chart-line>
     </template>
@@ -41,18 +52,13 @@ class StateHistoryCharts extends Polymer.Element {
   static get is() { return 'state-history-charts'; }
   static get properties() {
     return {
-      hass: {
-        type: Object
-      },
+      hass: Object,
       historyData: {
         type: Object,
         value: null,
       },
 
-      isLoadingData: {
-        type: Boolean,
-        value: true,
-      },
+      isLoadingData: Boolean,
 
       endTime: {
         type: Object,
@@ -60,6 +66,7 @@ class StateHistoryCharts extends Polymer.Element {
 
       upToNow: Boolean,
       noSingle: Boolean,
+      isZoomable: Boolean,
     };
   }
 
@@ -67,11 +74,17 @@ class StateHistoryCharts extends Polymer.Element {
     return !noSingle && data && data.length === 1;
   }
 
-  _computeIsEmpty(historyData) {
-    return !historyData || !historyData.timeline || !historyData.line ||
-           (historyData.timeline.length === 0 &&
-            historyData.line.length === 0);
+  _computeIsEmpty(isLoadingData, historyData) {
+    const historyDataEmpty = (!historyData || !historyData.timeline || !historyData.line ||
+                              (historyData.timeline.length === 0 &&
+                              historyData.line.length === 0));
+    return !isLoadingData && historyDataEmpty;
   }
+
+  _computeIsLoading(isLoading) {
+    return isLoading && !this.historyData;
+  }
+
 
   _computeEndTime(endTime, upToNow) {
     // We don't really care about the value of historyData, but if it change we want to update
