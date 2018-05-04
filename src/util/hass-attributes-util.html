@@ -28,6 +28,11 @@ window.hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     'window'
   ],
   cover: ['garage'],
+  sensor: [
+    'battery',
+    'humidity',
+    'temperature'
+  ],
 };
 
 window.hassAttributeUtil.UNKNOWN_TYPE = 'json';
@@ -65,12 +70,13 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
     homebridge_name: { type: 'string' },
     supported_features: undefined,
     attribution: undefined,
+    custom_ui_more_info: { type: 'string' },
     custom_ui_state_card: { type: 'string' },
     device_class: {
       type: 'array',
       options: window.hassAttributeUtil.DOMAIN_DEVICE_CLASS,
       description: 'Device class',
-      domains: ['binary_sensor', 'cover']
+      domains: ['binary_sensor', 'cover', 'sensor']
     },
     hidden: { type: 'boolean', description: 'Hide from UI' },
     assumed_state: {
