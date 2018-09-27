@@ -1,11 +1,6 @@
-build/*
-build-temp/*
-build-es5/*
-build-temp-es5/*
+build
 build-translations/*
-build-hassio/*
 node_modules/*
-bower_components/*
 npm-debug.log
 .DS_Store
 hass_frontend/*
@@ -26,5 +21,9 @@ lib
 bin
 dist
 
+# vscode
+.vscode
+
 # Secrets
 .lokalise_token
+yarn-error.log
