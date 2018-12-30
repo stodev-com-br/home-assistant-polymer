@@ -1,12 +1,12 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../components/buttons/ha-progress-button.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
+import "../../../components/buttons/ha-progress-button";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
+import EventsMixin from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -14,54 +14,67 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        padding-bottom: 24px;
-      }
+      <style include="iron-flex ha-style">
+        .content {
+          padding-bottom: 24px;
+        }
 
-      paper-card {
-        display: block;
-        max-width: 600px;
-        margin: 0 auto;
-        margin-top: 24px;
-      }
-      h1 {
-        @apply --paper-font-headline;
-        margin: 0;
-      }
-      .error {
-        color: var(--google-red-500);
-      }
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .card-actions a {
-        color: var(--primary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    </style>
-    <hass-subpage header="Forgot Password">
-      <div class="content">
-        <paper-card>
-          <div class="card-content">
-            <h1>Forgot your password?</h1>
-            <p>
-              Enter your email address and we will send you a link to reset your password.
-            </p>
-            <div class="error" hidden$="[[!_error]]">[[_error]]</div>
-            <paper-input autofocus="" id="email" label="E-mail" value="{{email}}" type="email" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
-          </div>
-          <div class="card-actions">
-            <ha-progress-button on-click="_handleEmailPasswordReset" progress="[[_requestInProgress]]">Send reset email</ha-progress-button>
-          </div>
-        </paper-card>
-      </div>
-    </hass-subpage>
-`;
+        paper-card {
+          display: block;
+          max-width: 600px;
+          margin: 0 auto;
+          margin-top: 24px;
+        }
+        h1 {
+          @apply --paper-font-headline;
+          margin: 0;
+        }
+        .error {
+          color: var(--google-red-500);
+        }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .card-actions a {
+          color: var(--primary-text-color);
+        }
+        [hidden] {
+          display: none;
+        }
+      </style>
+      <hass-subpage header="Forgot Password">
+        <div class="content">
+          <paper-card>
+            <div class="card-content">
+              <h1>Forgot your password?</h1>
+              <p>
+                Enter your email address and we will send you a link to reset
+                your password.
+              </p>
+              <div class="error" hidden$="[[!_error]]">[[_error]]</div>
+              <paper-input
+                autofocus=""
+                id="email"
+                label="E-mail"
+                value="{{email}}"
+                type="email"
+                on-keydown="_keyDown"
+                error-message="Invalid email"
+              ></paper-input>
+            </div>
+            <div class="card-actions">
+              <ha-progress-button
+                on-click="_handleEmailPasswordReset"
+                progress="[[_requestInProgress]]"
+                >Send reset email</ha-progress-button
+              >
+            </div>
+          </paper-card>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {
@@ -70,7 +83,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       email: {
         type: String,
         notify: true,
-        observer: '_emailChanged'
+        observer: "_emailChanged",
       },
       _requestInProgress: {
         type: Boolean,
@@ -78,13 +91,13 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       },
       _error: {
         type: String,
-        value: '',
-      }
+        value: "",
+      },
     };
   }
 
   _emailChanged() {
-    this._error = '';
+    this._error = "";
     this.$.email.invalid = false;
   }
 
@@ -97,7 +110,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
   }
 
   _handleEmailPasswordReset() {
-    if (!this.email || !this.email.includes('@')) {
+    if (!this.email || !this.email.includes("@")) {
       this.$.email.invalid = true;
     }
 
@@ -105,19 +118,31 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
 
     this._requestInProgress = true;
 
-    this.hass.callApi('post', 'cloud/forgot_password', {
-      email: this.email,
-    }).then(() => {
-      this._requestInProgress = false;
-      this.fire('cloud-done', {
-        flashMessage: 'Check your email for instructions on how to reset your password.'
-      });
-    }, err => this.setProperties({
-      _requestInProgress: false,
-      _error: err && err.body && err.body.message
-        ? err.body.message : 'Unknown error',
-    }));
+    this.hass
+      .callApi("post", "cloud/forgot_password", {
+        email: this.email,
+      })
+      .then(
+        () => {
+          this._requestInProgress = false;
+          this.fire("cloud-done", {
+            flashMessage:
+              "Check your email for instructions on how to reset your password.",
+          });
+        },
+        (err) =>
+          this.setProperties({
+            _requestInProgress: false,
+            _error:
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error",
+          })
+      );
   }
 }
 
-customElements.define('ha-config-cloud-forgot-password', HaConfigCloudForgotPassword);
+customElements.define(
+  "ha-config-cloud-forgot-password",
+  HaConfigCloudForgotPassword
+);

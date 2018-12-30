@@ -1,32 +1,35 @@
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../state-summary/state-card-content.js';
+import "../../../state-summary/state-card-content";
 
-import computeStateDomain from '../../../common/entity/compute_state_domain';
-import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      .child-card {
-        margin-bottom: 8px;
-      }
+      <style>
+        .child-card {
+          margin-bottom: 8px;
+        }
 
-      .child-card:last-child {
-        margin-bottom: 0;
-      }
-    </style>
+        .child-card:last-child {
+          margin-bottom: 0;
+        }
+      </style>
 
-    <div id="groupedControlDetails"></div>
-    <template is="dom-repeat" items="[[states]]" as="state">
-      <div class="child-card">
-        <state-card-content state-obj="[[state]]" hass="[[hass]]"></state-card-content>
-      </div>
-    </template>
-`;
+      <div id="groupedControlDetails"></div>
+      <template is="dom-repeat" items="[[states]]" as="state">
+        <div class="child-card">
+          <state-card-content
+            state-obj="[[state]]"
+            hass="[[hass]]"
+          ></state-card-content>
+        </div>
+      </template>
+    `;
   }
 
   static get properties() {
@@ -41,15 +44,13 @@ class MoreInfoGroup extends PolymerElement {
 
       states: {
         type: Array,
-        computed: 'computeStates(stateObj, hass)',
+        computed: "computeStates(stateObj, hass)",
       },
     };
   }
 
   static get observers() {
-    return [
-      'statesChanged(stateObj, states)',
-    ];
+    return ["statesChanged(stateObj, states)"];
   }
 
   computeStates(stateObj, hass) {
@@ -72,15 +73,15 @@ class MoreInfoGroup extends PolymerElement {
     let groupDomain = false;
 
     if (states && states.length > 0) {
-      const baseStateObj = states.find(s => s.state === 'on') || states[0];
+      const baseStateObj = states.find((s) => s.state === "on") || states[0];
       groupDomain = computeStateDomain(baseStateObj);
 
       // Groups need to be filtered out or we'll show content of
       // first child above the children of the current group
-      if (groupDomain !== 'group') {
+      if (groupDomain !== "group") {
         groupDomainStateObj = Object.assign({}, baseStateObj, {
           entity_id: stateObj.entity_id,
-          attributes: Object.assign({}, baseStateObj.attributes)
+          attributes: Object.assign({}, baseStateObj.attributes),
         });
 
         for (let i = 0; i < states.length; i++) {
@@ -100,11 +101,11 @@ class MoreInfoGroup extends PolymerElement {
     } else {
       dynamicContentUpdater(
         this.$.groupedControlDetails,
-        'MORE-INFO-' + groupDomain.toUpperCase(),
+        "MORE-INFO-" + groupDomain.toUpperCase(),
         { stateObj: groupDomainStateObj, hass: this.hass }
       );
     }
   }
 }
 
-customElements.define('more-info-group', MoreInfoGroup);
+customElements.define("more-info-group", MoreInfoGroup);

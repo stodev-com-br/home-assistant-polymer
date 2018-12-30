@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
-import './demo-more-info.js';
+import "./demo-more-info";
 
 class DemoMoreInfos extends PolymerElement {
   static get template() {
@@ -25,18 +25,18 @@ class DemoMoreInfos extends PolymerElement {
         }
       </style>
       <app-toolbar>
-        <div class='filters'>
-          <paper-toggle-button
-            checked='{{_showConfig}}'
-          >Show entity</paper-toggle-button>
+        <div class="filters">
+          <paper-toggle-button checked="{{_showConfig}}"
+            >Show entity</paper-toggle-button
+          >
         </div>
       </app-toolbar>
-      <div class='cards'>
-        <template is='dom-repeat' items='[[entities]]'>
+      <div class="cards">
+        <template is="dom-repeat" items="[[entities]]">
           <demo-more-info
-            entity-id='[[item]]'
-            show-config='[[_showConfig]]'
-            hass='[[hass]]'
+            entity-id="[[item]]"
+            show-config="[[_showConfig]]"
+            hass="[[hass]]"
           ></demo-more-info>
         </template>
       </div>
@@ -50,9 +50,9 @@ class DemoMoreInfos extends PolymerElement {
       _showConfig: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 }
 
-customElements.define('demo-more-infos', DemoMoreInfos);
+customElements.define("demo-more-infos", DemoMoreInfos);

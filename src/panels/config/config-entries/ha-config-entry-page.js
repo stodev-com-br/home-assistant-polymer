@@ -1,75 +1,83 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../layouts/hass-subpage.js';
+import "../../../layouts/hass-subpage";
 
-import '../../../components/entity/state-badge.js';
-import compare from '../../../common/string/compare.js';
+import "../../../components/entity/state-badge";
+import compare from "../../../common/string/compare";
 
-import './ha-device-card.js';
-import './ha-ce-entities-card.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import "./ha-device-card";
+import "./ha-ce-entities-card";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
-class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
+class HaConfigEntryPage extends NavigateMixin(
+  EventsMixin(LocalizeMixin(PolymerElement))
+) {
   static get template() {
     return html`
-  <style>
-    .content {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 4px;
-    }
-    ha-device-card, ha-ce-entities-card {
-      flex: 1;
-      min-width: 300px;
-      max-width: 300px;
-      margin: 8px;
-
-    }
-    @media(max-width: 600px) {
-      ha-device-card {
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-    }
-  </style>
-  <hass-subpage header='[[configEntry.title]]'>
-    <paper-icon-button
-      slot='toolbar-icon'
-      icon='hass:delete'
-      on-click='_removeEntry'
-    ></paper-icon-button>
-    <div class='content'>
-      <template is='dom-if' if='[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]'>
-        <p>This integration has no devices.</p>
-      </template>
-      <template is='dom-repeat' items='[[_configEntryDevices]]' as='device'>
-        <ha-device-card
-          hass='[[hass]]'
-          devices='[[devices]]'
-          device='[[device]]'
-          entities='[[entities]]'
-        ></ha-device-card>
-      </template>
-      <template is='dom-if' if='[[_noDeviceEntities.length]]'>
-        <ha-ce-entities-card
-          heading='Entities without devices'
-          entities='[[_noDeviceEntities]]'
-          hass='[[hass]]'
-        ></ha-ce-entities-card>
-      </template>
-    </div>
-  </hass-subpage>
-`;
+      <style>
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          padding: 4px;
+          justify-content: center;
+        }
+        .card {
+          box-sizing: border-box;
+          display: flex;
+          flex: 1 0 300px;
+          min-width: 0;
+          max-width: 500px;
+          padding: 8px;
+        }
+      </style>
+      <hass-subpage header="[[configEntry.title]]">
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:delete"
+          on-click="_removeEntry"
+        ></paper-icon-button>
+        <div class="content">
+          <template
+            is="dom-if"
+            if="[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]"
+          >
+            <p>
+              [[localize('ui.panel.config.integrations.config_entry.no_devices')]]
+            </p>
+          </template>
+          <template is="dom-repeat" items="[[_configEntryDevices]]" as="device">
+            <ha-device-card
+              class="card"
+              hass="[[hass]]"
+              devices="[[devices]]"
+              device="[[device]]"
+              entities="[[entities]]"
+              narrow="[[narrow]]"
+            ></ha-device-card>
+          </template>
+          <template is="dom-if" if="[[_noDeviceEntities.length]]">
+            <ha-ce-entities-card
+              class="card"
+              heading="[[localize('ui.panel.config.integrations.config_entry.no_device')]]"
+              entities="[[_noDeviceEntities]]"
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-ce-entities-card>
+          </template>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       configEntry: {
         type: Object,
         value: null,
@@ -77,7 +85,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
 
       _configEntryDevices: {
         type: Array,
-        computed: '_computeConfigEntryDevices(configEntry, devices)'
+        computed: "_computeConfigEntryDevices(configEntry, devices)",
       },
 
       /**
@@ -86,7 +94,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
        */
       _noDeviceEntities: {
         type: Array,
-        computed: '_computeNoDeviceEntities(configEntry, entities)',
+        computed: "_computeNoDeviceEntities(configEntry, entities)",
       },
 
       /**
@@ -109,14 +117,19 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
   _computeConfigEntryDevices(configEntry, devices) {
     if (!devices) return [];
     return devices
-      .filter(device => device.config_entries.includes(configEntry.entry_id))
-      .sort((dev1, dev2) => (!!dev1.hub_device_id - !!dev2.hub_device_id)
-            || compare(dev1.name, dev2.name));
+      .filter((device) => device.config_entries.includes(configEntry.entry_id))
+      .sort(
+        (dev1, dev2) =>
+          !!dev1.hub_device_id - !!dev2.hub_device_id ||
+          compare(dev1.name, dev2.name)
+      );
   }
 
   _computeNoDeviceEntities(configEntry, entities) {
     if (!entities) return [];
-    return entities.filter(ent => !ent.device_id && ent.config_entry_id === configEntry.entry_id);
+    return entities.filter(
+      (ent) => !ent.device_id && ent.config_entry_id === configEntry.entry_id
+    );
   }
 
   _computeIsEmpty(configEntryDevices, noDeviceEntities) {
@@ -124,19 +137,31 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _removeEntry() {
-    if (!confirm('Are you sure you want to delete this integration?')) return;
+    if (
+      !confirm(
+        this.localize(
+          "ui.panel.config.integrations.config_entry.delete_confirm"
+        )
+      )
+    )
+      return;
 
     const entryId = this.configEntry.entry_id;
 
-    this.hass.callApi('delete', `config/config_entries/entry/${entryId}`)
+    this.hass
+      .callApi("delete", `config/config_entries/entry/${entryId}`)
       .then((result) => {
-        this.fire('hass-reload-entries');
+        this.fire("hass-reload-entries");
         if (result.require_restart) {
-          alert('Restart Home Assistant to finish removing this integration');
+          alert(
+            this.localize(
+              "ui.panel.config.integrations.config_entry.restart_confirm"
+            )
+          );
         }
-        this.navigate('/config/integrations/dashboard', true);
+        this.navigate("/config/integrations/dashboard", true);
       });
   }
 }
 
-customElements.define('ha-config-entry-page', HaConfigEntryPage);
+customElements.define("ha-config-entry-page", HaConfigEntryPage);

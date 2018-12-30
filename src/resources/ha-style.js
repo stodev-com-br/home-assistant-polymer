@@ -1,8 +1,21 @@
-import '@polymer/paper-styles/paper-styles.js';
-import '@polymer/polymer/polymer-legacy.js';
+import "@polymer/paper-styles/paper-styles";
+import "@polymer/polymer/polymer-legacy";
 
-const documentContainer = document.createElement('template');
-documentContainer.setAttribute('style', 'display: none;');
+export const buttonLink = `
+  button.link {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
+const documentContainer = document.createElement("template");
+documentContainer.setAttribute("style", "display: none;");
 
 documentContainer.innerHTML = `<custom-style>
   <style>
@@ -162,16 +175,7 @@ documentContainer.innerHTML = `<custom-style>
         @apply --paper-font-title;
       }
 
-      button.link {
-        background: none;
-        color: inherit;
-        border: none;
-        padding: 0;
-        font: inherit;
-        text-align: left;
-        text-decoration: underline;
-        cursor: pointer;
-      }
+      ${buttonLink}
 
       .card-actions a {
         text-decoration: none;

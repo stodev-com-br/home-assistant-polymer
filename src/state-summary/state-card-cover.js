@@ -1,40 +1,48 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../components/entity/state-info.js';
-import '../components/ha-cover-controls.js';
-import '../components/ha-cover-tilt-controls.js';
-import CoverEntity from '../util/cover-model.js';
+import "../components/entity/state-info";
+import "../components/ha-cover-controls";
+import "../components/ha-cover-tilt-controls";
+import CoverEntity from "../util/cover-model";
 
 class StateCardCover extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      :host {
-        line-height: 1.5;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        :host {
+          line-height: 1.5;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <div class="horizontal layout">
-        <ha-cover-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
-        <ha-cover-tilt-controls hidden$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <div class="horizontal layout">
+          <ha-cover-controls
+            hidden$="[[entityObj.isTiltOnly]]"
+            hass="[[hass]]"
+            state-obj="[[stateObj]]"
+          ></ha-cover-controls>
+          <ha-cover-tilt-controls
+            hidden$="[[!entityObj.isTiltOnly]]"
+            hass="[[hass]]"
+            state-obj="[[stateObj]]"
+          ></ha-cover-tilt-controls>
+        </div>
       </div>
-    </div>
-`;
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {
@@ -47,8 +55,8 @@ class StateCardCover extends PolymerElement {
       },
       entityObj: {
         type: Object,
-        computed: 'computeEntityObj(hass, stateObj)',
-      }
+        computed: "computeEntityObj(hass, stateObj)",
+      },
     };
   }
 
@@ -57,4 +65,4 @@ class StateCardCover extends PolymerElement {
     return entity;
   }
 }
-customElements.define('state-card-cover', StateCardCover);
+customElements.define("state-card-cover", StateCardCover);

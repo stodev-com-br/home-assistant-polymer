@@ -1,12 +1,12 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style";
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -14,60 +14,67 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
 class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      @media all and (max-width: 500px) {
-        paper-dialog {
-          margin: 0;
-          width: 100%;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
         }
-      }
+        @media all and (max-width: 500px) {
+          paper-dialog {
+            margin: 0;
+            width: 100%;
+            max-height: calc(100% - 64px);
 
-      paper-dialog {
-        border-radius: 2px;
-      }
-      paper-dialog p {
-        color: var(--secondary-text-color);
-      }
+            position: fixed !important;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            overflow: scroll;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+          }
+        }
 
-      .icon {
-        float: right;
-      }
-    </style>
-    <paper-dialog id="mp3dialog" with-backdrop opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>
-        [[localize('ui.panel.mailbox.playback_title')]]
-        <div class='icon'>
-        <template is="dom-if" if="[[_loading]]">
-          <paper-spinner active></paper-spinner>
-        </template>
-        <paper-icon-button
-          id='delicon'
-          on-click='openDeleteDialog'
-          icon='hass:delete'
-        ></paper-icon-button>
+        paper-dialog {
+          border-radius: 2px;
+        }
+        paper-dialog p {
+          color: var(--secondary-text-color);
+        }
+
+        .icon {
+          float: right;
+        }
+      </style>
+      <paper-dialog
+        id="mp3dialog"
+        with-backdrop
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>
+          [[localize('ui.panel.mailbox.playback_title')]]
+          <div class="icon">
+            <template is="dom-if" if="[[_loading]]">
+              <paper-spinner active></paper-spinner>
+            </template>
+            <paper-icon-button
+              id="delicon"
+              on-click="openDeleteDialog"
+              icon="hass:delete"
+            ></paper-icon-button>
+          </div>
+        </h2>
+        <div id="transcribe"></div>
+        <div>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
+          </template>
+          <audio id="mp3" preload="none" controls>
+            <source id="mp3src" src="" type="audio/mpeg" />
+          </audio>
         </div>
-      </h2>
-      <div id="transcribe"></div>
-      <div>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg" /></audio>
-      </div>
-    </paper-dialog>
-`;
+      </paper-dialog>
+    `;
   }
 
   static get properties() {
@@ -100,18 +107,19 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const platform = message.platform;
     const mp3 = this.$.mp3;
     if (platform.has_media) {
-      mp3.style.display = '';
+      mp3.style.display = "";
       this._showLoading(true);
       mp3.src = null;
       const url = `/api/mailbox/media/${platform.name}/${message.sha}`;
-      this.hass.fetchWithAuth(url)
+      this.hass
+        .fetchWithAuth(url)
         .then((response) => {
           if (response.ok) {
             return response.blob();
           }
           return Promise.reject({
             status: response.status,
-            statusText: response.statusText
+            statusText: response.statusText,
           });
         })
         .then((blob) => {
@@ -124,20 +132,23 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           this._errorMsg = `Error loading audio: ${err.statusText}`;
         });
     } else {
-      mp3.style.display = 'none';
+      mp3.style.display = "none";
       this._showLoading(false);
     }
   }
 
   openDeleteDialog() {
-    if (confirm(this.localize('ui.panel.mailbox.delete_prompt'))) {
+    if (confirm(this.localize("ui.panel.mailbox.delete_prompt"))) {
       this.deleteSelected();
     }
   }
 
   deleteSelected() {
     const msg = this._currentMessage;
-    this.hass.callApi('DELETE', `mailbox/delete/${msg.platform.name}/${msg.sha}`);
+    this.hass.callApi(
+      "DELETE",
+      `mailbox/delete/${msg.platform.name}/${msg.sha}`
+    );
     this._dialogDone();
   }
 
@@ -164,12 +175,12 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const delicon = this.$.delicon;
     if (displayed) {
       this._loading = true;
-      delicon.style.display = 'none';
+      delicon.style.display = "none";
     } else {
       const platform = this._currentMessage.platform;
       this._loading = false;
-      delicon.style.display = platform.can_delete ? '' : 'none';
+      delicon.style.display = platform.can_delete ? "" : "none";
     }
   }
 }
-customElements.define('ha-dialog-show-audio-message', HaDialogShowAudioMessage);
+customElements.define("ha-dialog-show-audio-message", HaDialogShowAudioMessage);

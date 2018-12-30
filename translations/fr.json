@@ -13,7 +13,8 @@
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Calendrier"
+        "calendar": "Calendrier",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -132,7 +133,7 @@
         "climate": {
             "off": "Off",
             "on": "On",
-            "heat": "Chaleur",
+            "heat": "Chauffe",
             "cool": "Frais",
             "idle": "Inactif",
             "auto": "Auto",
@@ -143,7 +144,8 @@
             "performance": "Performance",
             "high_demand": "Forte demande",
             "heat_pump": "Pompe à chaleur",
-            "gas": "Gaz"
+            "gas": "Gaz",
+            "manual": "Manuel"
         },
         "configurator": {
             "configure": "Configurer",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "État",
                                     "from": "De",
-                                    "to": "À"
+                                    "to": "À",
+                                    "for": "Pour"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Désactiver l'utilisateur",
                         "delete_user": "Supprimer l'utilisateur"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Connecté en tant que {email}",
+                    "description_not_login": "Pas connecté"
+                },
+                "integrations": {
+                    "caption": "Intégrations",
+                    "description": "Gérer les appareils et services connectés",
+                    "discovered": "Découvert",
+                    "configured": "Configuré",
+                    "new": "Configurer une nouvelle intégration",
+                    "configure": "Configurer",
+                    "none": "Rien n'est encore configuré",
+                    "config_entry": {
+                        "no_devices": "Cette intégration n'a pas d'appareils.",
+                        "no_device": "Entités sans appareils",
+                        "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
+                        "restart_confirm": "Redémarrez Home Assistant pour terminer la suppression de cette intégration",
+                        "manuf": "par {manufacturer}",
+                        "hub": "Connecté via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "appareil indisponible",
+                        "entity_unavailable": "entité indisponible"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +599,30 @@
                     "empty_state": "Vous n'avez pas encore de jetons d'accès longue durée.",
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "not_used": "N'a jamais été utilisé"
+                },
+                "current_user": "Vous êtes actuellement connecté tant que {fullName}.",
+                "is_owner": "Vous êtes propriétaire",
+                "logout": "Déconnexion",
+                "change_password": {
+                    "header": "Changer le mot de passe",
+                    "current_password": "Mot de passe actuel",
+                    "new_password": "nouveau mot de passe",
+                    "confirm_new_password": "Confirmer le nouveau mot de passe",
+                    "error_required": "Requis",
+                    "submit": "Envoyer"
+                },
+                "mfa": {
+                    "header": "Modules d'authentification multi-facteurs",
+                    "disable": "Désactiver",
+                    "enable": "Activer",
+                    "confirm_disable": "Êtes-vous sûr de vouloir désactiver {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abandonné",
+                    "title_success": "Succès !",
+                    "step_done": "Configuration terminée pour {step}",
+                    "close": "Fermer",
+                    "submit": "Envoyer"
                 }
             },
             "page-authorize": {
@@ -659,6 +711,26 @@
                     "create_account": "Créer un compte",
                     "error": {
                         "required_fields": "Remplissez tous les champs requis"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Éléments cochés",
+                        "add_item": "Ajouter un élément"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "save": "Enregistrer",
+                        "toggle_editor": "Activer\/désactiver l’éditeur"
+                    },
+                    "migrate": {
+                        "header": "Configuration incompatible",
+                        "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant peut ajouter automatiquement des identifiants à toutes vos cartes et vues en appuyant sur le bouton «Migrer la configuration».",
+                        "migrate": "Migrer la configuration"
                     }
                 }
             }
@@ -779,6 +851,13 @@
                     "turn_on": "Allumer",
                     "turn_off": "Éteindre"
                 }
+            },
+            "water_heater": {
+                "currently": "Actuellement",
+                "on_off": "Marche \/ Arrêt",
+                "target_temperature": "Température cible",
+                "operation": "Opération",
+                "away_mode": "Mode \"Absent\""
             }
         },
         "components": {
@@ -791,15 +870,15 @@
                 "service": "Service"
             },
             "relative_time": {
-                "past": "{time} auparavant",
+                "past": "Il y a {time}",
                 "future": "Dans {time}",
                 "never": "Jamais",
                 "duration": {
                     "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
                     "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
+                    "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
+                    "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
                 }
             },
             "history_charts": {

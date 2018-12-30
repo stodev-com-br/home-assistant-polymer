@@ -1,6 +1,5 @@
-import createErrorCardConfig from '../common/create-error-card-config.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
-
+import createErrorCardConfig from "../common/create-error-card-config";
+import computeDomain from "../../../common/entity/compute_domain";
 
 export default class LegacyWrapperCard extends HTMLElement {
   constructor(tag, domain) {
@@ -16,11 +15,13 @@ export default class LegacyWrapperCard extends HTMLElement {
 
   setConfig(config) {
     if (!config.entity) {
-      throw new Error('No entity specified');
+      throw new Error("No entity specified");
     }
 
     if (computeDomain(config.entity) !== this._domain) {
-      throw new Error(`Specified entity needs to be of domain ${this._domain}.`);
+      throw new Error(
+        `Specified entity needs to be of domain ${this._domain}.`
+      );
     }
 
     this._config = config;
@@ -33,9 +34,15 @@ export default class LegacyWrapperCard extends HTMLElement {
       this._ensureElement(this._tag);
       this.lastChild.hass = hass;
       this.lastChild.stateObj = hass.states[entityId];
+      this.lastChild.config = this._config;
     } else {
-      this._ensureElement('HUI-ERROR-CARD');
-      this.lastChild.setConfig(createErrorCardConfig(`No state available for ${entityId}`, this._config));
+      this._ensureElement("HUI-ERROR-CARD");
+      this.lastChild.setConfig(
+        createErrorCardConfig(
+          `No state available for ${entityId}`,
+          this._config
+        )
+      );
     }
   }
 

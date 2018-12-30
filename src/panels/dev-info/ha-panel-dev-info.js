@@ -1,27 +1,29 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../components/buttons/ha-call-service-button.js';
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/buttons/ha-call-service-button";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
-import formatDateTime from '../../common/datetime/format_date_time.js';
-import formatTime from '../../common/datetime/format_time.js';
+import formatDateTime from "../../common/datetime/format_date_time";
+import formatTime from "../../common/datetime/format_time";
 
-import EventsMixin from '../../mixins/events-mixin.js';
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
+const OPT_IN_PANEL = "lovelace";
 let registeredDialog = false;
 
-class HaPanelDevInfo extends EventsMixin(PolymerElement) {
+class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-positioning ha-style">
@@ -163,7 +165,7 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
             </template>
           </p>
           <p>
-            <a href='/lovelace'>Try out the new Lovelace UI (experimental)</a>
+            <a href='/lovelace'>Try out the new Lovelace UI</a>
             <div id="love" style="cursor:pointer;" on-click="_toggleDefaultPage">[[_defaultPageText()]]</div
           </p>
         </div>
@@ -244,7 +246,7 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
 
       errorLog: {
         type: String,
-        value: '',
+        value: "",
       },
 
       updating: {
@@ -272,15 +274,17 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
       loadedComponents: {
         type: Array,
         value: [],
-      }
+      },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+    this.addEventListener("hass-service-called", (ev) =>
+      this.serviceCalled(ev)
+    );
     // Fix for overlay showing on top of dialog.
-    this.$.showlog.addEventListener('iron-overlay-opened', (ev) => {
+    this.$.showlog.addEventListener("iron-overlay-opened", (ev) => {
       if (ev.target.withBackdrop) {
         ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
       }
@@ -289,9 +293,9 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
 
   serviceCalled(ev) {
     // Check if this is for us
-    if (ev.detail.success && ev.detail.domain === 'system_log') {
+    if (ev.detail.success && ev.detail.domain === "system_log") {
       // Do the right thing depending on service
-      if (ev.detail.service === 'clear') {
+      if (ev.detail.service === "clear") {
         this.items = [];
       }
     }
@@ -305,10 +309,10 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
 
     if (!registeredDialog) {
       registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-loaded-components',
-        dialogTag: 'ha-loaded-components',
-        dialogImport: () => import('./ha-loaded-components.js'),
+      this.fire("register-dialog", {
+        dialogShowEvent: "show-loaded-components",
+        dialogTag: "ha-loaded-components",
+        dialogImport: () => import("./ha-loaded-components"),
       });
     }
 
@@ -325,10 +329,10 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
   refreshErrorLog(ev) {
     if (ev) ev.preventDefault();
 
-    this.errorLog = 'Loading error log…';
+    this.errorLog = "Loading error log…";
 
-    this.hass.callApi('GET', 'error_log').then((log) => {
-      this.errorLog = log || 'No errors have been reported.';
+    this.hass.callApi("GET", "error_log").then((log) => {
+      this.errorLog = log || "No errors have been reported.";
     });
   }
 
@@ -342,7 +346,8 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
     const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
     return dateTimeDay < today
-      ? formatDateTime(dateTime) : formatTime(dateTime);
+      ? formatDateTime(dateTime, this.hass.language)
+      : formatTime(dateTime, this.hass.language);
   }
 
   openLog(event) {
@@ -352,32 +357,32 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
 
   _fetchData() {
     this.updating = true;
-    this.hass.callApi('get', 'error/all')
-      .then((items) => {
-        this.items = items;
-        this.updating = false;
-      });
+    this.hass.callApi("get", "error/all").then((items) => {
+      this.items = items;
+      this.updating = false;
+    });
   }
 
   _defaultPageText() {
-    return `>> ${localStorage.defaultPage === 'lovelace'
-      ? 'Remove' : 'Set'} lovelace as default page on this device <<`;
+    return `>> ${
+      localStorage.defaultPage === OPT_IN_PANEL ? "Remove" : "Set"
+    } ${OPT_IN_PANEL} as default page on this device <<`;
   }
 
   _toggleDefaultPage() {
-    if (localStorage.defaultPage === 'lovelace') {
+    if (localStorage.defaultPage === OPT_IN_PANEL) {
       delete localStorage.defaultPage;
     } else {
-      localStorage.defaultPage = 'lovelace';
+      localStorage.defaultPage = OPT_IN_PANEL;
     }
     this.$.love.innerText = this._defaultPageText();
   }
 
   _showComponents() {
-    this.fire('show-loaded-components', {
-      hass: this.hass
+    this.fire("show-loaded-components", {
+      hass: this.hass,
     });
   }
 }
 
-customElements.define('ha-panel-dev-info', HaPanelDevInfo);
+customElements.define("ha-panel-dev-info", HaPanelDevInfo);

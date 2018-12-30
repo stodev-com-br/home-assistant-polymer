@@ -1,21 +1,21 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../components/ha-menu-button.js';
+import "../../../components/ha-menu-button";
 
-import '../ha-config-section.js';
-import './ha-config-navigation.js';
+import "../ha-config-section";
+import "./ha-config-navigation";
 
-import isComponentLoaded from '../../../common/config/is_component_loaded.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import isComponentLoaded from "../../../common/config/is_component_loaded";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -40,7 +40,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       <app-header slot="header" fixed="">
         <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <div main-title="">[[localize('panel.configuration')]]</div>
+          <div main-title="">[[localize('panel.config')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -52,14 +52,18 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
             <paper-card>
               <a href='/config/cloud' tabindex="-1">
-                <paper-item on-click="_navigate">
+                <paper-item>
                   <paper-item-body two-line="">
-                    Home Assistant Cloud
+                    [[localize('ui.panel.config.cloud.caption')]]
                     <template is="dom-if" if="[[cloudStatus.logged_in]]">
-                      <div secondary="">Logged in as [[cloudStatus.email]]</div>
+                      <div secondary="">
+                        [[localize('ui.panel.config.cloud.description_login', 'email', cloudStatus.email)]]
+                      </div>
                     </template>
                     <template is="dom-if" if="[[!cloudStatus.logged_in]]">
-                      <div secondary="">Not logged in</div>
+                      <div secondary="">
+                        [[localize('ui.panel.config.cloud.description_not_login')]]
+                      </div>
                     </template>
                   </paper-item-body>
                   <iron-icon icon="hass:chevron-right"></iron-icon>
@@ -72,8 +76,10 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
             <a href='/config/integrations/dashboard' tabindex="-1">
               <paper-item>
                 <paper-item-body two-line>
-                  Integrations
-                  <div secondary>Manage connected devices and services</div>
+                  [[localize('ui.panel.config.integrations.caption')]]
+                  <div secondary>
+                    [[localize('ui.panel.config.integrations.description')]]
+                  </div>
                 </paper-item-body>
                 <iron-icon icon="hass:chevron-right"></iron-icon>
               </paper-item>
@@ -114,4 +120,4 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
   }
 }
 
-customElements.define('ha-config-dashboard', HaConfigDashboard);
+customElements.define("ha-config-dashboard", HaConfigDashboard);

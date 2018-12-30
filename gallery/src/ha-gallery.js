@@ -1,19 +1,19 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../src/managers/notification-manager.js';
+import "../../src/managers/notification-manager";
 
-const DEMOS = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
+const DEMOS = require.context("./demos", true, /^(.*\.(ts$))[^.]*$/im);
 
-const fixPath = path => path.substr(2, path.length - 5);
+const fixPath = (path) => path.substr(2, path.length - 5);
 
 class HaGallery extends PolymerElement {
   static get template() {
@@ -118,6 +118,22 @@ class HaGallery extends PolymerElement {
                   </a>
                 </template>
               </paper-card>
+
+              <paper-card heading="Util demos">
+                <div class='card-content intro'>
+                  <p>
+                    Test pages for our utility functions.
+                  </p>
+                </div>
+                <template is='dom-repeat' items='[[_utilDemos]]'>
+                  <a href='#[[item]]'>
+                    <paper-item>
+                      <paper-item-body>{{ item }}</paper-item-body>
+                      <iron-icon icon="hass:chevron-right"></iron-icon>
+                    </paper-item>
+                  </a>
+                </template>
+              </paper-card>
             </div>
           </template>
         </div>
@@ -131,19 +147,23 @@ class HaGallery extends PolymerElement {
       _demo: {
         type: String,
         value: document.location.hash.substr(1),
-        observer: '_demoChanged',
+        observer: "_demoChanged",
       },
       _demos: {
         type: Array,
-        value: DEMOS.keys().map(fixPath)
+        value: DEMOS.keys().map(fixPath),
       },
       _lovelaceDemos: {
         type: Array,
-        computed: '_computeLovelace(_demos)',
+        computed: "_computeLovelace(_demos)",
       },
       _moreInfoDemos: {
         type: Array,
-        computed: '_computeMoreInfos(_demos)',
+        computed: "_computeMoreInfos(_demos)",
+      },
+      _utilDemos: {
+        type: Array,
+        computed: "_computeUtil(_demos)",
       },
     };
   }
@@ -151,18 +171,21 @@ class HaGallery extends PolymerElement {
   ready() {
     super.ready();
 
-    this.addEventListener(
-      'show-notification',
-      ev => this.$.notifications.showNotification(ev.detail.message)
+    this.addEventListener("show-notification", (ev) =>
+      this.$.notifications.showDialog({ message: ev.detail.message })
     );
 
-    this.addEventListener('hass-more-info', (ev) => {
+    this.addEventListener("hass-more-info", (ev) => {
       if (ev.detail.entityId) {
-        this.$.notifications.showNotification(`Showing more info for ${ev.detail.entityId}`);
+        this.$.notifications.showDialog({
+          message: `Showing more info for ${ev.detail.entityId}`,
+        });
       }
     });
 
-    window.addEventListener('hashchange', () => { this._demo = document.location.hash.substr(1); });
+    window.addEventListener("hashchange", () => {
+      this._demo = document.location.hash.substr(1);
+    });
   }
 
   _withDefault(value, def) {
@@ -175,27 +198,31 @@ class HaGallery extends PolymerElement {
     while (root.lastChild) root.removeChild(root.lastChild);
 
     if (demo) {
-      DEMOS(`./${demo}.js`);
+      DEMOS(`./${demo}.ts`);
       const el = document.createElement(demo);
       root.appendChild(el);
     }
   }
 
   _computeHeaderButtonClass(demo) {
-    return demo ? '' : 'invisible';
+    return demo ? "" : "invisible";
   }
 
   _backTapped() {
-    document.location.hash = '';
+    document.location.hash = "";
   }
 
   _computeLovelace(demos) {
-    return demos.filter(demo => demo.includes('hui'));
+    return demos.filter((demo) => demo.includes("hui"));
   }
 
   _computeMoreInfos(demos) {
-    return demos.filter(demo => demo.includes('more-info'));
+    return demos.filter((demo) => demo.includes("more-info"));
+  }
+
+  _computeUtil(demos) {
+    return demos.filter((demo) => demo.includes("util"));
   }
 }
 
-customElements.define('ha-gallery', HaGallery);
+customElements.define("ha-gallery", HaGallery);

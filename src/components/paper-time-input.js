@@ -16,12 +16,12 @@ Custom property | Description | Default
 `--paper-time-input-cotnainer` | Mixin applied to the inputs | `{}`
 `--paper-time-dropdown-input-cotnainer` | Mixin applied to the dropdown input | `{}`
 */
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class PaperTimeInput extends PolymerElement {
   static get template() {
@@ -43,13 +43,11 @@ class PaperTimeInput extends PolymerElement {
             -moz-appearance: textfield;
             @apply --paper-time-input-cotnainer;
           }
-          ;
           --paper-input-container-input-webkit-spinner: {
             -webkit-appearance: none;
             margin: 0;
             display: none;
           }
-          ;
         }
 
         paper-dropdown-menu {
@@ -57,20 +55,23 @@ class PaperTimeInput extends PolymerElement {
           padding: 0;
           /* Force ripple to use the whole container */
           --paper-dropdown-menu-ripple: {
-            color: var(--paper-time-input-dropdown-ripple-color, var(--primary-color));
-          };
+            color: var(
+              --paper-time-input-dropdown-ripple-color,
+              var(--primary-color)
+            );
+          }
           --paper-input-container-input: {
             @apply --paper-font-button;
             text-align: center;
             padding-left: 5px;
             @apply --paper-time-dropdown-input-cotnainer;
-          };
+          }
           --paper-input-container-underline: {
             border-color: transparent;
           }
           --paper-input-container-underline-focus: {
             border-color: transparent;
-          };
+          }
         }
 
         paper-item {
@@ -99,31 +100,61 @@ class PaperTimeInput extends PolymerElement {
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
       <div class="time-input-wrap">
-
         <!-- Hour Input -->
-        <paper-input id="hour" type="number" value="{{hour}}" on-change="_shouldFormatHour" required="" auto-validate="[[autoValidate]]"
-          prevent-invalid-input="" maxlength="2" max="[[_computeHourMax(format)]]" min="0" no-label-float="" disabled="[[disabled]]">
+        <paper-input
+          id="hour"
+          type="number"
+          value="{{hour}}"
+          on-change="_shouldFormatHour"
+          required=""
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input=""
+          maxlength="2"
+          max="[[_computeHourMax(format)]]"
+          min="0"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
           <span suffix="" slot="suffix">:</span>
         </paper-input>
 
         <!-- Min Input -->
-        <paper-input id="min" type="number" value="{{min}}" on-change="_formatMin" required="" auto-validate="[[autoValidate]]" prevent-invalid-input=""
-          maxlength="2" max="59" min="0" no-label-float="" disabled="[[disabled]]">
+        <paper-input
+          id="min"
+          type="number"
+          value="{{min}}"
+          on-change="_formatMin"
+          required=""
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input=""
+          maxlength="2"
+          max="59"
+          min="0"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
         </paper-input>
 
         <!-- Dropdown Menu -->
-        <paper-dropdown-menu id="dropdown" required="" hidden$="[[_equal(format, 24)]]" no-label-float="" disabled="[[disabled]]">
-
-          <paper-listbox attr-for-selected="name" selected="{{amPm}}" slot="dropdown-content">
+        <paper-dropdown-menu
+          id="dropdown"
+          required=""
+          hidden$="[[_equal(format, 24)]]"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
+          <paper-listbox
+            attr-for-selected="name"
+            selected="{{amPm}}"
+            slot="dropdown-content"
+          >
             <paper-item name="AM">AM</paper-item>
             <paper-item name="PM">PM</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
-
       </div>
     `;
   }
-
 
   static get properties() {
     return {
@@ -132,49 +163,49 @@ class PaperTimeInput extends PolymerElement {
        */
       label: {
         type: String,
-        value: 'Time'
+        value: "Time",
       },
       /**
        * auto validate time inputs
        */
       autoValidate: {
         type: Boolean,
-        value: true
+        value: true,
       },
       /**
        * hides the label
        */
       hideLabel: {
         type: Boolean,
-        value: false
+        value: false,
       },
       /**
        * 12 or 24 hr format
        */
       format: {
         type: Number,
-        value: 12
+        value: 12,
       },
       /**
        * disables the inputs
        */
       disabled: {
         type: Boolean,
-        value: false
+        value: false,
       },
       /**
        * hour
        */
       hour: {
         type: String,
-        notify: true
+        notify: true,
       },
       /**
        * minute
        */
       min: {
         type: String,
-        notify: true
+        notify: true,
       },
       /**
        * AM or PM
@@ -182,7 +213,7 @@ class PaperTimeInput extends PolymerElement {
       amPm: {
         type: String,
         notify: true,
-        value: 'AM'
+        value: "AM",
       },
       /**
        * Formatted time string
@@ -191,7 +222,7 @@ class PaperTimeInput extends PolymerElement {
         type: String,
         notify: true,
         readOnly: true,
-        computed: '_computeTime(min, hour, amPm)'
+        computed: "_computeTime(min, hour, amPm)",
       },
     };
   }
@@ -220,9 +251,9 @@ class PaperTimeInput extends PolymerElement {
     if (hour && min) {
       // No ampm on 24 hr time
       if (this.format === 24) {
-        amPm = '';
+        amPm = "";
       }
-      return hour + ':' + min + ' ' + amPm;
+      return hour + ":" + min + " " + amPm;
     }
     return undefined;
   }
@@ -232,7 +263,7 @@ class PaperTimeInput extends PolymerElement {
    */
   _formatMin() {
     if (this.min.toString().length === 1) {
-      this.min = (this.min < 10) ? ('0' + this.min) : this.min;
+      this.min = this.min < 10 ? "0" + this.min : this.min;
     }
   }
 
@@ -241,7 +272,7 @@ class PaperTimeInput extends PolymerElement {
    */
   _shouldFormatHour() {
     if (this.format === 24 && this.hour.toString().length === 1) {
-      this.hour = (this.hour < 10) ? ('0' + this.hour) : this.hour;
+      this.hour = this.hour < 10 ? "0" + this.hour : this.hour;
     }
   }
 
@@ -260,4 +291,4 @@ class PaperTimeInput extends PolymerElement {
   }
 }
 
-customElements.define('paper-time-input', PaperTimeInput);
+customElements.define("paper-time-input", PaperTimeInput);

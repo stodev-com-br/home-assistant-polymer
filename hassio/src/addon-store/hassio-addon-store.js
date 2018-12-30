@@ -1,23 +1,30 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import './hassio-addon-repository.js';
-import './hassio-repositories-editor.js';
+import "./hassio-addon-repository";
+import "./hassio-repositories-editor";
 
 class HassioAddonStore extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      hassio-addon-repository {
-        margin-top: 24px;
-      }
-    </style>
-    <hassio-repositories-editor hass="[[hass]]" repos="[[repos]]"></hassio-repositories-editor>
+      <style include="iron-flex ha-style">
+        hassio-addon-repository {
+          margin-top: 24px;
+        }
+      </style>
+      <hassio-repositories-editor
+        hass="[[hass]]"
+        repos="[[repos]]"
+      ></hassio-repositories-editor>
 
-    <template is="dom-repeat" items="[[repos]]" as="repo" sort="sortRepos">
-      <hassio-addon-repository hass="[[hass]]" repo="[[repo]]" addons="[[computeAddons(repo.slug)]]"></hassio-addon-repository>
-    </template>
-`;
+      <template is="dom-repeat" items="[[repos]]" as="repo" sort="sortRepos">
+        <hassio-addon-repository
+          hass="[[hass]]"
+          repo="[[repo]]"
+          addons="[[computeAddons(repo.slug)]]"
+        ></hassio-addon-repository>
+      </template>
+    `;
   }
 
   static get properties() {
@@ -30,7 +37,7 @@ class HassioAddonStore extends PolymerElement {
 
   ready() {
     super.ready();
-    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this.loadData();
   }
 
@@ -41,42 +48,45 @@ class HassioAddonStore extends PolymerElement {
   }
 
   sortRepos(a, b) {
-    if (a.slug === 'local') {
+    if (a.slug === "local") {
       return -1;
-    } if (b.slug === 'local') {
-      return 1;
-    } if (a.slug === 'core') {
-      return -1;
-    } if (b.slug === 'core') {
+    }
+    if (b.slug === "local") {
       return 1;
     }
-    return a.name < b.name ? -1 : 1;
+    if (a.slug === "core") {
+      return -1;
+    }
+    if (b.slug === "core") {
+      return 1;
+    }
+    return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
   }
 
   computeAddons(repo) {
-    return this.addons.filter(function (addon) {
+    return this.addons.filter(function(addon) {
       return addon.repository === repo;
     });
   }
 
   loadData() {
-    this.hass.callApi('get', 'hassio/addons')
-      .then((info) => {
+    this.hass.callApi("get", "hassio/addons").then(
+      (info) => {
         this.addons = info.data.addons;
         this.repos = info.data.repositories;
-      }, () => {
+      },
+      () => {
         this.addons = [];
         this.repos = [];
-      });
+      }
+    );
   }
 
-
   refreshData() {
-    this.hass.callApi('post', 'hassio/addons/reload')
-      .then(() => {
-        this.loadData();
-      });
+    this.hass.callApi("post", "hassio/addons/reload").then(() => {
+      this.loadData();
+    });
   }
 }
 
-customElements.define('hassio-addon-store', HassioAddonStore);
+customElements.define("hassio-addon-store", HassioAddonStore);

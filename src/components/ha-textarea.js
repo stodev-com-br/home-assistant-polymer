@@ -9,9 +9,9 @@ paper-textarea issue: https://github.com/PolymerElements/paper-input/issues/556
 WebKit issue: https://bugs.webkit.org/show_bug.cgi?id=174629
 */
 
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-input/paper-textarea";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaTextarea extends PolymerElement {
   static get template() {
@@ -21,10 +21,7 @@ class HaTextarea extends PolymerElement {
           display: block;
         }
       </style>
-      <paper-textarea
-        label='[[label]]'
-        value='{{value}}'
-      ></paper-textarea>
+      <paper-textarea label="[[label]]" value="{{value}}"></paper-textarea>
     `;
   }
 
@@ -34,9 +31,9 @@ class HaTextarea extends PolymerElement {
       value: {
         type: String,
         notify: true,
-      }
+      },
     };
   }
 }
 
-customElements.define('ha-textarea', HaTextarea);
+customElements.define("ha-textarea", HaTextarea);

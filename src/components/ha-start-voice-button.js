@@ -1,10 +1,10 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from '../mixins/events-mixin.js';
+import EventsMixin from "../mixins/events-mixin";
 
-import isComponentLoaded from '../common/config/is_component_loaded.js';
+import isComponentLoaded from "../common/config/is_component_loaded";
 
 /*
  * @appliesMixin EventsMixin
@@ -12,8 +12,12 @@ import isComponentLoaded from '../common/config/is_component_loaded.js';
 class HaStartVoiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <paper-icon-button icon="hass:microphone" hidden$="[[!canListen]]" on-click="handleListenClick"></paper-icon-button>
-`;
+      <paper-icon-button
+        icon="hass:microphone"
+        hidden$="[[!canListen]]"
+        on-click="handleListenClick"
+      ></paper-icon-button>
+    `;
   }
 
   static get properties() {
@@ -25,20 +29,22 @@ class HaStartVoiceButton extends EventsMixin(PolymerElement) {
 
       canListen: {
         type: Boolean,
-        computed: 'computeCanListen(hass)',
+        computed: "computeCanListen(hass)",
         notify: true,
       },
     };
   }
 
   computeCanListen(hass) {
-    return ('webkitSpeechRecognition' in window
-           && isComponentLoaded(hass, 'conversation'));
+    return (
+      "webkitSpeechRecognition" in window &&
+      isComponentLoaded(hass, "conversation")
+    );
   }
 
   handleListenClick() {
-    this.fire('hass-start-voice');
+    this.fire("hass-start-voice");
   }
 }
 
-customElements.define('ha-start-voice-button', HaStartVoiceButton);
+customElements.define("ha-start-voice-button", HaStartVoiceButton);

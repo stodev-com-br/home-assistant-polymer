@@ -1,21 +1,24 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../components/entity/ha-state-label-badge.js';
+import "../components/entity/ha-state-label-badge";
 
 class HaBadgesCard extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      ha-state-label-badge {
-        display: inline-block;
-        margin-bottom: var(--ha-state-label-badge-margin-bottom, 16px);
-      }
-    </style>
-    <template is="dom-repeat" items="[[states]]">
-      <ha-state-label-badge hass="[[hass]]" state="[[item]]"></ha-state-label-badge>
-    </template>
-`;
+      <style>
+        ha-state-label-badge {
+          display: inline-block;
+          margin-bottom: var(--ha-state-label-badge-margin-bottom, 16px);
+        }
+      </style>
+      <template is="dom-repeat" items="[[states]]">
+        <ha-state-label-badge
+          hass="[[hass]]"
+          state="[[item]]"
+        ></ha-state-label-badge>
+      </template>
+    `;
   }
 
   static get properties() {
@@ -25,4 +28,4 @@ class HaBadgesCard extends PolymerElement {
     };
   }
 }
-customElements.define('ha-badges-card', HaBadgesCard);
+customElements.define("ha-badges-card", HaBadgesCard);

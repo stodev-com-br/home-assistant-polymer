@@ -1,13 +1,17 @@
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaCustomizeString extends PolymerElement {
   static get template() {
     return html`
-    <paper-input disabled="[[item.secondary]]" label="[[getLabel(item)]]" value="{{item.value}}">
-    </paper-input>
-`;
+      <paper-input
+        disabled="[[item.secondary]]"
+        label="[[getLabel(item)]]"
+        value="{{item.value}}"
+      >
+      </paper-input>
+    `;
   }
 
   static get properties() {
@@ -15,12 +19,12 @@ class HaCustomizeString extends PolymerElement {
       item: {
         type: Object,
         notifies: true,
-      }
+      },
     };
   }
 
   getLabel(item) {
-    return item.description + (item.type === 'json' ? ' (JSON formatted)' : '');
+    return item.description + (item.type === "json" ? " (JSON formatted)" : "");
   }
 }
-customElements.define('ha-customize-string', HaCustomizeString);
+customElements.define("ha-customize-string", HaCustomizeString);

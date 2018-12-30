@@ -13,7 +13,8 @@
         "dev-templates": "Skabeloner",
         "dev-mqtt": "MQTT",
         "dev-info": "Udvikler Information",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Ydeevne",
             "high_demand": "Høj efterspørgsel",
             "heat_pump": "Varmepumpe",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "brugervejledning"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Tilstand",
                                     "from": "Fra",
-                                    "to": "Til"
+                                    "to": "Til",
+                                    "for": "Varighed"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Deaktiver bruger",
                         "delete_user": "Slet bruger"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logget ind som {email}",
+                    "description_not_login": "Ikke logget ind"
+                },
+                "integrations": {
+                    "caption": "Integrationer",
+                    "description": "Administrer tilsluttede enheder og tjenester",
+                    "discovered": "Opdaget",
+                    "configured": "Konfigureret",
+                    "new": "Opret en ny integration",
+                    "configure": "Konfigurer",
+                    "none": "Ikke konfigureret",
+                    "config_entry": {
+                        "no_devices": "Denne integration har ingen enheder",
+                        "no_device": "Entiteter uden enhed",
+                        "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
+                        "restart_confirm": "Genstart Home Assistant for at afslutte fjernelsen af denne integration",
+                        "manuf": "af {manufacturer}",
+                        "hub": "Forbundet via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "enhed utilgængelig",
+                        "entity_unavailable": "entitet utilgængelig"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +599,25 @@
                     "empty_state": "Du har ingen langtids adgangstokens endnu.",
                     "last_used": "Sidst anvendt den {date} af {location}",
                     "not_used": "Har aldrig været brugt"
+                },
+                "current_user": "Du er logget ind som {fullName} .",
+                "is_owner": "Du er ejer.",
+                "logout": "Log af",
+                "change_password": {
+                    "header": "Skift adgangskode",
+                    "submit": "Gem og afslut"
+                },
+                "mfa": {
+                    "header": "Multifaktor godkendelsesmoduler",
+                    "disable": "Deaktiver",
+                    "enable": "Aktiver"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Afbrudt",
+                    "title_success": "Succes!",
+                    "step_done": "Opsætning af {step} færdig",
+                    "close": "Luk",
+                    "submit": "Gem og afslut"
                 }
             },
             "page-authorize": {
@@ -647,7 +694,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Er du klar til at vække din hjem, genvinde dit privatliv og deltage i et verdensomspændende fællesskab af tinkerers?",
+                "intro": "Er du klar til at vække dit hjem, genvinde dit privatliv og blive medlem af et verdensomspændende fællesskab af tinkerers?",
                 "user": {
                     "intro": "Lad os komme i gang ved at oprette en brugerkonto.",
                     "required_field": "Nødvendig",
@@ -729,7 +776,9 @@
                 "clear_code": "Nulstil",
                 "disarm": "Frakoble",
                 "arm_home": "Tilkoble hjemme",
-                "arm_away": "Tilkoble ude"
+                "arm_away": "Tilkoble ude",
+                "arm_night": "Tilkoblet nat",
+                "armed_custom_bypass": "Brugerdefineret "
             },
             "automation": {
                 "last_triggered": "Senest udløst",
@@ -762,6 +811,7 @@
                 "target_humidity": "Ønsket luftfugtighed",
                 "operation": "Drift",
                 "fan_mode": "Ventilator tilstand",
+                "swing_mode": "Swing tilstand",
                 "away_mode": "Ude af huset-modus",
                 "aux_heat": "Støtte-varme"
             },
@@ -778,6 +828,13 @@
                     "turn_on": "Tænd",
                     "turn_off": "Sluk"
                 }
+            },
+            "water_heater": {
+                "currently": "Lige nu",
+                "on_off": "Tænd \/ sluk",
+                "target_temperature": "Ønsket temperatur",
+                "operation": "Drift",
+                "away_mode": "Ikke til stede"
             }
         },
         "components": {

@@ -13,7 +13,8 @@
         "dev-templates": "Sablonok",
         "dev-mqtt": "MQTT",
         "dev-info": "Infó",
-        "calendar": "Naptár"
+        "calendar": "Naptár",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Teljesítmény",
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
-            "gas": "Gáz"
+            "gas": "Gáz",
+            "manual": "Manuális"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -290,7 +292,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Törlés sikeres",
+                "clear_completed": "Kijelöltek törlése",
                 "add_item": "Tétel hozzáadása",
                 "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
             },
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Állapot",
                                     "from": "Eredeti állapot",
-                                    "to": "Módosult állapot"
+                                    "to": "Módosult állapot",
+                                    "for": "Időtartam"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Felhasználó inaktiválása",
                         "delete_user": "Felhasználó törlése"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Felhő",
+                    "description_login": "Bejelentkezve mint {email}",
+                    "description_not_login": "Nincs bejelentkezve"
+                },
+                "integrations": {
+                    "caption": "Integrációk",
+                    "description": "Csatlakoztatott eszközök és szolgáltatások kezelése",
+                    "discovered": "Felfedezett",
+                    "configured": "Konfigurált",
+                    "new": "Új integráció beállítása",
+                    "configure": "Beállítás",
+                    "none": "Még semmi sincs beállítva",
+                    "config_entry": {
+                        "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
+                        "no_device": "Entitások eszközök nélkül",
+                        "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
+                        "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
+                        "manuf": "Gyártó: {manufacturer}",
+                        "hub": "Csatlakoztatva",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "eszköz nem érhető el",
+                        "entity_unavailable": "entitás nem érhető el"
+                    }
                 }
             },
             "profile": {
@@ -551,7 +579,7 @@
                     "description": "Minden frissítési token egy bejelentkezési munkamenetet képvisel. A frissítési tokenek automatikusan eltávolításra kerülnek, amikor a kijelentkezésre kattintasz. Jelenleg a következő frissítési tokenek aktívak a fiókodban.",
                     "token_title": "{clientId} frissítési tokenje",
                     "created_at": "Létrehozva: {date}",
-                    "confirm_delete": "Biztosan törlöd {name} frissítési tokenjét?",
+                    "confirm_delete": "Biztosan törölni szeretnéd {name} frissítési tokenjét?",
                     "delete_failed": "Nem sikerült törölni a frissítési tokent.",
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt",
@@ -562,15 +590,39 @@
                     "description": "Hosszú életű hozzáférési tokenek létrehozásával engedélyezheted a szkriptjeid számára, hogy csatlakozzanak a Home Assistant példányodhoz. Minden token 10 évig érvényes a létrehozástól számítva. Jelenleg a következő hosszú életű hozzáférési tokenek aktívak.",
                     "learn_auth_requests": "Tudj meg többet a hitelesített kérelmek létrehozásáról.",
                     "created_at": "Létrehozva: {date}",
-                    "confirm_delete": "Biztosan törlöd {name} hozzáférési tokenjét?",
+                    "confirm_delete": "Biztosan törölni szeretnéd {name} hozzáférési tokenjét?",
                     "delete_failed": "Nem sikerült törölni a hozzáférési tokent.",
                     "create": "Token Létrehozása",
                     "create_failed": "Nem sikerült létrehozni a hozzáférési tokent.",
                     "prompt_name": "Név?",
-                    "prompt_copy_token": "Másold a hozzáférési tokened. Nem fog újra megjelenni.",
+                    "prompt_copy_token": "Most másold ki a hozzáférési tokened! Erre később nem lesz lehetőséged.",
                     "empty_state": "Még nincsenek hosszú életű hozzáférési tokenjeid.",
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt"
+                },
+                "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
+                "is_owner": "Tulajdonos vagy.",
+                "logout": "Kijelentkezés",
+                "change_password": {
+                    "header": "Jelszó Módosítása",
+                    "current_password": "Jelenlegi Jelszó",
+                    "new_password": "Új Jelszó",
+                    "confirm_new_password": "Új Jelszó Megerősítése",
+                    "error_required": "Szükséges",
+                    "submit": "Küldés"
+                },
+                "mfa": {
+                    "header": "Többfaktoros Hitelesítési Modulok",
+                    "disable": "Letilt",
+                    "enable": "Engedélyez",
+                    "confirm_disable": "Biztosan le szeretnéd tiltani {name}-t?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Megszakítva",
+                    "title_success": "Siker!",
+                    "step_done": "Beállítás kész {step}",
+                    "close": "Bezárás",
+                    "submit": "Küldés"
                 }
             },
             "page-authorize": {
@@ -603,7 +655,7 @@
                                 "invalid_code": "Érvénytelen hitelesítési kód"
                             },
                             "abort": {
-                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                                "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
                             }
                         },
                         "legacy_api_password": {
@@ -627,7 +679,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Nincs megadva API jelszó a konfigurációban.",
-                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                                "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
                             }
                         },
                         "trusted_networks": {
@@ -661,6 +713,47 @@
                         "required_fields": "Töltsd ki az összes szükséges mezőt"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Kijelölt tételek",
+                        "clear_items": "Kijelölt tételek törlése",
+                        "add_item": "Tétel hozzáadása"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kártya Konfiguráció",
+                        "save": "Mentés",
+                        "toggle_editor": "Szerkesztő",
+                        "pick_card": "Válaszd ki a kártyát amit hozzá szeretnél adni.",
+                        "add": "Kártya hozzáadása",
+                        "edit": "Szerkesztés",
+                        "delete": "Törlés"
+                    },
+                    "migrate": {
+                        "header": "Inkompatibilis Konfiguráció",
+                        "para_no_id": "Ez az elem nem rendelkezik azonosítóval. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!",
+                        "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni azonosítókat.",
+                        "migrate": "Konfiguráció áttelepítése"
+                    },
+                    "header": "Felhasználói felület szerkesztése",
+                    "configure_ui": "Felhasználói felület konfigurálása",
+                    "edit_view": {
+                        "header": "Nézet konfigurálása",
+                        "add": "Nézet hozzáadása",
+                        "edit": "Nézet szerkesztése",
+                        "delete": "Nézet törlése"
+                    },
+                    "save_config": {
+                        "header": "Vedd át az irányítást a Lovelace UI felett",
+                        "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
+                        "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
+                        "cancel": "Mégsem",
+                        "save": "Irányítás átvétele"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -669,7 +762,8 @@
         },
         "common": {
             "loading": "Betöltés",
-            "cancel": "Mégse"
+            "cancel": "Mégse",
+            "save": "Mentés"
         },
         "duration": {
             "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
@@ -729,7 +823,9 @@
                 "clear_code": "Törlés",
                 "disarm": "Hatástalanít",
                 "arm_home": "Élesít (otthon)",
-                "arm_away": "Élesít (távozó)"
+                "arm_away": "Élesít (távozó)",
+                "arm_night": "Élesít (éjszakai)",
+                "armed_custom_bypass": "Egyéni áthidalás"
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
@@ -779,6 +875,13 @@
                     "turn_on": "Bekapcsolás",
                     "turn_off": "Kikapcsolás"
                 }
+            },
+            "water_heater": {
+                "currently": "Jelenleg",
+                "on_off": "Be \/ ki",
+                "target_temperature": "Kívánt hőmérséklet",
+                "operation": "Üzemmód",
+                "away_mode": "Távoli mód"
             }
         },
         "components": {
@@ -859,7 +962,7 @@
         "notify": "Értesít",
         "plant": "Növény",
         "proximity": "Közelség",
-        "remote": "Távoli",
+        "remote": "Távirányítás",
         "scene": "Jelenet",
         "script": "Szkript",
         "sensor": "Érzékelő",

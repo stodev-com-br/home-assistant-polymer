@@ -1,11 +1,11 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from '../../../../mixins/events-mixin.js';
+import EventsMixin from "../../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -13,28 +13,34 @@ import EventsMixin from '../../../../mixins/events-mixin.js';
 export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        position: relative;
-      }
- 
-      .indicator {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--accent-color);
-        pointer-events: none;
-      }
+      <style>
+        :host {
+          position: relative;
+        }
 
-      .indicator[hidden] {
-        display: none;
-      }
-    </style>
-    <paper-icon-button icon="hass:bell" on-click="_clicked"></paper-icon-button>
-    <span class="indicator" hidden$="[[!_hasNotifications(notifications)]]"></span>
+        .indicator {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--accent-color);
+          pointer-events: none;
+        }
+
+        .indicator[hidden] {
+          display: none;
+        }
+      </style>
+      <paper-icon-button
+        icon="hass:bell"
+        on-click="_clicked"
+      ></paper-icon-button>
+      <span
+        class="indicator"
+        hidden$="[[!_hasNotifications(notifications)]]"
+      ></span>
     `;
   }
 
@@ -42,12 +48,12 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
     return {
       notificationsOpen: {
         type: Boolean,
-        notify: true
+        notify: true,
       },
       notifications: {
         type: Array,
-        value: []
-      }
+        value: [],
+      },
     };
   }
 
@@ -59,4 +65,4 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
     return notifications.length > 0;
   }
 }
-customElements.define('hui-notifications-button', HuiNotificationsButton);
+customElements.define("hui-notifications-button", HuiNotificationsButton);

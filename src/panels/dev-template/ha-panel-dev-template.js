@@ -1,101 +1,120 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-spinner/paper-spinner";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-style iron-flex iron-positioning"></style>
-    <style>
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-
-      .content {
-        padding: 16px;
-      }
-
-      .edit-pane {
-        margin-right: 16px;
-      }
-
-      .edit-pane a {
-        color: var(--dark-primary-color);
-      }
-
-      .horizontal .edit-pane {
-        max-width: 50%;
-      }
-
-      .render-pane {
-        position: relative;
-        max-width: 50%;
-      }
-
-      .render-spinner {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-      }
-
-      paper-textarea {
-        --paper-input-container-input: {
-          @apply --paper-font-code1;
+      <style include="ha-style iron-flex iron-positioning"></style>
+      <style>
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
         }
-      }
 
-      .rendered {
-        @apply --paper-font-code1;
-        clear: both;
-        white-space: pre-wrap;
-      }
+        .content {
+          padding: 16px;
+        }
 
-      .rendered.error {
-        color: red;
-      }
-    </style>
+        .edit-pane {
+          margin-right: 16px;
+        }
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Templates</div>
-        </app-toolbar>
-      </app-header>
+        .edit-pane a {
+          color: var(--dark-primary-color);
+        }
 
-      <div class$='[[computeFormClasses(narrow)]]'>
-        <div class='edit-pane'>
-          <p>
-            Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.
-          </p>
-          <ul>
-            <li><a href='http://jinja.pocoo.org/docs/dev/templates/' target='_blank'>Jinja2 template documentation</a></li>
-            <li><a href='https://home-assistant.io/docs/configuration/templating/' target='_blank'>Home Assistant template extensions</a></li>
-          </ul>
-          <paper-textarea
-            label="Template editor"
-            value='{{template}}'
-            autofocus
-          ></paper-textarea>
+        .horizontal .edit-pane {
+          max-width: 50%;
+        }
+
+        .render-pane {
+          position: relative;
+          max-width: 50%;
+        }
+
+        .render-spinner {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+        }
+
+        paper-textarea {
+          --paper-input-container-input: {
+            @apply --paper-font-code1;
+          }
+        }
+
+        .rendered {
+          @apply --paper-font-code1;
+          clear: both;
+          white-space: pre-wrap;
+        }
+
+        .rendered.error {
+          color: red;
+        }
+      </style>
+
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>Templates</div>
+          </app-toolbar>
+        </app-header>
+
+        <div class$="[[computeFormClasses(narrow)]]">
+          <div class="edit-pane">
+            <p>
+              Templates are rendered using the Jinja2 template engine with some
+              Home Assistant specific extensions.
+            </p>
+            <ul>
+              <li>
+                <a
+                  href="http://jinja.pocoo.org/docs/dev/templates/"
+                  target="_blank"
+                  >Jinja2 template documentation</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://home-assistant.io/docs/configuration/templating/"
+                  target="_blank"
+                  >Home Assistant template extensions</a
+                >
+              </li>
+            </ul>
+            <paper-textarea
+              label="Template editor"
+              value="{{template}}"
+              autofocus
+            ></paper-textarea>
+          </div>
+
+          <div class="render-pane">
+            <paper-spinner
+              class="render-spinner"
+              active="[[rendering]]"
+            ></paper-spinner>
+            <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
+          </div>
         </div>
-
-        <div class='render-pane'>
-          <paper-spinner class='render-spinner' active='[[rendering]]'></paper-spinner>
-          <pre class$='[[computeRenderedClasses(error)]]'>[[processed]]</pre>
-        </div>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 
@@ -150,23 +169,22 @@ For loop example:
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`,
         /* eslint-enable max-len */
-        observer: 'templateChanged',
+        observer: "templateChanged",
       },
 
       processed: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   computeFormClasses(narrow) {
-    return narrow
-      ? 'content fit' : 'content fit layout horizontal';
+    return narrow ? "content fit" : "content fit layout horizontal";
   }
 
   computeRenderedClasses(error) {
-    return error ? 'error rendered' : 'rendered';
+    return error ? "error rendered" : "rendered";
   }
 
   templateChanged() {
@@ -176,23 +194,27 @@ For loop example:
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(500),
-      () => { this.renderTemplate(); }
+      () => {
+        this.renderTemplate();
+      }
     );
   }
 
   renderTemplate() {
     this.rendering = true;
 
-    this.hass.callApi('POST', 'template', { template: this.template })
-      .then(function (processed) {
+    this.hass.callApi("POST", "template", { template: this.template }).then(
+      function(processed) {
         this.processed = processed;
         this.rendering = false;
-      }.bind(this), function (error) {
+      }.bind(this),
+      function(error) {
         this.processed = error.body.message;
         this.error = true;
         this.rendering = false;
-      }.bind(this));
+      }.bind(this)
+    );
   }
 }
 
-customElements.define('ha-panel-dev-template', HaPanelDevTemplate);
+customElements.define("ha-panel-dev-template", HaPanelDevTemplate);

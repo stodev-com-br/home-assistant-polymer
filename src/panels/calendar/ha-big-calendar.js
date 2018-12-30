@@ -1,58 +1,59 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 /* eslint-disable */
-import { render } from 'react-dom';
-import React from 'react';
+import { render } from "react-dom";
+import React from "react";
 /* eslint-enable */
-import BigCalendar from 'react-big-calendar';
-import moment from 'moment';
-import EventsMixin from '../../mixins/events-mixin.js';
+import BigCalendar from "react-big-calendar";
+import moment from "moment";
+import EventsMixin from "../../mixins/events-mixin";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style";
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
 
-const DEFAULT_VIEW = 'month';
+const DEFAULT_VIEW = "month";
 
 class HaBigCalendar extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
+      <link
+        rel="stylesheet"
+        href="/static/panels/calendar/react-big-calendar.css"
+      />
       <style>
         div#root {
           height: 100%;
           width: 100%;
         }
       </style>
-      <div id="root"></div>`;
+      <div id="root"></div>
+    `;
   }
 
   static get properties() {
     return {
       events: {
         type: Array,
-        observer: '_update',
+        observer: "_update",
       },
-
     };
   }
 
   _update(events) {
     const allViews = BigCalendar.Views.values;
 
-    const BCElement = React.createElement(
-      BigCalendar,
-      { events: events,
-        views: allViews,
-        popup: true,
-        onNavigate: (date, viewName) => this.fire('navigate', { date, viewName }),
-        onView: viewName => this.fire('view-changed', { viewName }),
-        eventPropGetter: this._setEventStyle,
-        defaultView: DEFAULT_VIEW,
-        defaultDate: new Date(),
-      }
-    );
+    const BCElement = React.createElement(BigCalendar, {
+      events: events,
+      views: allViews,
+      popup: true,
+      onNavigate: (date, viewName) => this.fire("navigate", { date, viewName }),
+      onView: (viewName) => this.fire("view-changed", { viewName }),
+      eventPropGetter: this._setEventStyle,
+      defaultView: DEFAULT_VIEW,
+      defaultDate: new Date(),
+    });
     render(BCElement, this.$.root);
   }
 
@@ -66,4 +67,4 @@ class HaBigCalendar extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-big-calendar', HaBigCalendar);
+customElements.define("ha-big-calendar", HaBigCalendar);

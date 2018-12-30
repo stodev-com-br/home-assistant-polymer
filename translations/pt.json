@@ -13,7 +13,8 @@
         "dev-templates": "Modelos",
         "dev-mqtt": "MQTT",
         "dev-info": "Informações",
-        "calendar": "Calendário"
+        "calendar": "Calendário",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Desempenho",
             "high_demand": "Necessidade alta",
             "heat_pump": "Bomba de calor",
-            "gas": "Gás"
+            "gas": "Gás",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -359,7 +361,7 @@
                         "introduction": "Crie automatizações para tornar a sua casa viva",
                         "default_name": "Nova Automação",
                         "save": "Guardar",
-                        "unsaved_confirm": "Você tem alterações não guardas. Tem a certeza de que quer sair?",
+                        "unsaved_confirm": "Existem alterações não guardas. Tem a certeza de que quer sair?",
                         "alias": "Nome",
                         "triggers": {
                             "header": "Gatilhos",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Estado",
                                     "from": "De",
-                                    "to": "Para"
+                                    "to": "Para",
+                                    "for": "Durante"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -396,7 +399,7 @@
                                     "label": "Estado numérico",
                                     "above": "Acima",
                                     "below": "Abaixo",
-                                    "value_template": "Modelo do valor (opcional)"
+                                    "value_template": "Valor para o modelo (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -441,7 +444,7 @@
                                     "label": "Estado numérico",
                                     "above": "Acima",
                                     "below": "Abaixo",
-                                    "value_template": "Modelo do valor (opcional)"
+                                    "value_template": "Valor para o modelo (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -520,9 +523,34 @@
                     "editor": {
                         "rename_user": "Alterar nome do utilizador",
                         "change_password": "Alterar palavra-passe",
-                        "activate_user": "Activar utilizador",
-                        "deactivate_user": "Desactivar utilizador",
+                        "activate_user": "Ativar utilizador",
+                        "deactivate_user": "Desativar utilizador",
                         "delete_user": "Apagar utilizador"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Ligado como {email}",
+                    "description_not_login": "Não está ligado"
+                },
+                "integrations": {
+                    "caption": "Integrações",
+                    "description": "Gerir dispositivos e serviços ligados",
+                    "discovered": "Detetados",
+                    "configured": "Configurado",
+                    "new": "Configurar uma nova integração",
+                    "configure": "Configurar",
+                    "none": "Nada configurado ainda",
+                    "config_entry": {
+                        "no_devices": "Esta integração não possui dispositivos.",
+                        "no_device": "Entidades sem dispositivos",
+                        "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
+                        "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
+                        "manuf": "por {manufacturer}",
+                        "hub": "Ligado via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "Dispositivo indisponível",
+                        "entity_unavailable": "Entidade indisponível"
                     }
                 }
             },
@@ -547,7 +575,7 @@
                     "dropdown_label": "Tema"
                 },
                 "refresh_tokens": {
-                    "header": "",
+                    "header": "Atualizar Tokens",
                     "description": "Cada \"refresh token\" representa a uma sessão de utilizador. Os \"refresh tokens\" serão automáticamente removidos quando clicar sair. Os seguintes \"refresh tokens\" estão activos para a sua conta.",
                     "token_title": "Atualizar o token de {clientId}",
                     "created_at": "Criado a {date}",
@@ -571,11 +599,35 @@
                     "empty_state": "Ainda não tem um token de longa duração",
                     "last_used": "Última utilização a {date} em {location}",
                     "not_used": "Nunca foi utilizado"
+                },
+                "current_user": "Esta actualmente ligado como {fullName}",
+                "is_owner": "Você é o proprietário.",
+                "logout": "Sair",
+                "change_password": {
+                    "header": "Alterar palavra-passe",
+                    "current_password": "Palavra-passe actual",
+                    "new_password": "Nova palavra-passe",
+                    "confirm_new_password": "Confirmar nova palavra-passe",
+                    "error_required": "Obrigatório",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Módulos de autenticação por multíplos-factores",
+                    "disable": "Desactivar",
+                    "enable": "Activar",
+                    "confirm_disable": "Tem certeza de que deseja desativar {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "Sucesso!",
+                    "step_done": "Configuração concluída para {step}",
+                    "close": "Fechar",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {
                 "initializing": "A inicializar",
-                "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
+                "authorizing_client": "Está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
                 "logging_in_with": "Iniciar a sessão com **{authProviderName}**.",
                 "pick_auth_provider": "Ou faça login com",
                 "abort_intro": "Login abortado",
@@ -661,6 +713,28 @@
                         "required_fields": "Preencha todos os campos obrigatórios"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Itens marcados",
+                        "clear_items": "Limpar itens marcados",
+                        "add_item": "Adicionar Item"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configuração do cartão",
+                        "save": "Guardar",
+                        "toggle_editor": "Alterar para editor"
+                    },
+                    "migrate": {
+                        "header": "Configuração Incompatível",
+                        "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'.",
+                        "para_migrate": "O Home Assistant pode adicionar IDs a todos os seus cartões e vistas automaticamente clicando no botão 'Migrar configuração'.",
+                        "migrate": "Migrar configuração"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -705,22 +779,22 @@
                     "wind_speed": "Vel. do vento"
                 },
                 "cardinal_direction": {
-                    "e": "",
-                    "ene": "",
-                    "ese": "",
-                    "n": "",
-                    "ne": "",
-                    "nne": "",
-                    "nw": "",
-                    "nnw": "",
-                    "s": "",
-                    "se": "",
-                    "sse": "",
-                    "ssw": "",
-                    "sw": "",
-                    "w": "",
-                    "wnw": "",
-                    "wsw": ""
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
                 },
                 "forecast": "Previsão"
             },
@@ -729,7 +803,9 @@
                 "clear_code": "Limpo",
                 "disarm": "Desarmar",
                 "arm_home": "Armado casa",
-                "arm_away": "Armado ausente"
+                "arm_away": "Armado ausente",
+                "arm_night": "Armado noite",
+                "armed_custom_bypass": "Desvio personalizado"
             },
             "automation": {
                 "last_triggered": "Última ocorrência",
@@ -757,7 +833,7 @@
             },
             "climate": {
                 "currently": "Atualmente",
-                "on_off": "Lig. \/ Des.",
+                "on_off": "Ligado \/ desligado",
                 "target_temperature": "Temperatura pretendida",
                 "target_humidity": "Humidade pretendida",
                 "operation": "Operação",
@@ -779,6 +855,13 @@
                     "turn_on": "Ligar",
                     "turn_off": "Desligar"
                 }
+            },
+            "water_heater": {
+                "currently": "Atualmente",
+                "on_off": "Ligado \/ desligado",
+                "target_temperature": "Temperatura pretendida",
+                "operation": "Operação",
+                "away_mode": "Modo ausente"
             }
         },
         "components": {

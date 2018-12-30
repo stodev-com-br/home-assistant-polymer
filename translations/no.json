@@ -12,8 +12,9 @@
         "dev-events": "Hendelser",
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info",
-        "calendar": "Kalender"
+        "dev-info": "Informasjon",
+        "calendar": "Kalender",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -65,11 +66,11 @@
             },
             "sound": {
                 "off": "Klar",
-                "on": "Oppdaget"
+                "on": "Aktivert"
             },
             "vibration": {
                 "off": "Klar",
-                "on": "Oppdaget"
+                "on": "Aktivert"
             },
             "opening": {
                 "off": "Lukket",
@@ -143,7 +144,8 @@
             "performance": "Ytelse",
             "high_demand": "Høy etterspørsel",
             "heat_pump": "Varmepumpe",
-            "gas": "Gass"
+            "gas": "Gass",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -235,7 +237,7 @@
             },
             "query_stage": {
                 "initializing": "Initialiserer ({query_stage})",
-                "dead": "Død  ({query_stage})"
+                "dead": "Død ({query_stage})"
             }
         },
         "weather": {
@@ -244,10 +246,10 @@
             "fog": "Tåke",
             "hail": "Hagl",
             "lightning": "Lyn",
-            "lightning-rainy": "Lyn, regnfull",
+            "lightning-rainy": "Lyn, regn",
             "partlycloudy": "Delvis skyet",
-            "pouring": "Kraftig regn",
-            "rainy": "Regnfull",
+            "pouring": "Kraftig nedbør",
+            "rainy": "Regn",
             "snowy": "Snø",
             "snowy-rainy": "Sludd",
             "sunny": "Solfylt",
@@ -273,14 +275,14 @@
         "alarm_control_panel": {
             "armed": "Påslått",
             "disarmed": "Deaktiver",
-            "armed_home": "Påslått",
-            "armed_away": "Påslått",
-            "armed_night": "Påslått",
+            "armed_home": "Aktivert",
+            "armed_away": "Aktivert",
+            "armed_night": "Aktivert",
             "pending": "Venter",
             "arming": "Slår på",
             "disarming": "Slå av",
             "triggered": "Utløs",
-            "armed_custom_bypass": "Påslått"
+            "armed_custom_bypass": "Aktivert"
         },
         "device_tracker": {
             "home": "Hjemme",
@@ -343,7 +345,7 @@
                 },
                 "customize": {
                     "caption": "Tilpasning",
-                    "description": "Tilpass dine enheter"
+                    "description": "Tilpass dine oppføringer"
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Tilstand",
                                     "from": "Fra",
-                                    "to": "Til"
+                                    "to": "Til",
+                                    "for": "For"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -415,9 +418,9 @@
                                 },
                                 "zone": {
                                     "label": "Sone",
-                                    "entity": "Enhet med posisjon",
+                                    "entity": "Oppføring med posisjon",
                                     "zone": "Sone",
-                                    "event": "Hendelse",
+                                    "event": "Hendelse:",
                                     "enter": "Ankommer",
                                     "leave": "Forlater"
                                 }
@@ -441,7 +444,7 @@
                                     "label": "Numerisk tilstand",
                                     "above": "Over",
                                     "below": "Under",
-                                    "value_template": "Verdi mal (valgfritt)"
+                                    "value_template": "Verdi mal (valgfri)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -524,12 +527,37 @@
                         "deactivate_user": "Deaktiver bruker",
                         "delete_user": "Slett bruker"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logget inn som {email}",
+                    "description_not_login": "Ikke pålogget"
+                },
+                "integrations": {
+                    "caption": "Integrasjoner",
+                    "description": "Administrer tilkoblede enheter og tjenester",
+                    "discovered": "Oppdaget",
+                    "configured": "Konfigurert",
+                    "new": "Sett opp en ny integrasjon",
+                    "configure": "Konfigurer",
+                    "none": "Ingenting er konfigurert enda",
+                    "config_entry": {
+                        "no_devices": "Denne integrasjonen har ingen enheter.",
+                        "no_device": "Oppføringer uten enheter",
+                        "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
+                        "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
+                        "manuf": "av {manufacturer}",
+                        "hub": "Tilkoblet via",
+                        "firmware": "Fastvare: {version}",
+                        "device_unavailable": "enheten er utilgjengelig",
+                        "entity_unavailable": "oppføringen er utilgjengelig"
+                    }
                 }
             },
             "profile": {
                 "push_notifications": {
                     "header": "Push varslinger",
-                    "description": "Send varslinger til denne enheten",
+                    "description": "Send notifikasjoner til denne enheten",
                     "error_load_platform": "Konfigurer notify.html5.",
                     "error_use_https": "Krever SSL aktivert for grensesnitt.",
                     "push_notifications": "Push varslinger",
@@ -571,6 +599,30 @@
                     "empty_state": "Du har ingen langvarige tilgangstokener ennå.",
                     "last_used": "Sist brukt den {date} fra {location}",
                     "not_used": "Har aldri blitt brukt"
+                },
+                "current_user": "Du er logget inn som {fullName}.",
+                "is_owner": "Du er en eier.",
+                "logout": "Logg ut",
+                "change_password": {
+                    "header": "Endre passord",
+                    "current_password": "Nåværende passord",
+                    "new_password": "Nytt passord",
+                    "confirm_new_password": "Bekreft nytt passord",
+                    "error_required": "Nødvendig",
+                    "submit": "Send inn"
+                },
+                "mfa": {
+                    "header": "Multifaktorautentisering moduler",
+                    "disable": "Deaktiver",
+                    "enable": "Aktiver",
+                    "confirm_disable": "Er du sikker på at du vil deaktivere {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Avbrutt",
+                    "title_success": "Suksess!",
+                    "step_done": "Oppsett fullført for {step}",
+                    "close": "Lukk",
+                    "submit": "Send inn"
                 }
             },
             "page-authorize": {
@@ -661,6 +713,47 @@
                         "required_fields": "Fyll ut alle nødvendige felt"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Merkede elementer",
+                        "clear_items": "Fjern merkede elementer",
+                        "add_item": "Legg til"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kortkonfigurasjon",
+                        "save": "Lagre",
+                        "toggle_editor": "Bytt redigering",
+                        "pick_card": "Velge det kortet du ønsker å legge til.",
+                        "add": "Legg til kort",
+                        "edit": "Rediger",
+                        "delete": "Slett"
+                    },
+                    "migrate": {
+                        "header": "Konfigurasjon inkompatibel",
+                        "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID til dette elementet i 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kan legge til ID-er til alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
+                        "migrate": "Overfør konfigurasjon"
+                    },
+                    "header": "Rediger brukergrensesnitt",
+                    "configure_ui": "Konfigurer brukergrensesnitt",
+                    "edit_view": {
+                        "header": "Vis konfigurasjon",
+                        "add": "Legg til visning",
+                        "edit": "Rediger visning",
+                        "delete": "Slett visning"
+                    },
+                    "save_config": {
+                        "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
+                        "para": "Home Assistant hjelper som standard med å vedlikeholde brukergrensesnittet ditt, oppdaterer det når nye enheter eller Lovelace-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
+                        "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
+                        "cancel": "Glem det",
+                        "save": "Ta kontroll"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -669,7 +762,8 @@
         },
         "common": {
             "loading": "Laster",
-            "cancel": "Avbryt"
+            "cancel": "Avbryt",
+            "save": "Lagre"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
@@ -729,7 +823,9 @@
                 "clear_code": "Klarer",
                 "disarm": "Deaktiver",
                 "arm_home": "Armer hjemme",
-                "arm_away": "Armer bort"
+                "arm_away": "Armer bort",
+                "arm_night": "Armer natt",
+                "armed_custom_bypass": "Tilpasset bypass"
             },
             "automation": {
                 "last_triggered": "Sist utløst",
@@ -741,7 +837,7 @@
             },
             "fan": {
                 "speed": "Hastighet",
-                "oscillate": "Svinge",
+                "oscillate": "Vandring",
                 "direction": "Retning"
             },
             "light": {
@@ -779,19 +875,26 @@
                     "turn_on": "Slå på",
                     "turn_off": "Slå av"
                 }
+            },
+            "water_heater": {
+                "currently": "Temperatur nå",
+                "on_off": "På \/ av",
+                "target_temperature": "Ønsket temperatur",
+                "operation": "Drift",
+                "away_mode": "Bortemodus"
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Enhet"
+                    "entity": "Oppføring"
                 }
             },
             "service-picker": {
                 "service": "Tjeneste"
             },
             "relative_time": {
-                "past": "For {time} siden",
+                "past": "{time} siden",
                 "future": "Om {time}",
                 "never": "Aldri",
                 "duration": {
@@ -818,7 +921,7 @@
             "more_info_settings": {
                 "save": "Lagre",
                 "name": "Navn",
-                "entity_id": "Enhets ID"
+                "entity_id": "Oppføring ID"
             }
         },
         "auth_store": {

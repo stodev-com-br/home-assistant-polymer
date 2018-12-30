@@ -1,16 +1,16 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../components/ha-form.js';
-import '../../components/ha-markdown.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-form";
+import "../../components/ha-markdown";
+import "../../resources/ha-style";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 let instance = 0;
 
@@ -18,94 +18,119 @@ let instance = 0;
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaMfaModuleSetupFlow extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      paper-dialog {
-        max-width: 500px;
-      }
-      ha-markdown img:first-child:last-child,
-      ha-markdown svg:first-child:last-child {
-        display: block;
-        margin: 0 auto;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      .init-spinner {
-        padding: 10px 100px 34px;
-        text-align: center;
-      }
-      .submit-spinner {
-        margin-right: 16px;
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          Aborted
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          Success!
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          [[_computeStepTitle(localize, _step)]]
-        </template>
-      </h2>
-      <paper-dialog-scrollable>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <template is="dom-if" if="[[!_step]]">
-          <div class='init-spinner'><paper-spinner active></paper-spinner></div>
-        </template>
-        <template is="dom-if" if="[[_step]]">
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
+        }
+        paper-dialog {
+          max-width: 500px;
+        }
+        ha-markdown img:first-child:last-child,
+        ha-markdown svg:first-child:last-child {
+          display: block;
+          margin: 0 auto;
+        }
+        ha-markdown a {
+          color: var(--primary-color);
+        }
+        .init-spinner {
+          padding: 10px 100px 34px;
+          text-align: center;
+        }
+        .submit-spinner {
+          margin-right: 16px;
+        }
+      </style>
+      <paper-dialog
+        id="dialog"
+        with-backdrop=""
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>
           <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-            <ha-markdown content="[[_computeStepAbortedReason(localize, _step)]]"></ha-markdown>
+            [[localize('ui.panel.profile.mfa_setup.title_aborted')]]
           </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <p>Setup done for [[_step.title]]</p>
+            [[localize('ui.panel.profile.mfa_setup.title_success')]]
           </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-            <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-              <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
+            [[_computeStepTitle(localize, _step)]]
+          </template>
+        </h2>
+        <paper-dialog-scrollable>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
+          </template>
+          <template is="dom-if" if="[[!_step]]">
+            <div class="init-spinner">
+              <paper-spinner active></paper-spinner>
+            </div>
+          </template>
+          <template is="dom-if" if="[[_step]]">
+            <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+              <ha-markdown
+                content="[[_computeStepAbortedReason(localize, _step)]]"
+              ></ha-markdown>
             </template>
 
-            <ha-form
-              data="{{_stepData}}"
-              schema="[[_step.data_schema]]"
-              error="[[_step.errors]]"
-              compute-label="[[_computeLabelCallback(localize, _step)]]"
-              compute-error="[[_computeErrorCallback(localize, _step)]]"
-            ></ha-form>
+            <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+              <p>
+                [[localize('ui.panel.profile.mfa_setup.step_done', 'step',
+                _step.title)]]
+              </p>
+            </template>
+
+            <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+              <template
+                is="dom-if"
+                if="[[_computeStepDescription(localize, _step)]]"
+              >
+                <ha-markdown
+                  content="[[_computeStepDescription(localize, _step)]]"
+                  allow-svg
+                ></ha-markdown>
+              </template>
+
+              <ha-form
+                data="{{_stepData}}"
+                schema="[[_step.data_schema]]"
+                error="[[_step.errors]]"
+                compute-label="[[_computeLabelCallback(localize, _step)]]"
+                compute-error="[[_computeErrorCallback(localize, _step)]]"
+              ></ha-form>
+            </template>
           </template>
-        </template>
-      </paper-dialog-scrollable>
-      <div class="buttons">
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          <template is="dom-if" if="[[_loading]]">
-            <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+            <paper-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            >
           </template>
-          <template is="dom-if" if="[[!_loading]]">
-            <paper-button on-click="_submitStep">Submit</paper-button>
+          <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+            <paper-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            >
           </template>
-        </template>
-      </div>
-    </paper-dialog>
-`;
+          <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+            <template is="dom-if" if="[[_loading]]">
+              <div class="submit-spinner">
+                <paper-spinner active></paper-spinner>
+              </div>
+            </template>
+            <template is="dom-if" if="[[!_loading]]">
+              <paper-button on-click="_submitStep"
+                >[[localize('ui.panel.profile.mfa_setup.submit')]]</paper-button
+              >
+            </template>
+          </template>
+        </div>
+      </paper-dialog>
+    `;
   }
 
   static get properties() {
@@ -141,7 +166,7 @@ class HaMfaModuleSetupFlow extends
 
   ready() {
     super.ready();
-    this.addEventListener('keypress', (ev) => {
+    this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();
       }
@@ -158,13 +183,13 @@ class HaMfaModuleSetupFlow extends
 
     const fetchStep = continueFlowId
       ? this.hass.callWS({
-        type: 'auth/setup_mfa',
-        flow_id: continueFlowId,
-      })
+          type: "auth/setup_mfa",
+          flow_id: continueFlowId,
+        })
       : this.hass.callWS({
-        type: 'auth/setup_mfa',
-        mfa_module_id: mfaModuleId,
-      });
+          type: "auth/setup_mfa",
+          mfa_module_id: mfaModuleId,
+        });
 
     const curInstance = this._instance;
 
@@ -185,22 +210,25 @@ class HaMfaModuleSetupFlow extends
 
     const curInstance = this._instance;
 
-    this.hass.callWS({
-      type: 'auth/setup_mfa',
-      flow_id: this._step.flow_id,
-      user_input: this._stepData,
-    }).then(
-      (step) => {
-        if (curInstance !== this._instance) return;
+    this.hass
+      .callWS({
+        type: "auth/setup_mfa",
+        flow_id: this._step.flow_id,
+        user_input: this._stepData,
+      })
+      .then(
+        (step) => {
+          if (curInstance !== this._instance) return;
 
-        this._processStep(step);
-        this._loading = false;
-      },
-      (err) => {
-        this._errorMsg = (err && err.body && err.body.message) || 'Unknown error occurred';
-        this._loading = false;
-      }
-    );
+          this._processStep(step);
+          this._loading = false;
+        },
+        (err) => {
+          this._errorMsg =
+            (err && err.body && err.body.message) || "Unknown error occurred";
+          this._loading = false;
+        }
+      );
   }
 
   _processStep(step) {
@@ -214,7 +242,8 @@ class HaMfaModuleSetupFlow extends
 
   _flowDone() {
     this._opened = false;
-    const flowFinished = this._step && ['create_entry', 'abort'].includes(this._step.type);
+    const flowFinished =
+      this._step && ["create_entry", "abort"].includes(this._step.type);
 
     if (this._step && !flowFinished && this._createdFromHandler) {
       // console.log('flow not finish');
@@ -242,16 +271,25 @@ class HaMfaModuleSetupFlow extends
   }
 
   _computeStepAbortedReason(localize, step) {
-    return localize(`component.auth.mfa_setup.${step.handler}.abort.${step.reason}`);
+    return localize(
+      `component.auth.mfa_setup.${step.handler}.abort.${step.reason}`
+    );
   }
 
   _computeStepTitle(localize, step) {
-    return localize(`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.title`)
-     || 'Setup Multi-factor Authentication';
+    return (
+      localize(
+        `component.auth.mfa_setup.${step.handler}.step.${step.step_id}.title`
+      ) || "Setup Multi-factor Authentication"
+    );
   }
 
   _computeStepDescription(localize, step) {
-    const args = [`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.description`];
+    const args = [
+      `component.auth.mfa_setup.${step.handler}.step.${
+        step.step_id
+      }.description`,
+    ];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
       args.push(key);
@@ -262,14 +300,20 @@ class HaMfaModuleSetupFlow extends
 
   _computeLabelCallback(localize, step) {
     // Returns a callback for ha-form to calculate labels per schema object
-    return schema => localize(`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.data.${schema.name}`)
-      || schema.name;
+    return (schema) =>
+      localize(
+        `component.auth.mfa_setup.${step.handler}.step.${step.step_id}.data.${
+          schema.name
+        }`
+      ) || schema.name;
   }
 
   _computeErrorCallback(localize, step) {
     // Returns a callback for ha-form to calculate error messages
-    return error => localize(`component.auth.mfa_setup.${step.handler}.error.${error}`) || error;
+    return (error) =>
+      localize(`component.auth.mfa_setup.${step.handler}.error.${error}`) ||
+      error;
   }
 }
 
-customElements.define('ha-mfa-module-setup-flow', HaMfaModuleSetupFlow);
+customElements.define("ha-mfa-module-setup-flow", HaMfaModuleSetupFlow);

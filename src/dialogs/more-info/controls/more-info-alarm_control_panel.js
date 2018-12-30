@@ -1,13 +1,15 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
-class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement)) {
+class MoreInfoAlarmControlPanel extends LocalizeMixin(
+  EventsMixin(PolymerElement)
+) {
   static get template() {
     return html`
       <style include="iron-flex"></style>
@@ -49,21 +51,85 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
         <template is="dom-if" if="[[_isNumber(_codeFormat)]]">
           <div class="pad">
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="1" raised>1</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="4" raised>4</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="7" raised>7</paper-button>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="1"
+                raised
+                >1</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="4"
+                raised
+                >4</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="7"
+                raised
+                >7</paper-button
+              >
             </div>
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="2" raised>2</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="5" raised>5</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="8" raised>8</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="0" raised>0</paper-button>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="2"
+                raised
+                >2</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="5"
+                raised
+                >5</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="8"
+                raised
+                >8</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="0"
+                raised
+                >0</paper-button
+              >
             </div>
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="3" raised>3</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="6" raised>6</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="9" raised>9</paper-button>
-              <paper-button on-click='_clearEnteredCode' disabled='[[!_inputEnabled]]' raised>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="3"
+                raised
+                >3</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="6"
+                raised
+                >6</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="9"
+                raised
+                >9</paper-button
+              >
+              <paper-button
+                on-click="_clearEnteredCode"
+                disabled="[[!_inputEnabled]]"
+                raised
+              >
                 [[localize('ui.card.alarm_control_panel.clear_code')]]
               </paper-button>
             </div>
@@ -73,15 +139,31 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
 
       <div class="layout horizontal center-justified actions">
         <template is="dom-if" if="[[_disarmVisible]]">
-          <paper-button raised class="disarm" on-click="_callService" data-service="alarm_disarm" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            class="disarm"
+            on-click="_callService"
+            data-service="alarm_disarm"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.disarm')]]
           </paper-button>
         </template>
         <template is="dom-if" if="[[_armVisible]]">
-          <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            on-click="_callService"
+            data-service="alarm_arm_home"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.arm_home')]]
           </paper-button>
-          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            on-click="_callService"
+            data-service="alarm_arm_away"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.arm_away')]]
           </paper-button>
         </template>
@@ -94,38 +176,43 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
       hass: Object,
       stateObj: {
         type: Object,
-        observer: '_stateObjChanged'
+        observer: "_stateObjChanged",
       },
       _enteredCode: {
         type: String,
-        value: ''
+        value: "",
       },
       _codeFormat: {
         type: String,
-        value: ''
+        value: "",
       },
       _codeValid: {
         type: Boolean,
-        computed: '_validateCode(_enteredCode, _codeFormat)'
+        computed: "_validateCode(_enteredCode, _codeFormat)",
       },
       _disarmVisible: {
         type: Boolean,
-        value: false
+        value: false,
       },
       _armVisible: {
         type: Boolean,
-        value: false
+        value: false,
       },
       _inputEnabled: {
         type: Boolean,
-        value: false
-      }
+        value: false,
+      },
     };
   }
 
   constructor() {
     super();
-    this._armedStates = ['armed_home', 'armed_away', 'armed_night', 'armed_custom_bypass'];
+    this._armedStates = [
+      "armed_home",
+      "armed_away",
+      "armed_night",
+      "armed_custom_bypass",
+    ];
   }
 
   _stateObjChanged(newVal, oldVal) {
@@ -133,22 +220,25 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
       const state = newVal.state;
       const props = {
         _codeFormat: newVal.attributes.code_format,
-        _armVisible: state === 'disarmed',
-        _disarmVisible: this._armedStates.includes(state)
-          || state === 'pending' || state === 'triggered' || state === 'arming'
+        _armVisible: state === "disarmed",
+        _disarmVisible:
+          this._armedStates.includes(state) ||
+          state === "pending" ||
+          state === "triggered" ||
+          state === "arming",
       };
       props._inputEnabled = props._disarmVisible || props._armVisible;
       this.setProperties(props);
     }
     if (oldVal) {
       setTimeout(() => {
-        this.fire('iron-resize');
+        this.fire("iron-resize");
       }, 500);
     }
   }
 
   _isNumber(format) {
-    return format === 'Number';
+    return format === "Number";
   }
 
   _validateCode(code, format) {
@@ -156,23 +246,25 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
   }
 
   _digitClicked(ev) {
-    this._enteredCode += ev.target.getAttribute('data-digit');
+    this._enteredCode += ev.target.getAttribute("data-digit");
   }
 
   _clearEnteredCode() {
-    this._enteredCode = '';
+    this._enteredCode = "";
   }
 
   _callService(ev) {
-    const service = ev.target.getAttribute('data-service');
+    const service = ev.target.getAttribute("data-service");
     const data = {
       entity_id: this.stateObj.entity_id,
-      code: this._enteredCode
+      code: this._enteredCode,
     };
-    this.hass.callService('alarm_control_panel', service, data)
-      .then(() => {
-        this._enteredCode = '';
-      });
+    this.hass.callService("alarm_control_panel", service, data).then(() => {
+      this._enteredCode = "";
+    });
   }
 }
-customElements.define('more-info-alarm_control_panel', MoreInfoAlarmControlPanel);
+customElements.define(
+  "more-info-alarm_control_panel",
+  MoreInfoAlarmControlPanel
+);

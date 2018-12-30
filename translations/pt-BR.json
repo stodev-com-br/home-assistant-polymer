@@ -13,7 +13,8 @@
         "dev-templates": "Modelos",
         "dev-mqtt": "",
         "dev-info": "Informações",
-        "calendar": "Calendário"
+        "calendar": "Calendário",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -133,7 +134,7 @@
             "off": "Desligado",
             "on": "Ligado",
             "heat": "Quente",
-            "cool": "Fresco",
+            "cool": "Frio",
             "idle": "Ocioso",
             "auto": "Automático",
             "dry": "Seco",
@@ -143,7 +144,8 @@
             "performance": "Desempenho",
             "high_demand": "Alta demanda",
             "heat_pump": "Bomba de calor",
-            "gas": "Gás"
+            "gas": "Gás",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Estado",
                                     "from": "De",
-                                    "to": "Para"
+                                    "to": "Para",
+                                    "for": "Por"
                                 },
                                 "homeassistant": {
                                     "label": "",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Desativar usuário",
                         "delete_user": "Excluir usuário"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Conectado como {email}",
+                    "description_not_login": "Não logado"
+                },
+                "integrations": {
+                    "caption": "Integrações",
+                    "description": "Gerenciar dispositivos e serviços conectados",
+                    "discovered": "Descoberto",
+                    "configured": "Configurado",
+                    "new": "Configurar uma nova integração",
+                    "configure": "Configurar",
+                    "none": "Nada configurado ainda",
+                    "config_entry": {
+                        "no_devices": "Esta integração não possui dispositivos.",
+                        "no_device": "Entidades sem dispositivos",
+                        "delete_confirm": "Tem certeza de que deseja excluir essa integração?",
+                        "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
+                        "manuf": "por {manufacturer}",
+                        "hub": "Conectado via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "dispositivo indisponível",
+                        "entity_unavailable": "entidade indisponível"
+                    }
                 }
             },
             "profile": {
@@ -553,7 +581,7 @@
                     "created_at": "Criado em {date}",
                     "confirm_delete": "Tem certeza de que deseja excluir o token de acesso para {name} ?",
                     "delete_failed": "Falha ao excluir o token de acesso.",
-                    "last_used": "Usado pela última vez em {data} em {localização}",
+                    "last_used": "Usado pela última vez em {date} em {location}",
                     "not_used": "Nunca foi usado",
                     "current_token_tooltip": "Não é possível excluir o token de atualização atual"
                 },
@@ -569,8 +597,32 @@
                     "prompt_name": "Nome?",
                     "prompt_copy_token": "Copie seu token de acesso. Ele não será mostrado novamente.",
                     "empty_state": "Você ainda não tem tokens de acesso de longa duração.",
-                    "last_used": "Usado pela última vez em {data} em {localização}",
+                    "last_used": "Usado pela última vez em {date} em {location}",
                     "not_used": "Nunca foi usado"
+                },
+                "current_user": "Você está logado como {fullName} .",
+                "is_owner": "Você é um proprietário.",
+                "logout": "Sair",
+                "change_password": {
+                    "header": "Alterar senha",
+                    "current_password": "Senha atual",
+                    "new_password": "Nova Senha",
+                    "confirm_new_password": "Confirme a nova senha",
+                    "error_required": "Obrigatório",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Módulos de Autenticação Multifator",
+                    "disable": "Desabilitar",
+                    "enable": "Habilitar",
+                    "confirm_disable": "Tem certeza de que deseja desativar {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "Sucesso!",
+                    "step_done": "Configuração feita para {step}",
+                    "close": "Fechar",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {
@@ -661,6 +713,28 @@
                         "required_fields": "Preencha todos os campos obrigatórios"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Itens marcados",
+                        "clear_items": "Limpar itens marcados",
+                        "add_item": "Adicionar item"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configuração de cartão",
+                        "save": "Salvar",
+                        "toggle_editor": "Alternar Editor"
+                    },
+                    "migrate": {
+                        "header": "Configuração Incompatível",
+                        "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'.",
+                        "para_migrate": "O Home Assistant pode adicionar IDs a todos os seus cards e visualizações automaticamente clicando no botão 'Migrar config'.",
+                        "migrate": "Migrar configuração"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -729,7 +803,9 @@
                 "clear_code": "Limpar",
                 "disarm": "Desarmar",
                 "arm_home": "Armar em casa",
-                "arm_away": "Armar ausente"
+                "arm_away": "Armar ausente",
+                "arm_night": "Acionamento noturno",
+                "armed_custom_bypass": "Atalho personalizado"
             },
             "automation": {
                 "last_triggered": "Último disparo",
@@ -779,6 +855,13 @@
                     "turn_on": "Ligar",
                     "turn_off": "Desligar"
                 }
+            },
+            "water_heater": {
+                "currently": "Atualmente",
+                "on_off": "Lig. \/ Des.",
+                "target_temperature": "Temperatura alvo",
+                "operation": "Operação",
+                "away_mode": "Modo ausente"
             }
         },
         "components": {
@@ -841,7 +924,7 @@
         "climate": "Clima",
         "configurator": "Configurador",
         "conversation": "Conversação",
-        "cover": "Cortina",
+        "cover": "Cobertura",
         "device_tracker": "Rastreador de dispositivo",
         "fan": "Ventilador",
         "history_graph": "Gráfico de histórico",

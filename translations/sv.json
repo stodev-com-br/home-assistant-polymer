@@ -13,7 +13,8 @@
         "dev-templates": "Mallar",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Prestanda",
             "high_demand": "Hög efterfrågan",
             "heat_pump": "Värmepump",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurera",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Tillstånd",
                                     "from": "Från",
-                                    "to": "Till"
+                                    "to": "Till",
+                                    "for": "För"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Avaktivera användare",
                         "delete_user": "Ta bort användare"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant moln",
+                    "description_login": "Inloggad som {email}",
+                    "description_not_login": "Inte inloggad"
+                },
+                "integrations": {
+                    "caption": "Integrationer",
+                    "description": "Hantera anslutna enheter och tjänster",
+                    "discovered": "Upptäckt",
+                    "configured": "Konfigurerad",
+                    "new": "Skapa en ny integration",
+                    "configure": "Konfigurera",
+                    "none": "Ingenting konfigurerat än",
+                    "config_entry": {
+                        "no_devices": "Denna integration har inga enheter.",
+                        "no_device": "Entitet utan enheter",
+                        "delete_confirm": "Är du säker på att du vill radera denna integration?",
+                        "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
+                        "manuf": "av {manufacturer}",
+                        "hub": "Ansluten via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "enhet otillgänglig",
+                        "entity_unavailable": "entitet otillgänglig"
+                    }
                 }
             },
             "profile": {
@@ -562,7 +590,7 @@
                     "description": "Skapa långlivade åtkomsttokens för att låta dina skript interagera med din hemassistentenhet. Varje token kommer att vara giltig i 10 år från skapandet. Följande långlivade åtkomsttoken är för närvarande aktiva.",
                     "learn_auth_requests": "Lär dig hur du gör autentiserade förfrågningar.",
                     "created_at": "Skapades den {date}",
-                    "confirm_delete": "Är du säker du vill radera åtkomsttoken för {namn}?",
+                    "confirm_delete": "Är du säker du vill radera åtkomsttoken för {name}?",
                     "delete_failed": "Det gick inte att ta bort åtkomsttoken.",
                     "create": "Skapa token",
                     "create_failed": "Det gick inte att skapa åtkomsttoken.",
@@ -571,6 +599,30 @@
                     "empty_state": "Du har än så länge inga långlivade åtkomsttokens.",
                     "last_used": "Användes senast den {date} från {location} ",
                     "not_used": "Har aldrig använts"
+                },
+                "current_user": "Du är inloggad som {fullName}.",
+                "is_owner": "Du är en ägare.",
+                "logout": "Logga ut",
+                "change_password": {
+                    "header": "Ändra lösenord",
+                    "current_password": "Nuvarande lösenord",
+                    "new_password": "Nytt lösenord",
+                    "confirm_new_password": "Bekräfta nytt lösenord",
+                    "error_required": "Krävs",
+                    "submit": "Skicka"
+                },
+                "mfa": {
+                    "header": "Tvåfaktorsautentiseringsmoduler",
+                    "disable": "Inaktivera",
+                    "enable": "Aktivera",
+                    "confirm_disable": "Är du säker på att du vill avaktivera {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Avbruten",
+                    "title_success": "Framgång!",
+                    "step_done": "Inställningen klar för {step}",
+                    "close": "Stäng",
+                    "submit": "Skicka"
                 }
             },
             "page-authorize": {
@@ -661,6 +713,28 @@
                         "required_fields": "Fyll i alla fält som krävs"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markerade objekt",
+                        "clear_items": "Rensa avbockade objekt",
+                        "add_item": "Lägg till objekt"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kortkonfiguration",
+                        "save": "Spara",
+                        "toggle_editor": "Visa \/ Dölj redigerare"
+                    },
+                    "migrate": {
+                        "header": "Konfigurationen är inte giltig",
+                        "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\".",
+                        "para_migrate": "Home Assistant kan automatiskt lägga till IDn till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
+                        "migrate": "Migrera konfigurationen"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -729,7 +803,9 @@
                 "clear_code": "Rensa",
                 "disarm": "Larma från",
                 "arm_home": "Larma hemmaläge",
-                "arm_away": "Larma bortaläge"
+                "arm_away": "Larma bortaläge",
+                "arm_night": "Nattlarmat",
+                "armed_custom_bypass": "Larm förbikopplat"
             },
             "automation": {
                 "last_triggered": "Utlöstes senast",
@@ -779,6 +855,13 @@
                     "turn_on": "Starta",
                     "turn_off": "Stäng av"
                 }
+            },
+            "water_heater": {
+                "currently": "Nuvarande",
+                "on_off": "På \/ av",
+                "target_temperature": "Måltemperatur",
+                "operation": "Operation",
+                "away_mode": "Bortaläge"
             }
         },
         "components": {

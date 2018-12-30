@@ -1,3 +1,5 @@
+import { supportsFeature } from "../common/entity/supports-feature";
+
 /* eslint-enable no-bitwise */
 export default class CoverEntity {
   constructor(hass, stateObj) {
@@ -11,14 +13,14 @@ export default class CoverEntity {
     if (this._attr.current_position !== undefined) {
       return this._attr.current_position === 100;
     }
-    return this.stateObj.state === 'open';
+    return this.stateObj.state === "open";
   }
 
   get isFullyClosed() {
     if (this._attr.current_position !== undefined) {
       return this._attr.current_position === 0;
     }
-    return this.stateObj.state === 'closed';
+    return this.stateObj.state === "closed";
   }
 
   get isFullyOpenTilt() {
@@ -30,89 +32,118 @@ export default class CoverEntity {
   }
 
   get isOpening() {
-    return this.stateObj.state === 'opening';
+    return this.stateObj.state === "opening";
   }
 
   get isClosing() {
-    return this.stateObj.state === 'closing';
+    return this.stateObj.state === "closing";
   }
 
-  /* eslint-disable no-bitwise */
-
   get supportsOpen() {
-    return (this._feat & 1) !== 0;
+    return supportsFeature(this.stateObj, 1);
   }
 
   get supportsClose() {
-    return (this._feat & 2) !== 0;
+    return supportsFeature(this.stateObj, 2);
   }
 
   get supportsSetPosition() {
-    return (this._feat & 4) !== 0;
+    return supportsFeature(this.stateObj, 4);
   }
 
   get supportsStop() {
-    return (this._feat & 8) !== 0;
+    return supportsFeature(this.stateObj, 8);
   }
 
   get supportsOpenTilt() {
-    return (this._feat & 16) !== 0;
+    return supportsFeature(this.stateObj, 16);
   }
 
   get supportsCloseTilt() {
-    return (this._feat & 32) !== 0;
+    return supportsFeature(this.stateObj, 32);
   }
 
   get supportsStopTilt() {
-    return (this._feat & 64) !== 0;
+    return supportsFeature(this.stateObj, 64);
   }
 
   get supportsSetTiltPosition() {
-    return (this._feat & 128) !== 0;
+    return supportsFeature(this.stateObj, 128);
   }
 
   get isTiltOnly() {
-    var supportsCover = this.supportsOpen || this.supportsClose || this.supportsStop;
-    var supportsTilt = this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
+    const supportsCover =
+      this.supportsOpen || this.supportsClose || this.supportsStop;
+    const supportsTilt =
+      this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
   }
 
   openCover() {
-    this.callService('open_cover');
+    this.callService("open_cover");
   }
 
   closeCover() {
-    this.callService('close_cover');
+    this.callService("close_cover");
   }
 
   stopCover() {
-    this.callService('stop_cover');
+    this.callService("stop_cover");
   }
 
   openCoverTilt() {
-    this.callService('open_cover_tilt');
+    this.callService("open_cover_tilt");
   }
 
   closeCoverTilt() {
-    this.callService('close_cover_tilt');
+    this.callService("close_cover_tilt");
   }
 
   stopCoverTilt() {
-    this.callService('stop_cover_tilt');
+    this.callService("stop_cover_tilt");
   }
 
   setCoverPosition(position) {
-    this.callService('set_cover_position', { position });
+    this.callService("set_cover_position", { position });
   }
 
   setCoverTiltPosition(tiltPosition) {
-    this.callService('set_cover_tilt_position', { tilt_position: tiltPosition });
+    this.callService("set_cover_tilt_position", {
+      tilt_position: tiltPosition,
+    });
   }
 
   // helper method
 
   callService(service, data = {}) {
     data.entity_id = this.stateObj.entity_id;
-    this.hass.callService('cover', service, data);
+    this.hass.callService("cover", service, data);
   }
+}
+
+export const supportsOpen = (stateObj) => supportsFeature(stateObj, 1);
+
+export const supportsClose = (stateObj) => supportsFeature(stateObj, 2);
+
+export const supportsSetPosition = (stateObj) => supportsFeature(stateObj, 4);
+
+export const supportsStop = (stateObj) => supportsFeature(stateObj, 8);
+
+export const supportsOpenTilt = (stateObj) => supportsFeature(stateObj, 16);
+
+export const supportsCloseTilt = (stateObj) => supportsFeature(stateObj, 32);
+
+export const supportsStopTilt = (stateObj) => supportsFeature(stateObj, 64);
+
+export const supportsSetTiltPosition = (stateObj) =>
+  supportsFeature(stateObj, 128);
+
+export function isTiltOnly(stateObj) {
+  const supportsCover =
+    supportsOpen(stateObj) || supportsClose(stateObj) || supportsStop(stateObj);
+  const supportsTilt =
+    supportsOpenTilt(stateObj) ||
+    supportsCloseTilt(stateObj) ||
+    supportsStopTilt(stateObj);
+  return supportsTilt && !supportsCover;
 }

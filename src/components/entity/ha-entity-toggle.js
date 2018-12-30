@@ -1,42 +1,56 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-toggle-button/paper-toggle-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { STATES_OFF } from '../../common/const.js';
-import computeStateDomain from '../../common/entity/compute_state_domain.js';
+import { STATES_OFF } from "../../common/const";
+import computeStateDomain from "../../common/entity/compute_state_domain";
 
 class HaEntityToggle extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      :host {
-        white-space: nowrap;
-        min-width: 38px;
-      }
-      paper-icon-button {
-        color: var(--paper-icon-button-inactive-color, var(--primary-text-color));
-        transition: color .5s;
-      }
-      paper-icon-button[state-active] {
-        color: var(--paper-icon-button-active-color, var(--primary-color));
-      }
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
-        padding: 13px 5px;
-        margin: -4px -5px;
-      }
-    </style>
+      <style>
+        :host {
+          white-space: nowrap;
+          min-width: 38px;
+        }
+        paper-icon-button {
+          color: var(
+            --paper-icon-button-inactive-color,
+            var(--primary-text-color)
+          );
+          transition: color 0.5s;
+        }
+        paper-icon-button[state-active] {
+          color: var(--paper-icon-button-active-color, var(--primary-color));
+        }
+        paper-toggle-button {
+          cursor: pointer;
+          --paper-toggle-button-label-spacing: 0;
+          padding: 13px 5px;
+          margin: -4px -5px;
+        }
+      </style>
 
-    <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
-      <paper-icon-button icon="hass:flash-off" on-click="turnOff" state-active$="[[!isOn]]"></paper-icon-button>
-      <paper-icon-button icon="hass:flash" on-click="turnOn" state-active$="[[isOn]]"></paper-icon-button>
-    </template>
-    <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
-      <paper-toggle-button checked="[[toggleChecked]]" on-change="toggleChanged"></paper-toggle-button>
-    </template>
-`;
+      <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
+        <paper-icon-button
+          icon="hass:flash-off"
+          on-click="turnOff"
+          state-active$="[[!isOn]]"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:flash"
+          on-click="turnOn"
+          state-active$="[[isOn]]"
+        ></paper-icon-button>
+      </template>
+      <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
+        <paper-toggle-button
+          checked="[[toggleChecked]]"
+          on-change="toggleChanged"
+        ></paper-toggle-button>
+      </template>
+    `;
   }
 
   static get properties() {
@@ -44,7 +58,7 @@ class HaEntityToggle extends PolymerElement {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjObserver'
+        observer: "stateObjObserver",
       },
 
       toggleChecked: {
@@ -54,15 +68,15 @@ class HaEntityToggle extends PolymerElement {
 
       isOn: {
         type: Boolean,
-        computed: 'computeIsOn(stateObj)',
-        observer: 'isOnChanged',
+        computed: "computeIsOn(stateObj)",
+        observer: "isOnChanged",
       },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', ev => this.onTap(ev));
+    this.addEventListener("click", (ev) => this.onTap(ev));
     this.forceStateChange();
   }
 
@@ -120,25 +134,25 @@ class HaEntityToggle extends PolymerElement {
     let serviceDomain;
     let service;
 
-    if (stateDomain === 'lock') {
-      serviceDomain = 'lock';
-      service = turnOn ? 'unlock' : 'lock';
-    } else if (stateDomain === 'cover') {
-      serviceDomain = 'cover';
-      service = turnOn ? 'open_cover' : 'close_cover';
-    } else if (stateDomain === 'group') {
-      serviceDomain = 'homeassistant';
-      service = turnOn ? 'turn_on' : 'turn_off';
+    if (stateDomain === "lock") {
+      serviceDomain = "lock";
+      service = turnOn ? "unlock" : "lock";
+    } else if (stateDomain === "cover") {
+      serviceDomain = "cover";
+      service = turnOn ? "open_cover" : "close_cover";
+    } else if (stateDomain === "group") {
+      serviceDomain = "homeassistant";
+      service = turnOn ? "turn_on" : "turn_off";
     } else {
       serviceDomain = stateDomain;
-      service = turnOn ? 'turn_on' : 'turn_off';
+      service = turnOn ? "turn_on" : "turn_off";
     }
 
     const currentState = this.stateObj;
-    this.hass.callService(
-      serviceDomain, service,
-      { entity_id: this.stateObj.entity_id }
-    )
+    this.hass
+      .callService(serviceDomain, service, {
+        entity_id: this.stateObj.entity_id,
+      })
       .then(() => {
         setTimeout(() => {
           // If after 2 seconds we have not received a state update
@@ -151,4 +165,4 @@ class HaEntityToggle extends PolymerElement {
   }
 }
 
-customElements.define('ha-entity-toggle', HaEntityToggle);
+customElements.define("ha-entity-toggle", HaEntityToggle);

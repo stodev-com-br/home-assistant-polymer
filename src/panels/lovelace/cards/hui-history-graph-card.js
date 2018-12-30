@@ -1,12 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../components/ha-card.js';
-import '../../../components/state-history-charts.js';
-import '../../../data/ha-state-history-data.js';
+import "../../../components/ha-card";
+import "../../../components/state-history-charts";
+import "../../../data/ha-state-history-data";
 
-import processConfigEntities from '../common/process-config-entities.js';
-
+import { processConfigEntities } from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
   static get template() {
@@ -20,7 +19,7 @@ class HuiHistoryGraphCard extends PolymerElement {
         }
       </style>
 
-      <ha-card header$='[[_config.title]]'>
+      <ha-card header$="[[_config.title]]">
         <ha-state-history-data
           hass="[[hass]]"
           filter-type="recent-entity"
@@ -50,7 +49,7 @@ class HuiHistoryGraphCard extends PolymerElement {
 
       _stateHistory: Object,
       _stateHistoryLoading: Boolean,
-      _cacheConfig: Object
+      _cacheConfig: Object,
     };
   }
 
@@ -76,12 +75,12 @@ class HuiHistoryGraphCard extends PolymerElement {
       _cacheConfig: {
         cacheKey: _entities.sort().join(),
         hoursToShow: config.hours_to_show || 24,
-        refresh: config.refresh_interval || 0
+        refresh: config.refresh_interval || 0,
       },
       _entities,
-      _names
+      _names,
     });
   }
 }
 
-customElements.define('hui-history-graph-card', HuiHistoryGraphCard);
+customElements.define("hui-history-graph-card", HuiHistoryGraphCard);

@@ -13,7 +13,8 @@
         "dev-templates": "Sabloane",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Calendar"
+        "calendar": "Calendar",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Performanţă",
             "high_demand": "Consum mare",
             "heat_pump": "Pompă de căldură",
-            "gas": "Gaz"
+            "gas": "Gaz",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurează",
@@ -319,7 +321,7 @@
                             "introduction": "Modificarea configurației poate fi un proces obositor. Noi stim. Această secțiune va încerca să vă facă viața un pic mai ușoară.",
                             "validation": {
                                 "heading": "Validare configurație",
-                                "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă",
+                                "introduction": "Validați configurația dvs, dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă.",
                                 "check_config": "Verificați configurația",
                                 "valid": "Configurația este validă!",
                                 "invalid": "Configurația este invalidă"
@@ -368,7 +370,7 @@
                             "duplicate": "Dublura",
                             "delete": "Ștergeți",
                             "delete_confirm": "Sigur doriți să ștergeți?",
-                            "unsupported_platform": "Platformă neacceptată: {platforma}",
+                            "unsupported_platform": "Platformă neacceptată: {platform}",
                             "type_select": "Tip acțiune",
                             "type": {
                                 "event": {
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Status",
                                     "from": "De la",
-                                    "to": "La"
+                                    "to": "La",
+                                    "for": "Pentru"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Dezactivați utilizatorul",
                         "delete_user": "Ștergeți utilizatorul"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logat ca {email}",
+                    "description_not_login": "Nu sunteți conectat (ă)"
+                },
+                "integrations": {
+                    "caption": "Integrări",
+                    "description": "Gestionați dispozitivele și serviciile conectate",
+                    "discovered": "Descoperit",
+                    "configured": "Configurat",
+                    "new": "Configurați o nouă integrare",
+                    "configure": "Configurează",
+                    "none": "Nimic nu a fost configurat încă",
+                    "config_entry": {
+                        "no_devices": "Această integrare nu are dispozitive.",
+                        "no_device": "Entități fără dispozitive",
+                        "delete_confirm": "Sigur doriți să ștergeți această integrare?",
+                        "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări",
+                        "manuf": "de {manufacturer}",
+                        "hub": "Conectat prin",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "dispozitiv indisponibil",
+                        "entity_unavailable": "Entitatea nu este disponibilă"
+                    }
                 }
             },
             "profile": {
@@ -550,8 +578,8 @@
                     "header": "Tokenuri de innoire",
                     "description": "Fiecare token de innoire reprezinta o sesiune de logare. Tokenuriile de innoire vor fi inlaturate cand se da click pe log out. Urmatoarele tokenuri de innoire sunt active in contul dumneavoastra.",
                     "token_title": "înnoirea token pentru {clientId}",
-                    "created_at": "Creat in {data}",
-                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {nume}?",
+                    "created_at": "Creat in {date}",
+                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
                     "last_used": "Ultima utilizate la {data} din {locaţie}",
                     "not_used": "Nu a fost utilizat niciodata",
@@ -561,16 +589,40 @@
                     "header": "Tokenuri de acces de lunga durata",
                     "description": "Creați tokenuri de acces cu durată lungă de viață pentru a permite script-urilor dvs. să interacționeze cu instanța dvs. Home Assistant. Fiecare token va fi valabil timp de 10 ani de la creatie. Următoarele tokenuri de acces de lungă durată sunt active la ora actuala.",
                     "learn_auth_requests": "Aflați cum să faceți cereri autentificate.",
-                    "created_at": "Creat in {data}",
-                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {nume}?",
+                    "created_at": "Creat in {date}",
+                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
                     "create": "Creaza un Token",
                     "create_failed": "Crearea tokenului de acces eşuată",
                     "prompt_name": "Nume?",
                     "prompt_copy_token": "Copia token-ul de acces. Acesta nu va fi afișat din nou.",
                     "empty_state": "Nu aveți tokenuri de acces de lungă durată deocamdata",
-                    "last_used": "Ultima utilizate la {data} din {locaţie}",
+                    "last_used": "Ultima utilizare la {data} din {locaţie}",
                     "not_used": "Nu a fost utilizat niciodata"
+                },
+                "current_user": "În prezent sunteți conectat ca {fullName} .",
+                "is_owner": "Sunteți proprietar.",
+                "logout": "Deconectați-vă",
+                "change_password": {
+                    "header": "Schimbaţi parola",
+                    "current_password": "Parola Curentă",
+                    "new_password": "Parolă Nouă",
+                    "confirm_new_password": "Confirmați Noua Parolă",
+                    "error_required": "Necesar",
+                    "submit": "Trimite"
+                },
+                "mfa": {
+                    "header": "Autentificare cu doi factori",
+                    "disable": "Dezactivați",
+                    "enable": "Activați",
+                    "confirm_disable": "Sigur doriți să dezactivați {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Anulat",
+                    "title_success": "Succes!",
+                    "step_done": "Configurarea făcută pentru {step}",
+                    "close": "Închide",
+                    "submit": "Trimite"
                 }
             },
             "page-authorize": {
@@ -675,8 +727,8 @@
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
             "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
-            "minute": "{count}{count, plural,\n  un { minute }\n  alte { minutes }\n}",
-            "hour": "{count}{count, plural,\n  o { hour }\n  alte { hours }\n}"
+            "minute": "{count} {count, plural,\n  one { minute }\n  other { minutes }\n}",
+            "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}"
         },
         "login-form": {
             "password": "Parola",
@@ -779,6 +831,13 @@
                     "turn_on": "Porniți",
                     "turn_off": "Opriți"
                 }
+            },
+            "water_heater": {
+                "currently": "În prezent",
+                "on_off": "Pornit \/ Oprit",
+                "target_temperature": "Temperatura țintă",
+                "operation": "Operație",
+                "away_mode": "Plecat"
             }
         },
         "components": {

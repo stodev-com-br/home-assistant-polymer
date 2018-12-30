@@ -1,14 +1,15 @@
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../layouts/hass-subpage.js';
+import "../../../layouts/hass-subpage";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import '../../../components/entity/state-badge.js';
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixIn from "../../../mixins/localize-mixin";
+import computeStateName from "../../../common/entity/compute_state_name";
+import "../../../components/entity/state-badge";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -17,36 +18,37 @@ function computeEntityName(hass, entity) {
 }
 
 /*
+ * @appliesMixin LocalizeMixIn
  * @appliesMixin EventsMixin
  */
-class HaDeviceCard extends EventsMixin(PolymerElement) {
+class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      paper-card {
-        display: block;
-        padding-bottom: 8px;
-      }
-      paper-icon-item {
-        cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-    </style>
-    <paper-card heading='[[heading]]'>
-      <template is='dom-repeat' items='[[entities]]' as='entity'>
-        <paper-icon-item on-click='_openMoreInfo'>
-          <state-badge
-            state-obj="[[_computeStateObj(entity, hass)]]"
-            slot='item-icon'
-          ></state-badge>
-          <paper-item-body>
-            <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-            <div class='secondary entity-id'>[[entity.entity_id]]</div>
-          </paper-item-body>
-        </paper-icon-item>
-      </template>
-    </paper-card>
+      <style>
+        paper-card {
+          flex: 1 0 100%;
+          padding-bottom: 8px;
+        }
+        paper-icon-item {
+          cursor: pointer;
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+      </style>
+      <paper-card heading="[[heading]]">
+        <template is="dom-repeat" items="[[entities]]" as="entity">
+          <paper-icon-item on-click="_openMoreInfo">
+            <state-badge
+              state-obj="[[_computeStateObj(entity, hass)]]"
+              slot="item-icon"
+            ></state-badge>
+            <paper-item-body>
+              <div class="name">[[_computeEntityName(entity, hass)]]</div>
+              <div class="secondary entity-id">[[entity.entity_id]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+      </paper-card>
     `;
   }
 
@@ -63,12 +65,17 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
   }
 
   _computeEntityName(entity, hass) {
-    return computeEntityName(hass, entity) || '(entity unavailable)';
+    return (
+      computeEntityName(hass, entity) ||
+      `(${this.localize(
+        "ui.panel.config.integrations.config_entry.entity_unavailable"
+      )})`
+    );
   }
 
   _openMoreInfo(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 }
 
-customElements.define('ha-ce-entities-card', HaDeviceCard);
+customElements.define("ha-ce-entities-card", HaCeEntitiesCard);

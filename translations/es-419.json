@@ -13,7 +13,8 @@
         "dev-templates": "Plantillas",
         "dev-mqtt": "",
         "dev-info": "Información",
-        "calendar": "Calendario"
+        "calendar": "Calendario",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -143,7 +144,8 @@
             "performance": "Rendimiento",
             "high_demand": "Alta Demanda",
             "heat_pump": "Bomba de Calor",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Estado",
                                     "from": "De",
-                                    "to": "A"
+                                    "to": "A",
+                                    "for": "Por"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Desactivar usuario",
                         "delete_user": "Eliminar usuario"
                     }
+                },
+                "cloud": {
+                    "caption": "Nube Home Assistant",
+                    "description_login": "Ha iniciado sesión como {email}",
+                    "description_not_login": "No ha iniciado sesión"
+                },
+                "integrations": {
+                    "caption": "Integraciones",
+                    "description": "Administrar dispositivos y servicios conectados",
+                    "discovered": "Descubierto",
+                    "configured": "Configurado",
+                    "new": "Configurar una nueva integración.",
+                    "configure": "Configurar",
+                    "none": "No hay nada configurado",
+                    "config_entry": {
+                        "no_devices": "Esta integración no tiene dispositivos.",
+                        "no_device": "Entidades sin dispositivos",
+                        "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
+                        "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
+                        "manuf": "por {manufacturer}",
+                        "hub": "Conectado a través de",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "dispositivo no disponible",
+                        "entity_unavailable": "entidad no disponible"
+                    }
                 }
             },
             "profile": {
@@ -545,6 +573,56 @@
                     "error_no_theme": "No hay temas disponibles.",
                     "link_promo": "Más información sobre los temas",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Actualizar tokens",
+                    "description": "Cada token de actualización representa una sesión de inicio de sesión. Los tokens de actualización se eliminarán automáticamente cuando haga clic en cerrar sesión. Los siguientes tokens de actualización están actualmente activos para su cuenta.",
+                    "token_title": "Actualizar token para {clientId}",
+                    "created_at": "Creado en {date}",
+                    "confirm_delete": "¿Estás seguro de que deseas eliminar el token de actualización de {name}?",
+                    "delete_failed": "No se pudo eliminar el token de actualización.",
+                    "last_used": "Utilizado por última vez en {date} desde {location}.",
+                    "not_used": "Nunca se ha utilizado",
+                    "current_token_tooltip": "No se puede eliminar el token de actualización actual"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Tokens de acceso de larga duración",
+                    "description": "Cree tokens de acceso de larga duración para permitir que sus secuencias de comandos interactúen con la instancia de su Home Assistant. Cada token tendrá una validez de 10 años a partir de su creación. Los siguientes tokens de acceso de larga duración están activos actualmente.",
+                    "learn_auth_requests": "Aprenda a realizar solicitudes autenticadas.",
+                    "created_at": "Creado en {date}",
+                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
+                    "delete_failed": "No se pudo eliminar el token de acceso.",
+                    "create": "Crear Token",
+                    "create_failed": "No se pudo crear el token de acceso.",
+                    "prompt_name": "¿Nombre?",
+                    "prompt_copy_token": "Copia tu token de acceso. No se volverá a mostrar",
+                    "empty_state": "Aún no tienes tokens de acceso de larga duración.",
+                    "last_used": "Utilizado por última vez en {fecha} desde {localización}.",
+                    "not_used": "Nunca se ha utilizado"
+                },
+                "current_user": "Actualmente estás conectado como {fullName} .",
+                "is_owner": "Eres propietario.",
+                "logout": "Cerrar sesión",
+                "change_password": {
+                    "header": "Cambiar contraseña",
+                    "current_password": "Contraseña actual",
+                    "new_password": "Nueva contraseña",
+                    "confirm_new_password": "Confirmar nueva contraseña",
+                    "error_required": "Necesario",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Módulos de autenticación multifactor",
+                    "disable": "Deshabilitar",
+                    "enable": "Habilitar",
+                    "confirm_disable": "¿Estás seguro de que deseas deshabilitar {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "¡Éxito!",
+                    "step_done": "Configuración realizada para {step}",
+                    "close": "Cerrar",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {
@@ -635,6 +713,28 @@
                         "required_fields": "Completar todos los campos requeridos"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "lementos marcados",
+                        "clear_items": "Borrar elementos marcados",
+                        "add_item": "Agregar elemento"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configuración de la tarjeta",
+                        "save": "Guardar",
+                        "toggle_editor": "Cambiar editor"
+                    },
+                    "migrate": {
+                        "header": "Configuración inválida",
+                        "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno a este elemento en 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
+                        "migrate": "Migrar configuración"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -703,7 +803,9 @@
                 "clear_code": "Limpiar",
                 "disarm": "Desactivar",
                 "arm_home": "Proteger en casa",
-                "arm_away": "Proteger fuera de casa"
+                "arm_away": "Proteger fuera de casa",
+                "arm_night": "Armado nocturno",
+                "armed_custom_bypass": "Bypass personalizado"
             },
             "automation": {
                 "last_triggered": "Última activación",
@@ -753,6 +855,13 @@
                     "turn_on": "Encender",
                     "turn_off": "Apagar"
                 }
+            },
+            "water_heater": {
+                "currently": "Actualmente",
+                "on_off": "Encendido \/ Apagado",
+                "target_temperature": "Temperatura deseada",
+                "operation": "Operación",
+                "away_mode": "Modo ausente"
             }
         },
         "components": {

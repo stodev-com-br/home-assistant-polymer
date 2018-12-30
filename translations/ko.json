@@ -13,7 +13,8 @@
         "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
         "dev-info": "정보",
-        "calendar": "캘린더"
+        "calendar": "캘린더",
+        "profile": "프로필"
     },
     "state": {
         "default": {
@@ -32,7 +33,7 @@
             "arming": "경비중",
             "disarming": "해제중",
             "triggered": "작동됨",
-            "armed_custom_bypass": "경비중(특정지점)"
+            "armed_custom_bypass": "경비중(사용자 우회)"
         },
         "automation": {
             "off": "꺼짐",
@@ -143,7 +144,8 @@
             "performance": "고효율",
             "high_demand": "고성능",
             "heat_pump": "순환펌프",
-            "gas": "가스"
+            "gas": "가스",
+            "manual": "수동"
         },
         "configurator": {
             "configure": "설정",
@@ -363,7 +365,7 @@
                         "alias": "이름",
                         "triggers": {
                             "header": "트리거",
-                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n [트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n[트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "트리거 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "상태",
                                     "from": "이전",
-                                    "to": "이후"
+                                    "to": "이후",
+                                    "for": "경과 시간"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -425,7 +428,7 @@
                         },
                         "conditions": {
                             "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n [조건에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n[조건에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "조건 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -513,7 +516,7 @@
                 },
                 "users": {
                     "caption": "사용자",
-                    "description": "사용자 관리",
+                    "description": "사용자를 관리합니다",
                     "picker": {
                         "title": "사용자"
                     },
@@ -523,6 +526,31 @@
                         "activate_user": "사용자 활성화",
                         "deactivate_user": "사용자 비활성화",
                         "delete_user": "사용자 삭제"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} 로 로그인 되어있습니다",
+                    "description_not_login": "로그인이 되어있지 않습니다"
+                },
+                "integrations": {
+                    "caption": "통합 구성요소",
+                    "description": "연결된 기기 및 서비스를 관리합니다",
+                    "discovered": "발견된 구성요소",
+                    "configured": "설정된 구성요소",
+                    "new": "새로운 통합 구성요소 설정",
+                    "configure": "설정하기",
+                    "none": "설정된 구성요소가 없습니다",
+                    "config_entry": {
+                        "no_devices": "이 통합 구성요소에는 장치가 없습니다.",
+                        "no_device": "장치가 없는 구성요소",
+                        "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
+                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 를 재시작합니다",
+                        "manuf": "{manufacturer} 제조",
+                        "hub": "연결 경유 대상",
+                        "firmware": "펌웨어: {version}",
+                        "device_unavailable": "기기 사용불가",
+                        "entity_unavailable": "구성요소 사용불가"
                     }
                 }
             },
@@ -553,24 +581,48 @@
                     "created_at": "{date} 에 생성 됨",
                     "confirm_delete": "{name} 의 리프레시 토큰을 삭제 하시겠습니까?",
                     "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",
-                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음",
                     "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음"
                 },
                 "long_lived_access_tokens": {
                     "header": "장기 액세스 토큰",
                     "description": "스크립트가 Home Assistant 인스턴스와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
-                    "learn_auth_requests": "인증된 요청을 생성하는 방법에 대해 알아 보세요.",
+                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
                     "created_at": "{date} 에 생성 됨",
-                    "confirm_delete": "{name} 의 액세스 토큰을 삭제 하시겠습니까?",
+                    "confirm_delete": "{name} 액세스 토큰을 삭제 하시겠습니까?",
                     "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
                     "create": "토큰 만들기",
                     "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
                     "prompt_name": "토큰 이름을 지어 주세요.",
                     "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "empty_state": "장기 액세스 토큰이 없습니다.",
-                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음"
+                },
+                "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
+                "is_owner": "관리자 계정 입니다.",
+                "logout": "로그아웃",
+                "change_password": {
+                    "header": "비밀번호 변경",
+                    "current_password": "현재 비밀번호",
+                    "new_password": "새 비밀번호",
+                    "confirm_new_password": "새 비밀번호 확인",
+                    "error_required": "필수 요소",
+                    "submit": "변경하기"
+                },
+                "mfa": {
+                    "header": "다단계 인증 모듈",
+                    "disable": "비활성화",
+                    "enable": "활성화",
+                    "confirm_disable": "{name} 을(를) 비활성화 하시겠습니까?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "취소됨",
+                    "title_success": "성공!",
+                    "step_done": "{step} 설정 완료",
+                    "close": "닫기",
+                    "submit": "구성하기"
                 }
             },
             "page-authorize": {
@@ -661,6 +713,47 @@
                         "required_fields": "필수 입력란을 모두 채워주세요"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "선택한 항목",
+                        "clear_items": "선택한 항목 삭제",
+                        "add_item": "항목 추가"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "카드 구성",
+                        "save": "저장하기",
+                        "toggle_editor": "에디터 전환",
+                        "pick_card": "추가하려는 카드를 선택해주세요",
+                        "add": "카드 추가",
+                        "edit": "편집",
+                        "delete": "삭제"
+                    },
+                    "migrate": {
+                        "header": "설정이 호환되지 않습니다",
+                        "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요.",
+                        "para_migrate": "Home Assistant 는 '설정 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 보기에 ID를 추가 할 수 있습니다.",
+                        "migrate": "설정 마이그레이션"
+                    },
+                    "header": "UI 편집",
+                    "configure_ui": "UI 구성",
+                    "edit_view": {
+                        "header": "구성 보기",
+                        "add": "뷰 추가",
+                        "edit": "뷰 편집",
+                        "delete": "뷰 삭제"
+                    },
+                    "save_config": {
+                        "header": "Lovelace UI 직접 관리하기",
+                        "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
+                        "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
+                        "cancel": "아닙니다",
+                        "save": "직접 관리할께요"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -669,7 +762,8 @@
         },
         "common": {
             "loading": "읽는중",
-            "cancel": "취소"
+            "cancel": "취소",
+            "save": "저장"
         },
         "duration": {
             "day": "{count} {count, plural,\none {일}\nother {일}\n}",
@@ -729,7 +823,9 @@
                 "clear_code": "지움",
                 "disarm": "경비 해제",
                 "arm_home": "재실 경비",
-                "arm_away": "외출 경비"
+                "arm_away": "외출 경비",
+                "arm_night": "야간 경비",
+                "armed_custom_bypass": "사용자 우회"
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",
@@ -779,6 +875,13 @@
                     "turn_on": "끄기",
                     "turn_off": "켜기"
                 }
+            },
+            "water_heater": {
+                "currently": "현재 온도",
+                "on_off": "켜기 \/ 끄기",
+                "target_temperature": "희망 온도",
+                "operation": "운전",
+                "away_mode": "외출 모드"
             }
         },
         "components": {

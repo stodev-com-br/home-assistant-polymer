@@ -1,9 +1,9 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from '../mixins/events-mixin.js';
+import EventsMixin from "../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -11,51 +11,55 @@ import EventsMixin from '../mixins/events-mixin.js';
 class HaClimateControl extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      /* local DOM styles go here */
-      :host {
-        @apply --layout-flex;
-        @apply --layout-horizontal;
-        @apply --layout-justified;
-      }
-      .in-flux#target_temperature {
-        color: var(--google-red-500);
-      }
-      #target_temperature {
-        @apply --layout-self-center;
-        font-size: 200%;
-      }
-      .control-buttons {
-        font-size: 200%;
-        text-align: right;
-      }
-      paper-icon-button {
-        height: 48px;
-        width: 48px;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        /* local DOM styles go here */
+        :host {
+          @apply --layout-flex;
+          @apply --layout-horizontal;
+          @apply --layout-justified;
+        }
+        .in-flux#target_temperature {
+          color: var(--google-red-500);
+        }
+        #target_temperature {
+          @apply --layout-self-center;
+          font-size: 200%;
+        }
+        .control-buttons {
+          font-size: 200%;
+          text-align: right;
+        }
+        paper-icon-button {
+          height: 48px;
+          width: 48px;
+        }
+      </style>
 
-    <!-- local DOM goes here -->
-    <div id="target_temperature">
-      [[value]] [[units]]
-    </div>
-    <div class="control-buttons">
-      <div>
-        <paper-icon-button icon="hass:chevron-up" on-click="incrementValue"></paper-icon-button>
+      <!-- local DOM goes here -->
+      <div id="target_temperature">[[value]] [[units]]</div>
+      <div class="control-buttons">
+        <div>
+          <paper-icon-button
+            icon="hass:chevron-up"
+            on-click="incrementValue"
+          ></paper-icon-button>
+        </div>
+        <div>
+          <paper-icon-button
+            icon="hass:chevron-down"
+            on-click="decrementValue"
+          ></paper-icon-button>
+        </div>
       </div>
-      <div>
-        <paper-icon-button icon="hass:chevron-down" on-click="decrementValue"></paper-icon-button>
-      </div>
-    </div>
-`;
+    `;
   }
 
   static get properties() {
     return {
       value: {
         type: Number,
-        observer: 'valueChanged'
+        observer: "valueChanged",
       },
       units: {
         type: String,
@@ -74,7 +78,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   }
 
   temperatureStateInFlux(inFlux) {
-    this.$.target_temperature.classList.toggle('in-flux', inFlux);
+    this.$.target_temperature.classList.toggle("in-flux", inFlux);
   }
 
   incrementValue() {
@@ -119,7 +123,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
       window.setTimeout(() => {
         const now = Date.now();
         if (now - this.last_changed >= 2000) {
-          this.fire('change');
+          this.fire("change");
           this.temperatureStateInFlux(false);
           this.last_changed = null;
         }
@@ -128,4 +132,4 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-climate-control', HaClimateControl);
+customElements.define("ha-climate-control", HaClimateControl);

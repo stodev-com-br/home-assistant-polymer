@@ -1,24 +1,30 @@
-import '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import './entity/ha-chart-base.js';
+import "./entity/ha-chart-base";
 
-import formatDateTime from '../common/datetime/format_date_time.js';
+import LocalizeMixin from "../mixins/localize-mixin";
+import formatDateTime from "../common/datetime/format_date_time";
 
-class StateHistoryChartLine extends PolymerElement {
+class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        display: block;
-        overflow: hidden;
-        height: 0;
-        transition: height 0.3s ease-in-out;
-      }
-    </style>
-      <ha-chart-base id="chart" data="[[chartData]]" identifier="[[identifier]]" rendered="{{rendered}}"></ha-chart-base>
-`;
+      <style>
+        :host {
+          display: block;
+          overflow: hidden;
+          height: 0;
+          transition: height 0.3s ease-in-out;
+        }
+      </style>
+      <ha-chart-base
+        id="chart"
+        data="[[chartData]]"
+        identifier="[[identifier]]"
+        rendered="{{rendered}}"
+      ></ha-chart-base>
+    `;
   }
 
   static get properties() {
@@ -38,13 +44,13 @@ class StateHistoryChartLine extends PolymerElement {
       rendered: {
         type: Boolean,
         value: false,
-        observer: '_onRenderedChanged'
-      }
+        observer: "_onRenderedChanged",
+      },
     };
   }
 
   static get observers() {
-    return ['dataChanged(data, endTime, isSingleDevice)'];
+    return ["dataChanged(data, endTime, isSingleDevice)"];
   }
 
   connectedCallback() {
@@ -62,9 +68,11 @@ class StateHistoryChartLine extends PolymerElement {
   }
 
   animateHeight() {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      this.style.height = this.$.chart.scrollHeight + 'px';
-    }));
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.style.height = this.$.chart.scrollHeight + "px";
+      })
+    );
   }
 
   drawChart() {
@@ -86,11 +94,18 @@ class StateHistoryChartLine extends PolymerElement {
       return isFinite(parsed) ? parsed : null;
     }
 
-
-    endTime = this.endTime
+    endTime =
+      this.endTime ||
       // Get the highest date from the last date of each device
-      || new Date(Math.max.apply(null, deviceStates.map(devSts =>
-        new Date(devSts.states[devSts.states.length - 1].last_changed))));
+      new Date(
+        Math.max.apply(
+          null,
+          deviceStates.map(
+            (devSts) =>
+              new Date(devSts.states[devSts.states.length - 1].last_changed)
+          )
+        )
+      );
     if (endTime > new Date()) {
       endTime = new Date();
     }
@@ -102,7 +117,6 @@ class StateHistoryChartLine extends PolymerElement {
       // array containing [value1, value2, etc]
       let prevValues;
       const data = [];
-
 
       function pushData(timestamp, datavalues) {
         if (!datavalues) return;
@@ -121,10 +135,10 @@ class StateHistoryChartLine extends PolymerElement {
         let dataFill = false;
         let dataStep = false;
         if (fill) {
-          dataFill = 'origin';
+          dataFill = "origin";
         }
         if (step) {
-          dataStep = 'before';
+          dataStep = "before";
         }
         data.push({
           label: nameY,
@@ -132,38 +146,45 @@ class StateHistoryChartLine extends PolymerElement {
           steppedLine: dataStep,
           pointRadius: 0,
           data: [],
-          unitText: unit
+          unitText: unit,
         });
       }
 
-      if (domain === 'thermostat' || domain === 'climate') {
+      if (
+        domain === "thermostat" ||
+        domain === "climate" ||
+        domain === "water_heater"
+      ) {
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
         // Using step chart by step-before so manually interpolation not needed.
-        const hasTargetRange = states.states.some(state => state.attributes
-          && state.attributes.target_temp_high !== state.attributes.target_temp_low);
-        const hasHeat = states.states.some(state => state.state === 'heat');
-        const hasCool = states.states.some(state => state.state === 'cool');
+        const hasTargetRange = states.states.some(
+          (state) =>
+            state.attributes &&
+            state.attributes.target_temp_high !==
+              state.attributes.target_temp_low
+        );
+        const hasHeat = states.states.some((state) => state.state === "heat");
+        const hasCool = states.states.some((state) => state.state === "cool");
 
-
-        addColumn(name + ' current temperature', true);
+        addColumn(name + " current temperature", true);
         if (hasHeat) {
-          addColumn(name + ' heating', true, true);
+          addColumn(name + " heating", true, true);
           // The "heating" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
         if (hasCool) {
-          addColumn(name + ' cooling', true, true);
+          addColumn(name + " cooling", true, true);
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
 
         if (hasTargetRange) {
-          addColumn(name + ' target temperature high', true);
-          addColumn(name + ' target temperature low', true);
+          addColumn(name + " target temperature high", true);
+          addColumn(name + " target temperature low", true);
         } else {
-          addColumn(name + ' target temperature', true);
+          addColumn(name + " target temperature", true);
         }
 
         states.states.forEach((state) => {
@@ -171,31 +192,27 @@ class StateHistoryChartLine extends PolymerElement {
           const curTemp = safeParseFloat(state.attributes.current_temperature);
           const series = [curTemp];
           if (hasHeat) {
-            series.push(state.state === 'heat' ? curTemp : null);
+            series.push(state.state === "heat" ? curTemp : null);
           }
           if (hasCool) {
-            series.push(state.state === 'cool' ? curTemp : null);
+            series.push(state.state === "cool" ? curTemp : null);
           }
           if (hasTargetRange) {
-            const targetHigh = safeParseFloat(state.attributes.target_temp_high);
+            const targetHigh = safeParseFloat(
+              state.attributes.target_temp_high
+            );
             const targetLow = safeParseFloat(state.attributes.target_temp_low);
             series.push(targetHigh, targetLow);
-            pushData(
-              new Date(state.last_changed),
-              series
-            );
+            pushData(new Date(state.last_changed), series);
           } else {
             const target = safeParseFloat(state.attributes.temperature);
             series.push(target);
-            pushData(
-              new Date(state.last_changed),
-              series
-            );
+            pushData(new Date(state.last_changed), series);
           }
         });
       } else {
         // Only disable interpolation for sensors
-        const isStep = domain === 'sensor';
+        const isStep = domain === "sensor";
         addColumn(name, isStep);
 
         let lastValue = null;
@@ -211,8 +228,11 @@ class StateHistoryChartLine extends PolymerElement {
             const dateTime = date.getTime();
             const lastNullDateTime = lastNullDate.getTime();
             const lastDateTime = lastDate.getTime();
-            const tmpValue = ((value - lastValue)
-              * ((lastNullDateTime - lastDateTime) / (dateTime - lastDateTime))) + lastValue;
+            const tmpValue =
+              (value - lastValue) *
+                ((lastNullDateTime - lastDateTime) /
+                  (dateTime - lastDateTime)) +
+              lastValue;
             pushData(lastNullDate, [tmpValue]);
             pushData(new Date(lastNullDateTime + 1), [null]);
             pushData(date, [value]);
@@ -223,7 +243,11 @@ class StateHistoryChartLine extends PolymerElement {
             pushData(date, [value]);
             lastDate = date;
             lastValue = value;
-          } else if (value === null && lastNullDate === null && lastValue !== null) {
+          } else if (
+            value === null &&
+            lastNullDate === null &&
+            lastValue !== null
+          ) {
             lastNullDate = date;
           }
         });
@@ -236,45 +260,49 @@ class StateHistoryChartLine extends PolymerElement {
       Array.prototype.push.apply(datasets, data);
     });
 
-    const formatTooltipTitle = function (items, data) {
+    const formatTooltipTitle = (items, data) => {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
-      return formatDateTime(date);
+      return formatDateTime(date, this.hass.language);
     };
 
     const chartOptions = {
-      type: 'line',
+      type: "line",
       unit: unit,
       legend: !this.isSingleDevice,
       options: {
         scales: {
-          xAxes: [{
-            type: 'time',
-            ticks: {
-              major: {
-                fontStyle: 'bold',
+          xAxes: [
+            {
+              type: "time",
+              ticks: {
+                major: {
+                  fontStyle: "bold",
+                },
               },
             },
-          }],
-          yAxes: [{
-            ticks: {
-              maxTicksLimit: 7,
+          ],
+          yAxes: [
+            {
+              ticks: {
+                maxTicksLimit: 7,
+              },
             },
-          }],
+          ],
         },
         tooltips: {
-          mode: 'neareach',
+          mode: "neareach",
           callbacks: {
-            title: formatTooltipTitle
+            title: formatTooltipTitle,
           },
         },
         hover: {
-          mode: 'neareach',
+          mode: "neareach",
         },
         layout: {
           padding: {
-            top: 5
+            top: 5,
           },
         },
         elements: {
@@ -285,20 +313,20 @@ class StateHistoryChartLine extends PolymerElement {
           },
           point: {
             hitRadius: 5,
-          }
+          },
         },
         plugins: {
           filler: {
             propagate: true,
-          }
+          },
         },
       },
       data: {
         labels: [],
-        datasets: datasets
-      }
+        datasets: datasets,
+      },
     };
     this.chartData = chartOptions;
   }
 }
-customElements.define('state-history-chart-line', StateHistoryChartLine);
+customElements.define("state-history-chart-line", StateHistoryChartLine);

@@ -1,38 +1,48 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../components/entity/state-info.js';
+import "../components/entity/state-info";
 
 class StateCardInputText extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      paper-input {
-        margin-left: 16px;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        paper-input {
+          margin-left: 16px;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <paper-input no-label-float="" minlength="[[stateObj.attributes.min]]" maxlength="[[stateObj.attributes.max]]" value="{{value}}" auto-validate="[[stateObj.attributes.pattern]]" pattern="[[stateObj.attributes.pattern]]" type="[[stateObj.attributes.mode]]" on-change="selectedValueChanged" on-click="stopPropagation" placeholder="(empty value)">
-      </paper-input>
-    </div>
-`;
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <paper-input
+          no-label-float=""
+          minlength="[[stateObj.attributes.min]]"
+          maxlength="[[stateObj.attributes.max]]"
+          value="{{value}}"
+          auto-validate="[[stateObj.attributes.pattern]]"
+          pattern="[[stateObj.attributes.pattern]]"
+          type="[[stateObj.attributes.mode]]"
+          on-change="selectedValueChanged"
+          on-click="stopPropagation"
+          placeholder="(empty value)"
+        >
+        </paper-input>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
-
 
   static get properties() {
     return {
@@ -45,11 +55,11 @@ class StateCardInputText extends PolymerElement {
 
       stateObj: {
         type: Object,
-        observer: 'stateObjectChanged',
+        observer: "stateObjectChanged",
       },
 
       pattern: String,
-      value: String
+      value: String,
     };
   }
 
@@ -61,7 +71,7 @@ class StateCardInputText extends PolymerElement {
     if (this.value === this.stateObj.state) {
       return;
     }
-    this.hass.callService('input_text', 'set_value', {
+    this.hass.callService("input_text", "set_value", {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
@@ -72,4 +82,4 @@ class StateCardInputText extends PolymerElement {
   }
 }
 
-customElements.define('state-card-input_text', StateCardInputText);
+customElements.define("state-card-input_text", StateCardInputText);

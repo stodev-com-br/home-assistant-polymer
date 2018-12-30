@@ -1,17 +1,17 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../components/entity/ha-entity-picker.js';
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -19,123 +19,162 @@ import EventsMixin from '../../mixins/events-mixin.js';
 class HaPanelDevState extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
+      <style include="ha-style">
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
 
-      .content {
-        padding: 16px;
-      }
+        .content {
+          padding: 16px;
+        }
 
-      ha-entity-picker, .state-input, paper-textarea {
-        display: block;
-        max-width: 400px;
-      }
+        ha-entity-picker,
+        .state-input,
+        paper-textarea {
+          display: block;
+          max-width: 400px;
+        }
 
-      .entities th {
-        text-align: left;
-      }
+        .entities th {
+          text-align: left;
+        }
 
-      .entities tr {
-        vertical-align: top;
-      }
+        .entities tr {
+          vertical-align: top;
+        }
 
-      .entities tr:nth-child(odd) {
-        background-color: var(--table-row-background-color, #fff)
-      }
+        .entities tr:nth-child(odd) {
+          background-color: var(--table-row-background-color, #fff);
+        }
 
-      .entities tr:nth-child(even) {
-        background-color: var(--table-row-alternative-background-color, #eee)
-      }
-      .entities td {
-        padding: 4px;
-      }
-      .entities paper-icon-button {
-        height: 24px;
-        padding: 0;
-      }
-      .entities td:nth-child(3) {
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
+        .entities tr:nth-child(even) {
+          background-color: var(--table-row-alternative-background-color, #eee);
+        }
+        .entities td {
+          padding: 4px;
+        }
+        .entities paper-icon-button {
+          height: 24px;
+          padding: 0;
+        }
+        .entities td:nth-child(3) {
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
 
-      .entities a {
-        color: var(--primary-color);
-      }
-    </style>
+        .entities a {
+          color: var(--primary-color);
+        }
+      </style>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>States</div>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>States</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class='content'>
-        <div>
-          <p>
-            Set the representation of a device within Home Assistant.<br />
-            This will not communicate with the actual device.
-          </p>
+        <div class="content">
+          <div>
+            <p>
+              Set the representation of a device within Home Assistant.<br />
+              This will not communicate with the actual device.
+            </p>
 
-          <ha-entity-picker
-            autofocus
-            hass="[[hass]]"
-            value="{{_entityId}}"
-            allow-custom-entity
-          ></ha-entity-picker>
-          <paper-input
-            label="State"
-            required
-            value='{{_state}}'
-            class='state-input'
-          ></paper-input>
-          <paper-textarea label="State attributes (JSON, optional)" value='{{_stateAttributes}}'></paper-textarea>
-          <paper-button on-click='handleSetState' raised>Set State</paper-button>
-        </div>
+            <ha-entity-picker
+              autofocus
+              hass="[[hass]]"
+              value="{{_entityId}}"
+              allow-custom-entity
+            ></ha-entity-picker>
+            <paper-input
+              label="State"
+              required
+              autocapitalize="none"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              value="{{_state}}"
+              class="state-input"
+            ></paper-input>
+            <paper-textarea
+              label="State attributes (JSON, optional)"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
+              value="{{_stateAttributes}}"
+            ></paper-textarea>
+            <paper-button on-click="handleSetState" raised
+              >Set State</paper-button
+            >
+          </div>
 
-        <h1>Current entities</h1>
-        <table class='entities'>
-          <tr>
-            <th>Entity</th>
-            <th>State</th>
-            <th hidden$='[[narrow]]'>
-              Attributes
-              <paper-checkbox checked='{{_showAttributes}}'></paper-checkbox>
-            </th>
-          </tr>
-          <tr>
-            <th><paper-input label="Filter entities" type="search" value='{{_entityFilter}}'></paper-input></th>
-            <th><paper-input label="Filter states" type="search" value='{{_stateFilter}}'></paper-input></th>
-            <th hidden$='[[!computeShowAttributes(narrow, _showAttributes)]]'><paper-input label="Filter attributes" type="search" value='{{_attributeFilter}}'></paper-input></th>
-          </tr>
-          <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
-            <td colspan="3">No entities</td>
-          </tr>
-          <template is='dom-repeat' items='[[_entities]]' as='entity'>
+          <h1>Current entities</h1>
+          <table class="entities">
             <tr>
-              <td>
-                <paper-icon-button
-                  on-click='entityMoreInfo'
-                  icon='hass:open-in-new'
-                  alt="More Info" title="More Info"
-                  >
-                </paper-icon-button>
-                <a href='#' on-click='entitySelected'>[[entity.entity_id]]</a>
-              </td>
-              <td>[[entity.state]]</td>
-              <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
-                <td>[[attributeString(entity)]]</td>
-              </template>
+              <th>Entity</th>
+              <th>State</th>
+              <th hidden$="[[narrow]]">
+                Attributes
+                <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+              </th>
             </tr>
-          </template>
-        </table>
-      </div>
-    </app-header-layout>
+            <tr>
+              <th>
+                <paper-input
+                  label="Filter entities"
+                  type="search"
+                  value="{{_entityFilter}}"
+                ></paper-input>
+              </th>
+              <th>
+                <paper-input
+                  label="Filter states"
+                  type="search"
+                  value="{{_stateFilter}}"
+                ></paper-input>
+              </th>
+              <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
+                <paper-input
+                  label="Filter attributes"
+                  type="search"
+                  value="{{_attributeFilter}}"
+                ></paper-input>
+              </th>
+            </tr>
+            <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
+              <td colspan="3">No entities</td>
+            </tr>
+            <template is="dom-repeat" items="[[_entities]]" as="entity">
+              <tr>
+                <td>
+                  <paper-icon-button
+                    on-click="entityMoreInfo"
+                    icon="hass:open-in-new"
+                    alt="More Info"
+                    title="More Info"
+                  >
+                  </paper-icon-button>
+                  <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
+                </td>
+                <td>[[entity.state]]</td>
+                <template
+                  is="dom-if"
+                  if="[[computeShowAttributes(narrow, _showAttributes)]]"
+                >
+                  <td>[[attributeString(entity)]]</td>
+                </template>
+              </tr>
+            </template>
+          </table>
+        </div>
+      </app-header-layout>
     `;
   }
 
@@ -157,32 +196,32 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
       _entityId: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _entityFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _stateFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _attributeFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _state: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _stateAttributes: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _showAttributes: {
@@ -192,7 +231,8 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
       _entities: {
         type: Array,
-        computed: 'computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)',
+        computed:
+          "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
     };
   }
@@ -201,37 +241,39 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
-    this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
+    this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
     ev.preventDefault();
   }
 
   entityMoreInfo(ev) {
     ev.preventDefault();
-    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 
   handleSetState() {
     var attr;
-    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '');
+    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, "");
     try {
-      attr = attrRaw
-        ? JSON.parse(attrRaw) : {};
+      attr = attrRaw ? JSON.parse(attrRaw) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert('Error parsing JSON: ' + err);
+      alert("Error parsing JSON: " + err);
       /* eslint-enable no-alert */
       return;
     }
 
-    this.hass.callApi('POST', 'states/' + this._entityId, {
+    this.hass.callApi("POST", "states/" + this._entityId, {
       state: this._state,
       attributes: attr,
     });
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
-      .filter(function (value) {
+    return Object.keys(hass.states)
+      .map(function(key) {
+        return hass.states[key];
+      })
+      .filter(function(value) {
         if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
           return false;
         }
@@ -240,9 +282,9 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           return false;
         }
 
-        if (_attributeFilter !== '') {
+        if (_attributeFilter !== "") {
           var attributeFilter = _attributeFilter.toLowerCase();
-          var colonIndex = attributeFilter.indexOf(':');
+          var colonIndex = attributeFilter.indexOf(":");
           var multiMode = colonIndex !== -1;
 
           var keyFilter = attributeFilter;
@@ -261,14 +303,19 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
             if (key.includes(keyFilter) && !multiMode) {
               return true; // in single mode we're already satisfied with this match
-            } if (!key.includes(keyFilter) && multiMode) {
+            }
+            if (!key.includes(keyFilter) && multiMode) {
               continue;
             }
 
             var attributeValue = value.attributes[key];
 
-            if (attributeValue !== null
-                && JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)) {
+            if (
+              attributeValue !== null &&
+              JSON.stringify(attributeValue)
+                .toLowerCase()
+                .includes(valueFilter)
+            ) {
               return true;
             }
           }
@@ -279,7 +326,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
         return true;
       })
-      .sort(function (entityA, entityB) {
+      .sort(function(entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
           return -1;
         }
@@ -299,7 +346,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
   }
 
   attributeString(entity) {
-    var output = '';
+    var output = "";
     var i;
     var keys;
     var key;
@@ -308,14 +355,14 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
       key = keys[i];
       value = entity.attributes[key];
-      if (!Array.isArray(value) && (value instanceof Object)) {
-        value = JSON.stringify(value, null, '  ');
+      if (!Array.isArray(value) && value instanceof Object) {
+        value = JSON.stringify(value, null, "  ");
       }
-      output += key + ': ' + value + '\n';
+      output += key + ": " + value + "\n";
     }
 
     return output;
   }
 }
 
-customElements.define('ha-panel-dev-state', HaPanelDevState);
+customElements.define("ha-panel-dev-state", HaPanelDevState);

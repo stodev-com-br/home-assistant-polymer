@@ -13,7 +13,8 @@
         "dev-templates": "Mallid",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profiil"
     },
     "state": {
         "default": {
@@ -25,9 +26,9 @@
         "alarm_control_panel": {
             "armed": "Valves",
             "disarmed": "Maas",
-            "armed_home": "Valves kodu",
+            "armed_home": "Valves kodus",
             "armed_away": "Valves eemal",
-            "armed_night": "Öö-valves",
+            "armed_night": "Valves öine",
             "pending": "Ootel",
             "arming": "Valvestab",
             "disarming": "Maas...",
@@ -143,7 +144,8 @@
             "performance": "Jõudlus",
             "high_demand": "Kõrge nõudlus",
             "heat_pump": "Soojuspump",
-            "gas": "Gaas"
+            "gas": "Gaas",
+            "manual": "Käsitsi"
         },
         "configurator": {
             "configure": "Seadista",
@@ -379,7 +381,8 @@
                                 "state": {
                                     "label": "Olek",
                                     "from": "Algväärtus",
-                                    "to": "Lõppväärtus"
+                                    "to": "Lõppväärtus",
+                                    "for": "Jaoks"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -470,7 +473,7 @@
                         },
                         "actions": {
                             "header": "Tegevused",
-                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.\n\n[Lisateave tegevustest.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.\n\n[Lisateave tegevustest.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Lisa toiming",
                             "duplicate": "Paljunda",
                             "delete": "Kustuta",
@@ -524,6 +527,31 @@
                         "deactivate_user": "Deaktiveeri kasutaja",
                         "delete_user": "Kustuta kasutaja"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant pilv",
+                    "description_login": "Sisse logitud kui {email}",
+                    "description_not_login": "Pole sisse logitud"
+                },
+                "integrations": {
+                    "caption": "Sidumised",
+                    "description": "Halda ühendatud seadmeid ja teenuseid",
+                    "discovered": "Leitud",
+                    "configured": "Seadistatud",
+                    "new": "Loo uus sidumine",
+                    "configure": "Seadista",
+                    "none": "Midagi pole veel seadistatud",
+                    "config_entry": {
+                        "no_devices": "See sidumine ei hõlma ühtegi seadet",
+                        "no_device": "Üksused ilma seadmeteta",
+                        "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
+                        "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
+                        "manuf": "{manufacturer}",
+                        "hub": "Ühendatud",
+                        "firmware": "Püsivara: {version}",
+                        "device_unavailable": "seade pole saadaval",
+                        "entity_unavailable": "üksus pole saadaval"
+                    }
                 }
             },
             "profile": {
@@ -551,7 +579,7 @@
                     "description": "Iga ajutine juurdepääsutõend kehtib ühe seansi jaoks. Ajutised juurdepääsutõendid kustutatakse automaatselt pärast välja logimist. Sinu konto jaoks on praegu aktiivsed järgmised ajutised juurdepääsutõendid.",
                     "token_title": "Ajutine juurdepääsutõend {clientId} jaoks",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Ajutise juurdepääsutõendi kustutamine ebaõnnestus.",
                     "last_used": "Viimati kasutatud {date} asukohast {location}",
                     "not_used": "Pole kunagi kasutatud",
@@ -562,7 +590,7 @@
                     "description": "Loo pikaajalised juurdepääsutõendid, mis võimaldavad sinu skriptidel suhelda sinu Home Assistant serveriga. Iga juurdepääsutõend kehtib kümme aastat loomisest alates. Praegu on aktiivsed järgmised pikaajalised juurdepääsutõendid.",
                     "learn_auth_requests": "Loe, kuidas teha tõendatud päringuid.",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Juurdepääsutõendi kustutamine ebaõnnestus.",
                     "create": "Loo juurdepääsutõend",
                     "create_failed": "Juurdepääsutõendi loomine ebaõnnestus.",
@@ -571,6 +599,30 @@
                     "empty_state": "Sul pole veel pikaajalisi juurdepääsutõendeid.",
                     "last_used": "Viimati kasutatud {date} asukohast {location}",
                     "not_used": "Pole kunagi kasutatud"
+                },
+                "current_user": "Oled praegu sisse logitud kui {fullName}.",
+                "is_owner": "Oled omanik.",
+                "logout": "Logi välja",
+                "change_password": {
+                    "header": "Muuda salasõna",
+                    "current_password": "Praegune salasõna",
+                    "new_password": "Uus salasõna",
+                    "confirm_new_password": "Kinnita uut salasõna",
+                    "error_required": "Nõutav",
+                    "submit": "Esita"
+                },
+                "mfa": {
+                    "header": "Mitmeastmelise autentimise moodulid",
+                    "disable": "Keela",
+                    "enable": "Luba",
+                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Katkestatud",
+                    "title_success": "Korras!",
+                    "step_done": "{step} seadistatud",
+                    "close": "Sulge",
+                    "submit": "Esita"
                 }
             },
             "page-authorize": {
@@ -616,7 +668,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Kaheastmeline autentimiskood"
+                                        "code": "Kaheastmelise autentimise kood"
                                     },
                                     "description": "Ava oma seadmes **{mfa_module_name}**, et näha oma kahetasemelise autentimise koodi ja tõendada oma isikut:"
                                 }
@@ -728,8 +780,10 @@
                 "code": "Kood",
                 "clear_code": "Puhasta",
                 "disarm": "Valvest maha",
-                "arm_home": "Valvesta kodu",
-                "arm_away": "Valves eemal"
+                "arm_home": "Valvesta kodus",
+                "arm_away": "Valvesta eemal",
+                "arm_night": "Valvesta öine",
+                "armed_custom_bypass": "Eranditega"
             },
             "automation": {
                 "last_triggered": "Viimati käivitatud",
@@ -779,6 +833,13 @@
                     "turn_on": "Lülita sisse",
                     "turn_off": "Lülita välja"
                 }
+            },
+            "water_heater": {
+                "currently": "Hetkel",
+                "on_off": "Sees \/ väljas",
+                "target_temperature": "Soovitud temperatuur",
+                "operation": "Töörežiim",
+                "away_mode": "Eemalolekurežiim"
             }
         },
         "components": {

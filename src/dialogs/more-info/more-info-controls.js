@@ -1,88 +1,121 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../components/state-history-charts.js';
-import '../../data/ha-state-history-data.js';
-import '../../resources/ha-style.js';
-import '../../state-summary/state-card-content.js';
+import "../../components/state-history-charts";
+import "../../data/ha-state-history-data";
+import "../../resources/ha-style";
+import "../../state-summary/state-card-content";
 
-import './controls/more-info-content.js';
+import "./controls/more-info-content";
 
-import computeStateName from '../../common/entity/compute_state_name.js';
-import computeStateDomain from '../../common/entity/compute_state_domain.js';
-import isComponentLoaded from '../../common/config/is_component_loaded.js';
-import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import computeStateName from "../../common/entity/compute_state_name";
+import computeStateDomain from "../../common/entity/compute_state_domain";
+import isComponentLoaded from "../../common/config/is_component_loaded";
+import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import EventsMixin from "../../mixins/events-mixin";
+import { computeRTL } from "../../common/util/compute_rtl";
 
-const DOMAINS_NO_INFO = [
-  'camera',
-  'configurator',
-  'history_graph',
-];
+const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
  * @appliesMixin EventsMixin
  */
 class MoreInfoControls extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-  <style include="ha-style-dialog">
-    app-toolbar {
-      color: var(--more-info-header-color);
-      background-color: var(--more-info-header-background);
-    }
+      <style include="ha-style-dialog">
+        app-toolbar {
+          color: var(--more-info-header-color);
+          background-color: var(--more-info-header-background);
+        }
 
-    app-toolbar [main-title] {
-      @apply --ha-more-info-app-toolbar-title;
-    }
+        app-toolbar [main-title] {
+          @apply --ha-more-info-app-toolbar-title;
+        }
 
-    state-card-content {
-      display: block;
-      padding: 16px;
-    }
+        state-card-content {
+          display: block;
+          padding: 16px;
+        }
 
-    state-history-charts {
-      max-width: 100%;
-      margin-bottom: 16px;
-    }
+        state-history-charts {
+          max-width: 100%;
+          margin-bottom: 16px;
+        }
 
-    @media all and (min-width: 451px) and (min-height: 501px) {
-      .main-title {
-        pointer-events: auto;
-        cursor: default;
-      }
-    }
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          .main-title {
+            pointer-events: auto;
+            cursor: default;
+          }
+        }
 
-    paper-dialog-scrollable {
-      padding-bottom: 16px;
-    }
+        paper-dialog-scrollable {
+          padding-bottom: 16px;
+        }
 
-    :host([domain=camera]) paper-dialog-scrollable {
-      margin: 0 -24px -21px;
-    }
-  </style>
+        :host([domain="camera"]) paper-dialog-scrollable {
+          margin: 0 -24px -21px;
+        }
 
-  <app-toolbar>
-    <paper-icon-button icon="hass:close" dialog-dismiss=""></paper-icon-button>
-    <div class="main-title" main-title="" on-click="enlarge">[[_computeStateName(stateObj)]]</div>
-    <template is="dom-if" if="[[canConfigure]]">
-      <paper-icon-button icon="hass:settings" on-click="_gotoSettings"></paper-icon-button>
-    </template>
-  </app-toolbar>
+        :host([rtl]) app-toolbar {
+          direction: rtl;
+          text-align: right;
+        }
+      </style>
 
-  <template is="dom-if" if="[[_computeShowStateInfo(stateObj)]]" restamp="">
-    <state-card-content state-obj="[[stateObj]]" hass="[[hass]]" in-dialog=""></state-card-content>
-  </template>
-  <paper-dialog-scrollable dialog-element="[[dialogElement]]">
-    <template is="dom-if" if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp="">
-      <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[stateObj.entity_id]]" data="{{_stateHistory}}" is-loading="{{_stateHistoryLoading}}" cache-config="[[_cacheConfig]]"></ha-state-history-data>
-      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now></state-history-charts>
-    </template>
-    <more-info-content state-obj="[[stateObj]]" hass="[[hass]]"></more-info-content>
-  </paper-dialog-scrollable>
-`;
+      <app-toolbar>
+        <paper-icon-button
+          icon="hass:close"
+          dialog-dismiss=""
+        ></paper-icon-button>
+        <div class="main-title" main-title="" on-click="enlarge">
+          [[_computeStateName(stateObj)]]
+        </div>
+        <template is="dom-if" if="[[canConfigure]]">
+          <paper-icon-button
+            icon="hass:settings"
+            on-click="_gotoSettings"
+          ></paper-icon-button>
+        </template>
+      </app-toolbar>
+
+      <template is="dom-if" if="[[_computeShowStateInfo(stateObj)]]" restamp="">
+        <state-card-content
+          state-obj="[[stateObj]]"
+          hass="[[hass]]"
+          in-dialog=""
+        ></state-card-content>
+      </template>
+      <paper-dialog-scrollable dialog-element="[[dialogElement]]">
+        <template
+          is="dom-if"
+          if="[[_computeShowHistoryComponent(hass, stateObj)]]"
+          restamp=""
+        >
+          <ha-state-history-data
+            hass="[[hass]]"
+            filter-type="recent-entity"
+            entity-id="[[stateObj.entity_id]]"
+            data="{{_stateHistory}}"
+            is-loading="{{_stateHistoryLoading}}"
+            cache-config="[[_cacheConfig]]"
+          ></ha-state-history-data>
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[_stateHistory]]"
+            is-loading-data="[[_stateHistoryLoading]]"
+            up-to-now
+          ></state-history-charts>
+        </template>
+        <more-info-content
+          state-obj="[[stateObj]]"
+          hass="[[hass]]"
+        ></more-info-content>
+      </paper-dialog-scrollable>
+    `;
   }
 
   static get properties() {
@@ -91,7 +124,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
 
       stateObj: {
         type: Object,
-        observer: '_stateObjChanged',
+        observer: "_stateObjChanged",
       },
 
       dialogElement: Object,
@@ -100,7 +133,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
       domain: {
         type: String,
         reflectToAttribute: true,
-        computed: '_computeDomain(stateObj)',
+        computed: "_computeDomain(stateObj)",
       },
 
       _stateHistory: Object,
@@ -120,6 +153,11 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
           hoursToShow: 24,
         },
       },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -132,17 +170,20 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   }
 
   _computeShowHistoryComponent(hass, stateObj) {
-    return hass && stateObj
-      && isComponentLoaded(hass, 'history')
-      && !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
+    return (
+      hass &&
+      stateObj &&
+      isComponentLoaded(hass, "history") &&
+      !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj))
+    );
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? computeStateDomain(stateObj) : '';
+    return stateObj ? computeStateDomain(stateObj) : "";
   }
 
   _computeStateName(stateObj) {
-    return stateObj ? computeStateName(stateObj) : '';
+    return stateObj ? computeStateName(stateObj) : "";
   }
 
   _stateObjChanged(newVal) {
@@ -151,15 +192,18 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
     }
 
     if (this._cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-      this._cacheConfig = Object.assign(
-        {}, this._cacheConfig,
-        { cacheKey: `more_info.${newVal.entity_id}` }
-      );
+      this._cacheConfig = Object.assign({}, this._cacheConfig, {
+        cacheKey: `more_info.${newVal.entity_id}`,
+      });
     }
   }
 
   _gotoSettings() {
-    this.fire('more-info-page', { page: 'settings' });
+    this.fire("more-info-page", { page: "settings" });
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
-customElements.define('more-info-controls', MoreInfoControls);
+customElements.define("more-info-controls", MoreInfoControls);

@@ -1,17 +1,15 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import Leaflet from 'leaflet';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-icon-button/paper-icon-button";
 
-import '../../map/ha-entity-marker.js';
+import "../../map/ha-entity-marker";
 
-import setupLeafletMap from '../../../common/dom/setup-leaflet-map.js';
-import processConfigEntities from '../common/process-config-entities.js';
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import debounce from '../../../common/util/debounce.js';
-
-Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
+import { setupLeafletMap } from "../../../common/dom/setup-leaflet-map";
+import { processConfigEntities } from "../common/process-config-entities";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import computeStateName from "../../../common/entity/compute_state_name";
+import debounce from "../../../common/util/debounce";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
 class HuiMapCard extends PolymerElement {
   static get template() {
@@ -68,7 +66,6 @@ class HuiMapCard extends PolymerElement {
           ></paper-icon-button>
         </div>
       </ha-card>
-
     `;
   }
 
@@ -76,13 +73,13 @@ class HuiMapCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_drawEntities'
+        observer: "_drawEntities",
       },
       _config: Object,
       isPanel: {
         type: Boolean,
-        reflectToAttribute: true
-      }
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -98,12 +95,20 @@ class HuiMapCard extends PolymerElement {
       return;
     }
 
-    this.$.root.style.paddingTop = this._config.aspect_ratio || '100%';
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+
+    if (ratio && ratio.w > 0 && ratio.h > 0) {
+      this.$.root.style.paddingBottom = `${((100 * ratio.h) / ratio.w).toFixed(
+        2
+      )}%`;
+    } else {
+      this.$.root.style.paddingBottom = "100%";
+    }
   }
 
   setConfig(config) {
     if (!config) {
-      throw new Error('Error in card configuration.');
+      throw new Error("Error in card configuration.");
     }
 
     this._configEntities = processConfigEntities(config.entities);
@@ -111,8 +116,13 @@ class HuiMapCard extends PolymerElement {
   }
 
   getCardSize() {
-    let ar = this._config.aspect_ratio || '100%';
-    ar = ar.substr(0, ar.length - 1);
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+    let ar;
+    if (ratio && ratio.w > 0 && ratio.h > 0) {
+      ar = `${((100 * ratio.h) / ratio.w).toFixed(2)}`;
+    } else {
+      ar = "100";
+    }
     return 1 + Math.floor(ar / 25) || 3;
   }
 
@@ -121,20 +131,23 @@ class HuiMapCard extends PolymerElement {
 
     // Observe changes to map size and invalidate to prevent broken rendering
     // Uses ResizeObserver in Chrome, otherwise window resize event
-    if (typeof ResizeObserver === 'function') {
-      this._resizeObserver = new ResizeObserver(() => this._debouncedResizeListener());
+    if (typeof ResizeObserver === "function") {
+      this._resizeObserver = new ResizeObserver(() =>
+        this._debouncedResizeListener()
+      );
       this._resizeObserver.observe(this.$.map);
     } else {
-      window.addEventListener('resize', this._debouncedResizeListener);
+      window.addEventListener("resize", this._debouncedResizeListener);
     }
 
-    this._map = setupLeafletMap(this.$.map);
-    this._drawEntities(this.hass);
+    this.loadMap();
+  }
 
-    setTimeout(() => {
-      this._resetMap();
-      this._fitMap();
-    }, 1);
+  async loadMap() {
+    [this._map, this.Leaflet] = await setupLeafletMap(this.$.map);
+    this._drawEntities(this.hass);
+    this._map.invalidateSize();
+    this._fitMap();
   }
 
   disconnectedCallback() {
@@ -147,7 +160,7 @@ class HuiMapCard extends PolymerElement {
     if (this._resizeObserver) {
       this._resizeObserver.unobserve(this.$.map);
     } else {
-      window.removeEventListener('resize', this._debouncedResizeListener);
+      window.removeEventListener("resize", this._debouncedResizeListener);
     }
   }
 
@@ -162,13 +175,18 @@ class HuiMapCard extends PolymerElement {
     const zoom = this._config.default_zoom;
     if (this._mapItems.length === 0) {
       this._map.setView(
-        new Leaflet.LatLng(this.hass.config.latitude, this.hass.config.longitude),
+        new this.Leaflet.LatLng(
+          this.hass.config.latitude,
+          this.hass.config.longitude
+        ),
         zoom || 14
       );
       return;
     }
 
-    const bounds = new Leaflet.latLngBounds(this._mapItems.map(item => item.getLatLng()));
+    const bounds = new this.Leaflet.latLngBounds(
+      this._mapItems.map((item) => item.getLatLng())
+    );
     this._map.fitBounds(bounds.pad(0.5));
 
     if (zoom && this._map.getZoom() > zoom) {
@@ -183,9 +201,9 @@ class HuiMapCard extends PolymerElement {
     }
 
     if (this._mapItems) {
-      this._mapItems.forEach(marker => marker.remove());
+      this._mapItems.forEach((marker) => marker.remove());
     }
-    const mapItems = this._mapItems = [];
+    const mapItems = (this._mapItems = []);
 
     this._configEntities.forEach((entity) => {
       const entityId = entity.entity;
@@ -194,8 +212,15 @@ class HuiMapCard extends PolymerElement {
       }
       const stateObj = hass.states[entityId];
       const title = computeStateName(stateObj);
-      const { latitude, longitude, passive, icon, radius,
-        entity_picture: entityPicture, gps_accuracy: gpsAccuracy } = stateObj.attributes;
+      const {
+        latitude,
+        longitude,
+        passive,
+        icon,
+        radius,
+        entity_picture: entityPicture,
+        gps_accuracy: gpsAccuracy,
+      } = stateObj.attributes;
 
       if (!(latitude && longitude)) {
         return;
@@ -205,75 +230,87 @@ class HuiMapCard extends PolymerElement {
       let iconHTML;
       let el;
 
-      if (computeStateDomain(stateObj) === 'zone') {
+      if (computeStateDomain(stateObj) === "zone") {
         // DRAW ZONE
         if (passive) return;
 
         // create icon
         if (icon) {
-          el = document.createElement('ha-icon');
-          el.setAttribute('icon', icon);
+          el = document.createElement("ha-icon");
+          el.setAttribute("icon", icon);
           iconHTML = el.outerHTML;
         } else {
           iconHTML = title;
         }
 
-        markerIcon = Leaflet.divIcon({
+        markerIcon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
-          className: '',
+          className: "",
         });
 
         // create market with the icon
-        mapItems.push(Leaflet.marker([latitude, longitude], {
-          icon: markerIcon,
-          interactive: false,
-          title: title,
-        }).addTo(map));
+        mapItems.push(
+          this.Leaflet.marker([latitude, longitude], {
+            icon: markerIcon,
+            interactive: false,
+            title: title,
+          }).addTo(map)
+        );
 
         // create circle around it
-        mapItems.push(Leaflet.circle([latitude, longitude], {
-          interactive: false,
-          color: '#FF9800',
-          radius: radius,
-        }).addTo(map));
+        mapItems.push(
+          this.Leaflet.circle([latitude, longitude], {
+            interactive: false,
+            color: "#FF9800",
+            radius: radius,
+          }).addTo(map)
+        );
 
         return;
       }
 
       // DRAW ENTITY
       // create icon
-      const entityName = title.split(' ').map(part => part[0]).join('').substr(0, 3);
+      const entityName = title
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .substr(0, 3);
 
-      el = document.createElement('ha-entity-marker');
-      el.setAttribute('entity-id', entityId);
-      el.setAttribute('entity-name', entityName);
-      el.setAttribute('entity-picture', entityPicture || '');
+      el = document.createElement("ha-entity-marker");
+      el.setAttribute("entity-id", entityId);
+      el.setAttribute("entity-name", entityName);
+      el.setAttribute("entity-picture", entityPicture || "");
 
-      /* Leaflet clones this element before adding it to the map. This messes up
+      /* this.Leaflet clones this element before adding it to the map. This messes up
          our Polymer object and we can't pass data through. Thus we hack like this. */
-      markerIcon = Leaflet.divIcon({
+      markerIcon = this.Leaflet.divIcon({
         html: el.outerHTML,
         iconSize: [48, 48],
-        className: '',
+        className: "",
       });
 
       // create market with the icon
-      mapItems.push(Leaflet.marker([latitude, longitude], {
-        icon: markerIcon,
-        title: computeStateName(stateObj),
-      }).addTo(map));
+      mapItems.push(
+        this.Leaflet.marker([latitude, longitude], {
+          icon: markerIcon,
+          title: computeStateName(stateObj),
+        }).addTo(map)
+      );
 
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
-        mapItems.push(Leaflet.circle([latitude, longitude], {
-          interactive: false,
-          color: '#0288D1',
-          radius: gpsAccuracy,
-        }).addTo(map));
+        mapItems.push(
+          this.Leaflet.circle([latitude, longitude], {
+            interactive: false,
+            color: "#0288D1",
+            radius: gpsAccuracy,
+          }).addTo(map)
+        );
       }
     });
   }
 }
 
-customElements.define('hui-map-card', HuiMapCard);
+customElements.define("hui-map-card", HuiMapCard);

@@ -1,16 +1,16 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { enableWrite } from '../common/auth/token_storage.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import { enableWrite } from "../common/auth/token_storage";
+import LocalizeMixin from "../mixins/localize-mixin";
 
-import '../resources/ha-style.js';
+import "../resources/ha-style";
 
 class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include='ha-style'>
+      <style include="ha-style">
         paper-card {
           position: fixed;
           padding: 8px 0;
@@ -31,12 +31,14 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
         }
       </style>
       <paper-card elevation="4">
-        <div class='card-content'>
-          [[localize('ui.auth_store.ask')]]
-        </div>
-        <div class='card-actions'>
-          <paper-button on-click='_done'>[[localize('ui.auth_store.decline')]]</paper-button>
-          <paper-button primary on-click='_save'>[[localize('ui.auth_store.confirm')]]</paper-button>
+        <div class="card-content">[[localize('ui.auth_store.ask')]]</div>
+        <div class="card-actions">
+          <paper-button on-click="_done"
+            >[[localize('ui.auth_store.decline')]]</paper-button
+          >
+          <paper-button primary on-click="_save"
+            >[[localize('ui.auth_store.confirm')]]</paper-button
+          >
         </div>
       </paper-card>
     `;
@@ -50,7 +52,7 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.classList.toggle('small', window.innerWidth < 600);
+    this.classList.toggle("small", window.innerWidth < 600);
   }
 
   _save() {
@@ -59,11 +61,11 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   }
 
   _done() {
-    const card = this.shadowRoot.querySelector('paper-card');
-    card.style.transition = 'bottom .25s';
+    const card = this.shadowRoot.querySelector("paper-card");
+    card.style.transition = "bottom .25s";
     card.style.bottom = `-${card.offsetHeight + 8}px`;
     setTimeout(() => this.parentNode.removeChild(this), 300);
   }
 }
 
-customElements.define('ha-store-auth-card', HaStoreAuth);
+customElements.define("ha-store-auth-card", HaStoreAuth);

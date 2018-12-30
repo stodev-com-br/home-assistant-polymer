@@ -1,11 +1,10 @@
-import '@polymer/paper-styles/element-styles/paper-material-styles.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-styles/element-styles/paper-material-styles";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-
-import computeStateName from '../common/entity/compute_state_name.js';
-import EventsMixin from '../mixins/events-mixin.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import computeStateName from "../common/entity/compute_state_name";
+import EventsMixin from "../mixins/events-mixin";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 const UPDATE_INTERVAL = 10000; // ms
 /*
@@ -15,51 +14,55 @@ const UPDATE_INTERVAL = 10000; // ms
 class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-  <style include="paper-material-styles">
-    :host {
-      @apply --paper-material-elevation-1;
-      display: block;
-      position: relative;
-      font-size: 0px;
-      border-radius: 2px;
-      cursor: pointer;
-      min-height: 48px;
-      line-height: 0;
-    }
-    .camera-feed {
-      width: 100%;
-      height: auto;
-      border-radius: 2px;
-    }
-    .caption {
-      @apply --paper-font-common-nowrap;
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
-      border-bottom-left-radius: 2px;
-      border-bottom-right-radius: 2px;
+      <style include="paper-material-styles">
+        :host {
+          @apply --paper-material-elevation-1;
+          display: block;
+          position: relative;
+          font-size: 0px;
+          border-radius: 2px;
+          cursor: pointer;
+          min-height: 48px;
+          line-height: 0;
+        }
+        .camera-feed {
+          width: 100%;
+          height: auto;
+          border-radius: 2px;
+        }
+        .caption {
+          @apply --paper-font-common-nowrap;
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+          border-bottom-left-radius: 2px;
+          border-bottom-right-radius: 2px;
 
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 16px;
+          background-color: rgba(0, 0, 0, 0.3);
+          padding: 16px;
 
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 16px;
-      color: white;
-    }
-  </style>
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 16px;
+          color: white;
+        }
+      </style>
 
-  <template is="dom-if" if="[[cameraFeedSrc]]">
-    <img src="[[cameraFeedSrc]]" class="camera-feed" alt="[[_computeStateName(stateObj)]]">
-  </template>
-  <div class="caption">
-    [[_computeStateName(stateObj)]]
-    <template is="dom-if" if="[[!imageLoaded]]">
-      ([[localize('ui.card.camera.not_available')]])
-    </template>
-  </div>
-`;
+      <template is="dom-if" if="[[cameraFeedSrc]]">
+        <img
+          src="[[cameraFeedSrc]]"
+          class="camera-feed"
+          alt="[[_computeStateName(stateObj)]]"
+        />
+      </template>
+      <div class="caption">
+        [[_computeStateName(stateObj)]]
+        <template is="dom-if" if="[[!imageLoaded]]">
+          ([[localize('ui.card.camera.not_available')]])
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {
@@ -67,11 +70,11 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'updateCameraFeedSrc',
+        observer: "updateCameraFeedSrc",
       },
       cameraFeedSrc: {
         type: String,
-        value: '',
+        value: "",
       },
       imageLoaded: {
         type: Boolean,
@@ -82,7 +85,7 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.cardTapped());
+    this.addEventListener("click", () => this.cardTapped());
   }
 
   connectedCallback() {
@@ -96,13 +99,13 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   cardTapped() {
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    this.fire("hass-more-info", { entityId: this.stateObj.entity_id });
   }
 
   async updateCameraFeedSrc() {
     try {
       const { content_type: contentType, content } = await this.hass.callWS({
-        type: 'camera_thumbnail',
+        type: "camera_thumbnail",
         entity_id: this.stateObj.entity_id,
       });
       this.setProperties({
@@ -118,4 +121,4 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return computeStateName(stateObj);
   }
 }
-customElements.define('ha-camera-card', HaCameraCard);
+customElements.define("ha-camera-card", HaCameraCard);

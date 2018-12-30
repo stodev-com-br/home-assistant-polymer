@@ -1,14 +1,14 @@
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-checkbox/paper-checkbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaCustomizeBoolean extends PolymerElement {
   static get template() {
     return html`
-    <paper-checkbox disabled="[[item.secondary]]" checked="{{item.value}}">
-      [[item.description]]
-    </paper-checkbox>
-`;
+      <paper-checkbox disabled="[[item.secondary]]" checked="{{item.value}}">
+        [[item.description]]
+      </paper-checkbox>
+    `;
   }
 
   static get properties() {
@@ -16,8 +16,8 @@ class HaCustomizeBoolean extends PolymerElement {
       item: {
         type: Object,
         notifies: true,
-      }
+      },
     };
   }
 }
-customElements.define('ha-customize-boolean', HaCustomizeBoolean);
+customElements.define("ha-customize-boolean", HaCustomizeBoolean);

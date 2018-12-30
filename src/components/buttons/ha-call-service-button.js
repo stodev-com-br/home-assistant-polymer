@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import './ha-progress-button.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import "./ha-progress-button";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -10,8 +10,13 @@ import EventsMixin from '../../mixins/events-mixin.js';
 class HaCallServiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <ha-progress-button id="progress" progress="[[progress]]" on-click="buttonTapped"><slot></slot></ha-progress-button>
-`;
+      <ha-progress-button
+        id="progress"
+        progress="[[progress]]"
+        on-click="buttonTapped"
+        ><slot></slot
+      ></ha-progress-button>
+    `;
   }
 
   static get properties() {
@@ -49,19 +54,24 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
       serviceData: this.serviceData,
     };
 
-    this.hass.callService(this.domain, this.service, this.serviceData)
-      .then(function () {
-        el.progress = false;
-        el.$.progress.actionSuccess();
-        eventData.success = true;
-      }, function () {
-        el.progress = false;
-        el.$.progress.actionError();
-        eventData.success = false;
-      }).then(function () {
-        el.fire('hass-service-called', eventData);
+    this.hass
+      .callService(this.domain, this.service, this.serviceData)
+      .then(
+        function() {
+          el.progress = false;
+          el.$.progress.actionSuccess();
+          eventData.success = true;
+        },
+        function() {
+          el.progress = false;
+          el.$.progress.actionError();
+          eventData.success = false;
+        }
+      )
+      .then(function() {
+        el.fire("hass-service-called", eventData);
       });
   }
 }
 
-customElements.define('ha-call-service-button', HaCallServiceButton);
+customElements.define("ha-call-service-button", HaCallServiceButton);

@@ -1,13 +1,14 @@
-import '@polymer/app-route/app-route.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
-import './ha-user-picker.js';
-import './ha-user-editor.js';
+import "./ha-user-picker";
+import "./ha-user-editor";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 /*
  * @appliesMixin NavigateMixin
@@ -15,25 +16,29 @@ import './ha-user-editor.js';
 class HaConfigUsers extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <app-route
-      route='[[route]]'
-      pattern='/users/:user'
-      data="{{_routeData}}"
-    ></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/users/:user"
+        data="{{_routeData}}"
+      ></app-route>
 
-    <template is='dom-if' if='[[_equals(_routeData.user, "picker")]]'>
-      <ha-user-picker
-        hass='[[hass]]'
-        users='[[_users]]'
-      ></ha-user-picker>
-    </template>
-    <template is='dom-if' if='[[!_equals(_routeData.user, "picker")]]' restamp>
-      <ha-user-editor
-        hass='[[hass]]'
-        user='[[_computeUser(_users, _routeData.user)]]'
-      ></ha-user-editor>
-    </template>
-`;
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.user, &quot;picker&quot;)]]"
+      >
+        <ha-user-picker hass="[[hass]]" users="[[_users]]"></ha-user-picker>
+      </template>
+      <template
+        is="dom-if"
+        if="[[!_equals(_routeData.user, &quot;picker&quot;)]]"
+        restamp
+      >
+        <ha-user-editor
+          hass="[[hass]]"
+          user="[[_computeUser(_users, _routeData.user)]]"
+        ></ha-user-editor>
+      </template>
+    `;
   }
 
   static get properties() {
@@ -41,7 +46,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
       hass: Object,
       route: {
         type: Object,
-        observer: '_checkRoute',
+        observer: "_checkRoute",
       },
       _routeData: Object,
       _user: {
@@ -58,7 +63,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   ready() {
     super.ready();
     this._loadData();
-    this.addEventListener('reload-users', () => this._loadData());
+    this.addEventListener("reload-users", () => this._loadData());
   }
 
   _handlePickUser(ev) {
@@ -66,24 +71,24 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== '/users') return;
+    if (!route || route.path.substr(0, 6) !== "/users") return;
 
-    // prevent list gettung under toolbar
-    this.fire('iron-resize');
+    // prevent list getting under toolbar
+    fireEvent(this, "iron-resize");
 
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(0),
       () => {
-        if (route.path === '/users') {
-          this.navigate('/config/users/picker', true);
+        if (route.path === "/users") {
+          this.navigate("/config/users/picker", true);
         }
       }
     );
   }
 
   _computeUser(users, userId) {
-    return users && users.filter(u => u.id === userId)[0];
+    return users && users.filter((u) => u.id === userId)[0];
   }
 
   _equals(a, b) {
@@ -92,9 +97,9 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
 
   async _loadData() {
     this._users = await this.hass.callWS({
-      type: 'config/auth/list',
+      type: "config/auth/list",
     });
   }
 }
 
-customElements.define('ha-config-users', HaConfigUsers);
+customElements.define("ha-config-users", HaConfigUsers);

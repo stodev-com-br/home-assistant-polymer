@@ -1,22 +1,22 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin";
 
 class NotificationManager extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-toast {
-        z-index: 1;
-      }
-    </style>
+      <style>
+        paper-toast {
+          z-index: 1;
+        }
+      </style>
 
-    <ha-toast
-      id="toast"
-      no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"
-    ></ha-toast>
-`;
+      <ha-toast
+        id="toast"
+        no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"
+      ></ha-toast>
+    `;
   }
 
   static get properties() {
@@ -32,7 +32,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    import(/* webpackChunkName: "ha-toast" */ '../components/ha-toast.js');
+    import(/* webpackChunkName: "ha-toast" */ "../components/ha-toast");
   }
 
   showDialog({ message }) {
@@ -40,4 +40,4 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('notification-manager', NotificationManager);
+customElements.define("notification-manager", NotificationManager);

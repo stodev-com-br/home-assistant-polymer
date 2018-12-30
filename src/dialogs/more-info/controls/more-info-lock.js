@@ -1,11 +1,11 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import '../../../components/ha-attributes.js';
+import "../../../components/ha-attributes";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -20,11 +20,29 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
       </style>
 
       <template is="dom-if" if="[[stateObj.attributes.code_format]]">
-        <paper-input label="[[localize('ui.card.lock.code')]]" value="{{enteredCode}}" pattern="[[stateObj.attributes.code_format]]" type="password"></paper-input>
-        <paper-button on-click="callService" data-service="unlock" hidden$="[[!isLocked]]">[[localize('ui.card.lock.unlock')]]</paper-button>
-        <paper-button on-click="callService" data-service="lock" hidden$="[[isLocked]]">[[localize('ui.card.lock.lock')]]</paper-button>
+        <paper-input
+          label="[[localize('ui.card.lock.code')]]"
+          value="{{enteredCode}}"
+          pattern="[[stateObj.attributes.code_format]]"
+          type="password"
+        ></paper-input>
+        <paper-button
+          on-click="callService"
+          data-service="unlock"
+          hidden$="[[!isLocked]]"
+          >[[localize('ui.card.lock.unlock')]]</paper-button
+        >
+        <paper-button
+          on-click="callService"
+          data-service="lock"
+          hidden$="[[isLocked]]"
+          >[[localize('ui.card.lock.lock')]]</paper-button
+        >
       </template>
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="code_format"></ha-attributes>
+      <ha-attributes
+        state-obj="[[stateObj]]"
+        extra-filters="code_format"
+      ></ha-attributes>
     `;
   }
 
@@ -33,30 +51,30 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
       enteredCode: {
         type: String,
-        value: '',
+        value: "",
       },
-      isLocked: Boolean
+      isLocked: Boolean,
     };
   }
 
   stateObjChanged(newVal) {
     if (newVal) {
-      this.isLocked = newVal.state === 'locked';
+      this.isLocked = newVal.state === "locked";
     }
   }
 
   callService(ev) {
-    const service = ev.target.getAttribute('data-service');
+    const service = ev.target.getAttribute("data-service");
     const data = {
       entity_id: this.stateObj.entity_id,
-      code: this.enteredCode
+      code: this.enteredCode,
     };
-    this.hass.callService('lock', service, data);
+    this.hass.callService("lock", service, data);
   }
 }
 
-customElements.define('more-info-lock', MoreInfoLock);
+customElements.define("more-info-lock", MoreInfoLock);
