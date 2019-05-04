@@ -1,6 +1,12 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import "@polymer/paper-button/paper-button";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+  CSSResult,
+  css,
+} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
@@ -8,9 +14,8 @@ import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-tog
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { updatePref } from "./data";
-import { CloudStatusLoggedIn } from "./types";
 import "./cloud-exposed-entities";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
 
 export class CloudAlexaPref extends LitElement {
   public hass?: HomeAssistant;
@@ -23,7 +28,7 @@ export class CloudAlexaPref extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.cloudStatus) {
       return html``;
     }
@@ -31,7 +36,6 @@ export class CloudAlexaPref extends LitElement {
     const enabled = this.cloudStatus!.prefs.alexa_enabled;
 
     return html`
-      ${this.renderStyle()}
       <paper-card heading="Alexa">
         <paper-toggle-button
           .checked="${enabled}"
@@ -47,7 +51,7 @@ export class CloudAlexaPref extends LitElement {
             </li>
             <li>
               <a
-                href="https://www.home-assistant.io/cloud/alexa/"
+                href="https://www.nabucasa.com/config/amazon_alexa/"
                 target="_blank"
               >
                 Config documentation
@@ -58,18 +62,16 @@ export class CloudAlexaPref extends LitElement {
             >This integration requires an Alexa-enabled device like the Amazon
             Echo.</em
           >
-          ${
-            enabled
-              ? html`
-                  <p>Exposed entities:</p>
-                  <cloud-exposed-entities
-                    .hass="${this.hass}"
-                    .filter="${this.cloudStatus!.alexa_entities}"
-                    .supportedDomains="${this.cloudStatus!.alexa_domains}"
-                  ></cloud-exposed-entities>
-                `
-              : ""
-          }
+          ${enabled
+            ? html`
+                <p>Exposed entities:</p>
+                <cloud-exposed-entities
+                  .hass="${this.hass}"
+                  .filter="${this.cloudStatus!.alexa_entities}"
+                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
+                ></cloud-exposed-entities>
+              `
+            : ""}
         </div>
       </paper-card>
     `;
@@ -78,25 +80,23 @@ export class CloudAlexaPref extends LitElement {
   private async _toggleChanged(ev) {
     const toggle = ev.target as PaperToggleButtonElement;
     try {
-      await updatePref(this.hass!, { alexa_enabled: toggle.checked! });
+      await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
     }
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        a {
-          color: var(--primary-color);
-        }
-        paper-card > paper-toggle-button {
-          position: absolute;
-          right: 8px;
-          top: 16px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      a {
+        color: var(--primary-color);
+      }
+      paper-card > paper-toggle-button {
+        position: absolute;
+        right: 8px;
+        top: 16px;
+      }
     `;
   }
 }

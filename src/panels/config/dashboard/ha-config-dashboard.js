@@ -9,6 +9,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-menu-button";
+import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import "./ha-config-navigation";
@@ -39,7 +40,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
     <app-header-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
+          <ha-menu-button></ha-menu-button>
           <div main-title="">[[localize('panel.config')]]</div>
         </app-toolbar>
       </app-header>
@@ -62,11 +63,11 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     </template>
                     <template is="dom-if" if="[[!cloudStatus.logged_in]]">
                       <div secondary="">
-                        [[localize('ui.panel.config.cloud.description_not_login')]]
+                        [[localize('ui.panel.config.cloud.description_features')]]
                       </div>
                     </template>
                   </paper-item-body>
-                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                  <ha-icon-next></ha-icon-next>
                 </paper-item>
               </paper-card>
             </a>
@@ -81,7 +82,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     [[localize('ui.panel.config.integrations.description')]]
                   </div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
 
@@ -93,7 +94,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     [[localize('ui.panel.config.users.description')]]
                   </div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
           </paper-card>
@@ -110,8 +111,6 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       hass: Object,
       isWide: Boolean,
       cloudStatus: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
     };
   }
 

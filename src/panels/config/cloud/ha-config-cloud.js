@@ -11,12 +11,8 @@ import "./ha-config-cloud-login";
 import "./ha-config-cloud-register";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 
-const LOGGED_IN_URLS = ["/cloud/account"];
-const NOT_LOGGED_IN_URLS = [
-  "/cloud/login",
-  "/cloud/register",
-  "/cloud/forgot-password",
-];
+const LOGGED_IN_URLS = ["/account"];
+const NOT_LOGGED_IN_URLS = ["/login", "/register", "/forgot-password"];
 
 /*
  * @appliesMixin NavigateMixin
@@ -26,14 +22,14 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/cloud/:page"
+        pattern="/:page"
         data="{{_routeData}}"
         tail="{{_routeTail}}"
       ></app-route>
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;account&quot;)]]"
+        if='[[_equals(_routeData.page, "account")]]'
         restamp=""
       >
         <ha-config-cloud-account
@@ -45,7 +41,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;login&quot;)]]"
+        if='[[_equals(_routeData.page, "login")]]'
         restamp=""
       >
         <ha-config-cloud-login
@@ -59,7 +55,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;register&quot;)]]"
+        if='[[_equals(_routeData.page, "register")]]'
         restamp=""
       >
         <ha-config-cloud-register
@@ -72,7 +68,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;forgot-password&quot;)]]"
+        if='[[_equals(_routeData.page, "forgot-password")]]'
         restamp=""
       >
         <ha-config-cloud-forgot-password
@@ -121,8 +117,6 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== "/cloud") return;
-
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(0),

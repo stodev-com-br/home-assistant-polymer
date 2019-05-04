@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -8,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-labeled-slider";
+import "../../../components/ha-paper-dropdown-menu";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
 import EventsMixin from "../../../mixins/events-mixin";
@@ -48,6 +48,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           --paper-slider-knob-start-border-color: var(--primary-color);
         }
 
+        .segmentationContainer {
+          position: relative;
+          width: 100%;
+        }
+
         ha-color-picker {
           display: block;
           width: 100%;
@@ -55,6 +60,29 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           max-height: 0px;
           overflow: hidden;
           transition: max-height 0.5s ease-in;
+        }
+
+        .segmentationButton {
+          position: absolute;
+          top: 11%;
+          transform: translate(0%, 0%);
+          padding: 0px;
+          max-height: 0px;
+          width: 23px;
+          height: 23px;
+          opacity: var(--dark-secondary-opacity);
+          overflow: hidden;
+          transition: max-height 0.5s ease-in;
+        }
+
+        .has-color.is-on .segmentationContainer .segmentationButton {
+          position: absolute;
+          top: 11%;
+          transform: translate(0%, 0%);
+          width: 23px;
+          height: 23px;
+          padding: 0px;
+          opacity: var(--dark-secondary-opacity);
         }
 
         .has-effect_list.is-on .effect_list,
@@ -73,6 +101,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .has-color_temp.is-on .color_temp,
         .has-white_value.is-on .white_value {
           padding-top: 16px;
+        }
+
+        .has-color.is-on .segmentationButton {
+          max-height: 100px;
+          overflow: visible;
         }
 
         .has-color.is-on ha-color-picker {
@@ -126,19 +159,25 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
             on-change="wvSliderChanged"
           ></ha-labeled-slider>
         </div>
-
-        <ha-color-picker
-          class="control color"
-          on-colorselected="colorPicked"
-          desired-hs-color="{{colorPickerColor}}"
-          throttle="500"
-          hue-segments="24"
-          saturation-segments="8"
-        >
-        </ha-color-picker>
+        <div class="segmentationContainer">
+          <ha-color-picker
+            class="control color"
+            on-colorselected="colorPicked"
+            desired-hs-color="{{colorPickerColor}}"
+            throttle="500"
+            hue-segments="{{hueSegments}}"
+            saturation-segments="{{saturationSegments}}"
+          >
+          </ha-color-picker>
+          <paper-icon-button
+            icon="mdi:palette"
+            on-click="segmentClick"
+            class="control segmentationButton"
+          ></paper-icon-button>
+        </div>
 
         <div class="control effect_list">
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
             label="[[localize('ui.card.light.effect')]]"
@@ -151,7 +190,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <paper-item>[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
         </div>
 
         <ha-attributes
@@ -192,6 +231,16 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       wvSliderValue: {
         type: Number,
         value: 0,
+      },
+
+      hueSegments: {
+        type: Number,
+        value: 24,
+      },
+
+      saturationSegments: {
+        type: Number,
+        value: 8,
       },
 
       colorPickerColor: {
@@ -289,6 +338,14 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       entity_id: this.stateObj.entity_id,
       white_value: wv,
     });
+  }
+
+  segmentClick() {
+    if (this.hueSegments === 24 && this.saturationSegments === 8) {
+      this.setProperties({ hueSegments: 0, saturationSegments: 0 });
+    } else {
+      this.setProperties({ hueSegments: 24, saturationSegments: 8 });
+    }
   }
 
   serviceChangeColor(hass, entityId, color) {

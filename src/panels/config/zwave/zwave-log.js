@@ -1,9 +1,7 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import EventsMixin from "../../../mixins/events-mixin";
@@ -42,8 +40,8 @@ class OzwLog extends EventsMixin(PolymerElement) {
           </paper-input>
         </div>
         <div class="card-actions">
-          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>
-          <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
+          <mwc-button raised="true" on-click="_openLogWindow">Load</mwc-button>
+          <mwc-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</mwc-button>
       </paper-card>
     </ha-config-section>
 `;
@@ -133,7 +131,8 @@ class OzwLog extends EventsMixin(PolymerElement) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-ozwlog-dialog",
         dialogTag: "zwave-log-dialog",
-        dialogImport: () => import("./zwave-log-dialog"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "zwave-log-dialog" */ "./zwave-log-dialog"),
       });
     }
   }

@@ -265,6 +265,15 @@
             "on": "Ligado",
             "paused": "Pausado",
             "returning": "Retornando para base"
+        },
+        "timer": {
+            "active": "ativo",
+            "idle": "Em espera",
+            "paused": "Pausado"
+        },
+        "person": {
+            "home": "Home",
+            "not_home": "Ausente"
         }
     },
     "state_badge": {
@@ -301,7 +310,8 @@
                 "period": "Período"
             },
             "logbook": {
-                "showing_entries": "Exibindo entradas para"
+                "showing_entries": "Exibindo entradas para",
+                "period": "Período"
             },
             "mailbox": {
                 "empty": "Você não tem mensagens",
@@ -345,7 +355,10 @@
                 },
                 "customize": {
                     "caption": "Customização",
-                    "description": "Personalizar suas entidades"
+                    "description": "Personalizar suas entidades",
+                    "picker": {
+                        "header": "Personalização"
+                    }
                 },
                 "automation": {
                     "caption": "Automação",
@@ -355,7 +368,8 @@
                         "introduction": "O editor de automação permite que você crie e edite automações. Por favor leia [as instruções](https:\/\/home-assistant.io\/docs\/automation\/editor\/) para certificar-se que configurou o Home Assistant corretamente.",
                         "pick_automation": "Escolha uma automação para editar",
                         "no_automations": "Não encontramos nenhuma automação editável",
-                        "add_automation": "Adicionar automação"
+                        "add_automation": "Adicionar automação",
+                        "learn_more": "Saiba mais sobre automações"
                     },
                     "editor": {
                         "introduction": "Use automações para trazer sua casa a vida",
@@ -423,8 +437,25 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Sair"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "ID da Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Padrão de hora",
+                                    "hours": "Horas",
+                                    "minutes": "Minutos",
+                                    "seconds": "Segundos"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalização",
+                                    "source": "Origem",
+                                    "zone": "Zona",
+                                    "event": "Evento:"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre gatilhos"
                         },
                         "conditions": {
                             "header": "Condições",
@@ -469,7 +500,8 @@
                                     "entity": "Entidade com localização",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre condições"
                         },
                         "actions": {
                             "header": "Ações",
@@ -502,7 +534,8 @@
                                     "event": "Evento:",
                                     "service_data": "Informações do serviço"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre ações"
                         }
                     }
                 },
@@ -525,7 +558,15 @@
                         "change_password": "Mudar senha",
                         "activate_user": "Ativar usuário",
                         "deactivate_user": "Desativar usuário",
-                        "delete_user": "Excluir usuário"
+                        "delete_user": "Excluir usuário",
+                        "caption": "Visualizar usuário"
+                    },
+                    "add_user": {
+                        "caption": "Adicionar Usuário",
+                        "name": "Nome",
+                        "username": "Usuário",
+                        "password": "Senha",
+                        "create": "Criar"
                     }
                 },
                 "cloud": {
@@ -551,6 +592,40 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo indisponível",
                         "entity_unavailable": "entidade indisponível"
+                    }
+                },
+                "area_registry": {
+                    "description": "Visão geral de todas as áreas de sua casa.",
+                    "no_areas": "Parece que você ainda não tem áreas!",
+                    "create_area": "CRIAR ÁREA",
+                    "editor": {
+                        "default_name": "Nova Área",
+                        "delete": "APAGAR",
+                        "update": "ATUALIZAR",
+                        "create": "CRIAR"
+                    },
+                    "picker": {
+                        "integrations_page": "Página de integrações"
+                    }
+                },
+                "entity_registry": {
+                    "picker": {
+                        "unavailable": "(indisponível)",
+                        "integrations_page": "Página de integrações"
+                    },
+                    "editor": {
+                        "unavailable": "Esta entidade não está disponível no momento.",
+                        "default_name": "Nova Área",
+                        "delete": "APAGAR",
+                        "update": "ATUALIZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Pessoas",
+                    "description": "Gerencie as pessoas que o Home Assistant acompanha.",
+                    "detail": {
+                        "name": "Nome",
+                        "device_tracker_intro": "Selecione os dispositivos que pertencem a essa pessoa."
                     }
                 }
             },
@@ -694,6 +769,11 @@
                             "abort": {
                                 "not_whitelisted": "Seu computador não está na lista de permissões."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessão expirada, por favor fazer o login novamente."
+                            }
                         }
                     }
                 }
@@ -720,20 +800,58 @@
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados",
                         "add_item": "Adicionar item"
+                    },
+                    "empty_state": {
+                        "no_devices": "Esta página permite que você controle seus dispositivos, no entanto, parece que você ainda não tem dispositivos configurados. Vá até a página de integrações para começar.",
+                        "go_to_integrations_page": "Vá para a página de integrações."
                     }
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Configuração de cartão",
                         "save": "Salvar",
-                        "toggle_editor": "Alternar Editor"
+                        "toggle_editor": "Alternar Editor",
+                        "pick_card": "Escolha o cartão que você deseja adicionar.",
+                        "add": "Adicionar Cartão",
+                        "edit": "Editar",
+                        "delete": "Excluir",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
                         "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'.",
                         "para_migrate": "O Home Assistant pode adicionar IDs a todos os seus cards e visualizações automaticamente clicando no botão 'Migrar config'.",
                         "migrate": "Migrar configuração"
+                    },
+                    "header": "Editar “interface” do usuário",
+                    "edit_view": {
+                        "header": "Configurações",
+                        "add": "Editar visualização",
+                        "edit": "Editar visualização",
+                        "delete": "Excluir visualização"
+                    },
+                    "save_config": {
+                        "header": "Assuma o controle da sua interface do Lovelace",
+                        "para": "Por padrão, o Home Assistant manterá sua interface de usuário, atualizando-a quando novas entidades ou componentes do Lovelace estiverem disponíveis. Se você assumir o controle, não faremos mais alterações automaticamente para você.",
+                        "para_sure": "Tem certeza de que deseja assumir o controle da sua interface de usuário?",
+                        "cancel": "Nunca",
+                        "save": "Assuma o controle"
+                    },
+                    "raw_editor": {
+                        "header": "Editar Configuração",
+                        "save": "Salvar",
+                        "unsaved_changes": "Alterações não salvas",
+                        "saved": "Salvo"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configurar “interface” do usuário",
+                    "unused_entities": "Entidades não utilizadas",
+                    "help": "Ajuda",
+                    "refresh": "Atualizar"
+                },
+                "warning": {
+                    "entity_not_found": "Entidade não disponível: {entity}"
                 }
             }
         },
@@ -743,7 +861,8 @@
         },
         "common": {
             "loading": "Carregando",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "save": "Salvar"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dias}\n}",
@@ -823,7 +942,7 @@
             "light": {
                 "brightness": "Brilho",
                 "color_temperature": "Temperatura de cor",
-                "white_value": " Balanço de branco",
+                "white_value": "Balanço de branco",
                 "effect": "Efeito"
             },
             "media_player": {
@@ -902,6 +1021,14 @@
                 "save": "Salvar",
                 "name": "Nome",
                 "entity_id": "ID da entidade"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última Ação"
+                },
+                "updater": {
+                    "title": "Atualizar Instruções"
+                }
             }
         },
         "auth_store": {
@@ -951,7 +1078,11 @@
         "updater": "Atualizador",
         "weblink": "Weblink",
         "zwave": "",
-        "vacuum": "Aspirando"
+        "vacuum": "Aspirando",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "system_health": "Integridade Do Sistema",
+        "person": "Pessoa"
     },
     "attribute": {
         "weather": {

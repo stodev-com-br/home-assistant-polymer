@@ -1,53 +1,64 @@
-import { html, LitElement } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { TemplateResult } from "lit-html";
+import { HomeAssistant } from "../../../types";
+import { ErrorCardConfig } from "./types";
 
-interface Config extends LovelaceCardConfig {
-  error: string;
-  origConfig: LovelaceCardConfig;
-}
+export const createErrorCardElement = (config) => {
+  const el = document.createElement("hui-error-card");
+  el.setConfig(config);
+  return el;
+};
 
-class HuiErrorCard extends LitElement implements LovelaceCard {
-  private _config?: Config;
+export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
 
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
+@customElement("hui-error-card")
+export class HuiErrorCard extends LitElement implements LovelaceCard {
+  public hass?: HomeAssistant;
+
+  @property() private _config?: ErrorCardConfig;
 
   public getCardSize(): number {
     return 4;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ErrorCardConfig): void {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }
 
     return html`
-      ${this.renderStyle()} ${this._config.error}
+      ${this._config.error}
       <pre>${this._toStr(this._config.origConfig)}</pre>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          display: block;
-          background-color: #ef5350;
-          color: white;
-          padding: 8px;
-          font-weight: 500;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+        background-color: #ef5350;
+        color: white;
+        padding: 8px;
+        font-weight: 500;
+      }
     `;
   }
 
@@ -61,5 +72,3 @@ declare global {
     "hui-error-card": HuiErrorCard;
   }
 }
-
-customElements.define("hui-error-card", HuiErrorCard);

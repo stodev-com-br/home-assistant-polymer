@@ -8,12 +8,45 @@ import {
   HassEntityAttributeBase,
   HassServices,
 } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "./common/translations/localize";
+import { ExternalMessaging } from "./external_app/external_messaging";
+import { HASSDomEvent } from "./common/dom/fire_event";
 
 declare global {
   var __DEV__: boolean;
+  var __DEMO__: boolean;
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
+  var __STATIC_PATH__: string;
+
+  interface Window {
+    // Custom panel entry point url
+    customPanelJS: string;
+    ShadyCSS: {
+      nativeCss: boolean;
+      nativeShadow: boolean;
+      prepareTemplate(templateElement, elementName, elementExtension);
+      styleElement(element);
+      styleSubtree(element, overrideProperties);
+      styleDocument(overrideProperties);
+      getComputedStyleValue(element, propertyName);
+    };
+  }
+  // for fire event
+  interface HASSDomEvents {
+    "value-changed": {
+      value: unknown;
+    };
+    change: undefined;
+    "connection-status": ConnectionStatus;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    "connection-status": HASSDomEvent<ConnectionStatus>;
+  }
 }
+
+type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
 
 export interface WebhookError {
   code: number;
@@ -31,9 +64,10 @@ export interface MFAModule {
   enabled: boolean;
 }
 
-export interface User {
+export interface CurrentUser {
   id: string;
   is_owner: boolean;
+  is_admin: boolean;
   name: string;
   credentials: Credential[];
   mfa_modules: MFAModule[];
@@ -51,16 +85,16 @@ export interface Themes {
   themes: { [key: string]: Theme };
 }
 
-export interface Panel {
+export interface PanelInfo<T = {} | null> {
   component_name: string;
-  config?: { [key: string]: any };
-  icon: string;
-  title: string;
+  config: T;
+  icon: string | null;
+  title: string | null;
   url_path: string;
 }
 
 export interface Panels {
-  [name: string]: Panel;
+  [name: string]: PanelInfo;
 }
 
 export interface Translation {
@@ -77,27 +111,43 @@ export interface Notification {
   created_at: string;
 }
 
+export interface Resources {
+  [language: string]: { [key: string]: string };
+}
+
 export interface HomeAssistant {
-  auth: Auth;
+  auth: Auth & { external?: ExternalMessaging };
   connection: Connection;
   connected: boolean;
   states: HassEntities;
   services: HassServices;
   config: HassConfig;
   themes: Themes;
+  selectedTheme?: string | null;
   panels: Panels;
   panelUrl: string;
+
+  // i18n
+  // current effective language, in that order:
+  //   - backend saved user selected lanugage
+  //   - language in local appstorage
+  //   - browser language
+  //   - english (en)
   language: string;
-  resources: { [key: string]: any };
+  // local stored language, keep that name for backward compability
+  selectedLanguage: string;
+  resources: Resources;
+  localize: LocalizeFunc;
   translationMetadata: {
     fragments: string[];
     translations: {
       [lang: string]: Translation;
     };
   };
+
   dockedSidebar: boolean;
   moreInfoEntityId: string;
-  user: User;
+  user?: CurrentUser;
   callService: (
     domain: string,
     service: string,
@@ -160,10 +210,34 @@ export type GroupEntity = HassEntityBase & {
   };
 };
 
-export interface PanelInfo<T = unknown> {
-  component_name: string;
-  icon?: string;
-  title?: string;
-  url_path: string;
-  config: T;
+export type CameraEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    model_name: string;
+    access_token: string;
+    brand: string;
+    motion_detection: boolean;
+  };
+};
+
+export type InputSelectEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    options: string[];
+  };
+};
+
+export interface Route {
+  prefix: string;
+  path: string;
+}
+
+export interface PanelElement extends HTMLElement {
+  hass?: HomeAssistant;
+  narrow?: boolean;
+  route?: Route | null;
+  panel?: PanelInfo;
+}
+
+export interface LocalizeMixin {
+  hass?: HomeAssistant;
+  localize: LocalizeFunc;
 }

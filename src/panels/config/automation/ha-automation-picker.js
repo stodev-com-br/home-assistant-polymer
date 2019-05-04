@@ -8,14 +8,18 @@ import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-markdown";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import "../ha-config-section";
 
+import "../../../components/ha-icon-next";
+
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
@@ -44,22 +48,27 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           right: 24px;
         }
 
-        a {
-          color: var(--primary-color);
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
         }
 
-        ha-markdown p {
-          margin: 0px;
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
+        }
+
+        a {
+          color: var(--primary-color);
         }
       </style>
 
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
-              on-click="_backTapped"
-            ></paper-icon-button>
+            <ha-paper-icon-button-arrow-prev on-click="_backTapped">
+            </ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.automation.caption')]]
             </div>
@@ -71,9 +80,12 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             [[localize('ui.panel.config.automation.picker.header')]]
           </div>
           <div slot="introduction">
-            <ha-markdown
-              content="[[localize('ui.panel.config.automation.picker.introduction')]]"
-            ></ha-markdown>
+            [[localize('ui.panel.config.automation.picker.introduction')]]
+            <p>
+              <a href="https://home-assistant.io/docs/automation/editor/">
+                [[localize('ui.panel.config.automation.picker.learn_more')]]
+              </a>
+            </p>
           </div>
 
           <paper-card
@@ -92,7 +104,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                   <div>[[computeName(automation)]]</div>
                   <div secondary="">[[computeDescription(automation)]]</div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </template>
           </paper-card>
@@ -104,6 +116,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           icon="hass:plus"
           title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
           on-click="addAutomation"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -115,21 +128,18 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       automations: {
         type: Array,
       },
 
       isWide: {
         type: Boolean,
+      },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -157,6 +167,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

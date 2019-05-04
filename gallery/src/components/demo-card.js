@@ -2,12 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import JsYaml from "js-yaml";
 
-import HomeAssistant from "../data/hass";
-import { demoConfig } from "../data/demo_config";
-import { demoServices } from "../data/demo_services";
-import demoResources from "../data/demo_resources";
-import demoStates from "../data/demo_states";
-import createCardElement from "../../../src/panels/lovelace/common/create-card-element";
+import { createCardElement } from "../../../src/panels/lovelace/common/create-card-element";
 
 class DemoCard extends PolymerElement {
   static get template() {
@@ -68,19 +63,7 @@ class DemoCard extends PolymerElement {
     }
 
     const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
-
-    if (this.hass) {
-      el.hass = this.hass;
-    } else {
-      const hass = new HomeAssistant(demoStates);
-      hass.config = demoConfig;
-      hass.services = demoServices;
-      hass.resources = demoResources;
-      hass.language = "en";
-      hass.states = demoStates;
-      el.hass = hass;
-    }
-
+    el.hass = this.hass;
     card.appendChild(el);
   }
 

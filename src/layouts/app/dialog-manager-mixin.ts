@@ -1,15 +1,15 @@
-import { PolymerElement } from "@polymer/polymer";
-import { Constructor } from "@polymer/lit-element";
-import { HASSDomEvent, ValidHassDomEvent } from "../../common/dom/fire_event";
+import { Constructor, LitElement } from "lit-element";
+import { HASSDomEvent } from "../../common/dom/fire_event";
+import { HassBaseEl } from "./hass-base-mixin";
+import {
+  makeDialogManager,
+  showDialog,
+} from "../../dialogs/make-dialog-manager";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
-}
-
-interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {
-  showDialog(params: T);
 }
 
 declare global {
@@ -23,13 +23,17 @@ declare global {
   }
 }
 
-export const dialogManagerMixin = (superClass: Constructor<PolymerElement>) =>
+export const dialogManagerMixin = (
+  superClass: Constructor<LitElement & HassBaseEl>
+) =>
   class extends superClass {
-    public ready() {
-      super.ready();
+    protected firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
+      // deprecated
       this.addEventListener("register-dialog", (e) =>
         this.registerDialog(e.detail)
       );
+      makeDialogManager(this, this.shadowRoot!);
     }
 
     private registerDialog({
@@ -37,19 +41,13 @@ export const dialogManagerMixin = (superClass: Constructor<PolymerElement>) =>
       dialogTag,
       dialogImport,
     }: RegisterDialogParams) {
-      let loaded: Promise<HassDialog<unknown>>;
-
       this.addEventListener(dialogShowEvent, (showEv) => {
-        if (!loaded) {
-          loaded = dialogImport().then(() => {
-            const dialogEl = document.createElement(dialogTag) as HassDialog;
-            this.shadowRoot!.appendChild(dialogEl);
-            (this as any).provideHass(dialogEl);
-            return dialogEl;
-          });
-        }
-        loaded.then((dialogEl) =>
-          dialogEl.showDialog((showEv as HASSDomEvent<unknown>).detail)
+        showDialog(
+          this,
+          this.shadowRoot!,
+          dialogImport,
+          dialogTag,
+          (showEv as HASSDomEvent<unknown>).detail
         );
       });
     }

@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -52,10 +52,7 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.profile')]]</div>
           </app-toolbar>
         </app-header>
@@ -86,8 +83,8 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             ></ha-push-notifications-row>
 
             <div class="card-actions">
-              <paper-button class="warning" on-click="_handleLogOut"
-                >[[localize('ui.panel.profile.logout')]]</paper-button
+              <mwc-button class="warning" on-click="_handleLogOut"
+                >[[localize('ui.panel.profile.logout')]]</mwc-button
               >
             </div>
           </paper-card>
@@ -121,7 +118,6 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
-      showMenu: Boolean,
       _refreshTokens: Array,
     };
   }

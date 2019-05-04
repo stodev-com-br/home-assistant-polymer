@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -16,10 +16,10 @@ import formatDateTime from "../../../common/datetime/format_date_time";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
-
-import { fetchSubscriptionInfo } from "./data";
+import { fetchCloudSubscriptionInfo } from "../../../data/cloud";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
+import "./cloud-remote-pref";
 
 let registeredWebhookDialog = false;
 
@@ -39,6 +39,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
         .content {
           padding-bottom: 24px;
+          direction: ltr;
         }
         paper-card {
           display: block;
@@ -47,7 +48,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: flex;
           padding: 0 16px;
         }
-        paper-button {
+        mwc-button {
           align-self: center;
         }
         .soon {
@@ -65,9 +66,8 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-transform: capitalize;
           padding: 16px;
         }
-        paper-button {
+        a {
           color: var(--primary-color);
-          font-weight: 500;
         }
       </style>
       <hass-subpage header="Home Assistant Cloud">
@@ -86,7 +86,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <div class="account-row">
                 <paper-item-body two-line="">
                   [[cloudStatus.email]]
-                  <div secondary="" class="wrap">
+                  <div secondary class="wrap">
                     [[_formatSubscription(_subscription)]]
                   </div>
                 </paper-item-body>
@@ -99,10 +99,10 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
               <div class="card-actions">
                 <a href="https://account.nabucasa.com" target="_blank"
-                  ><paper-button>Manage Account</paper-button></a
+                  ><mwc-button>Manage Account</mwc-button></a
                 >
-                <paper-button style="float: right" on-click="handleLogout"
-                  >Sign out</paper-button
+                <mwc-button style="float: right" on-click="handleLogout"
+                  >Sign out</mwc-button
                 >
               </div>
             </paper-card>
@@ -123,6 +123,11 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 >.
               </p>
             </div>
+
+            <cloud-remote-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-remote-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"
@@ -169,13 +174,18 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
       fireEvent(this, "register-dialog", {
         dialogShowEvent: "manage-cloud-webhook",
         dialogTag: "cloud-webhook-manage-dialog",
-        dialogImport: () => import("./cloud-webhook-manage-dialog"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "cloud-webhook-manage-dialog" */ "./cloud-webhook-manage-dialog"),
       });
     }
   }
 
+  _computeRemoteConnected(connected) {
+    return connected ? "Connected" : "Not Connected";
+  }
+
   async _fetchSubscriptionInfo() {
-    this._subscription = await fetchSubscriptionInfo(this.hass);
+    this._subscription = await fetchCloudSubscriptionInfo(this.hass);
     if (
       this._subscription.provider &&
       this.cloudStatus &&

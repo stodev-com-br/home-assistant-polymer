@@ -1,13 +1,16 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import getEntity from "../data/entity";
-import provideHass from "../data/provide_hass";
+import { getEntity } from "../../../src/fake_data/entity";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("light", "kitchen_lights", "on", {
     friendly_name: "Kitchen Lights",
+  }),
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Bed Lights",
   }),
   getEntity("device_tracker", "demo_paulus", "work", {
     source_type: "gps",

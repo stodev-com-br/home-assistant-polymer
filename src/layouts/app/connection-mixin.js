@@ -6,22 +6,23 @@ import {
   callService,
 } from "home-assistant-js-websocket";
 
-import translationMetadata from "../../../build-translations/translationMetadata.json";
+import { translationMetadata } from "../../resources/translations-metadata";
 
 import LocalizeMixin from "../../mixins/localize-mixin";
 import EventsMixin from "../../mixins/events-mixin";
 
 import { getState } from "../../util/ha-pref-storage";
-import { getActiveTranslation } from "../../util/hass-translation";
+import { getLocalLanguage } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
-import computeStateName from "../../common/entity/compute_state_name";
 import { subscribePanels } from "../../data/ws-panels";
+import { forwardHaptic } from "../../util/haptics";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this._handleConnProm();
     }
 
@@ -46,11 +47,14 @@ export default (superClass) =>
           config: null,
           themes: null,
           panels: null,
-          panelUrl: this.panelUrl,
+          services: null,
+          user: null,
+          panelUrl: this._panelUrl,
 
-          language: getActiveTranslation(),
+          language: getLocalLanguage(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
+          localize: () => "",
 
           translationMetadata: translationMetadata,
           dockedSidebar: false,
@@ -62,38 +66,6 @@ export default (superClass) =>
             }
             try {
               await callService(conn, domain, service, serviceData);
-
-              let message;
-              let name;
-              if (
-                serviceData.entity_id &&
-                this.hass.states &&
-                this.hass.states[serviceData.entity_id]
-              ) {
-                name = computeStateName(
-                  this.hass.states[serviceData.entity_id]
-                );
-              }
-              if (service === "turn_on" && serviceData.entity_id) {
-                message = this.localize(
-                  "ui.notification_toast.entity_turned_on",
-                  "entity",
-                  name || serviceData.entity_id
-                );
-              } else if (service === "turn_off" && serviceData.entity_id) {
-                message = this.localize(
-                  "ui.notification_toast.entity_turned_off",
-                  "entity",
-                  name || serviceData.entity_id
-                );
-              } else {
-                message = this.localize(
-                  "ui.notification_toast.service_called",
-                  "service",
-                  `${domain}/${service}`
-                );
-              }
-              this.fire("hass-notification", { message });
             } catch (err) {
               if (__DEV__) {
                 // eslint-disable-next-line
@@ -101,14 +73,17 @@ export default (superClass) =>
                   "Error calling service",
                   domain,
                   service,
-                  serviceData
+                  serviceData,
+                  err
                 );
               }
-              const message = this.localize(
-                "ui.notification_toast.service_call_failed",
-                "service",
-                `${domain}/${service}`
-              );
+              forwardHaptic(this, "error");
+              const message =
+                this.hass.localize(
+                  "ui.notification_toast.service_call_failed",
+                  "service",
+                  `${domain}/${service}`
+                ) + ` ${err.message}`;
               this.fire("hass-notification", { message });
               throw err;
             }
@@ -154,11 +129,16 @@ export default (superClass) =>
 
       const conn = this.hass.connection;
 
+      fireEvent(document, "connection-status", "connected");
+
       conn.addEventListener("ready", () => this.hassReconnected());
       conn.addEventListener("disconnected", () => this.hassDisconnected());
       // If we reconnect after losing connection and auth is no longer valid.
       conn.addEventListener("reconnect-error", (_conn, err) => {
-        if (err === ERR_INVALID_AUTH) location.reload();
+        if (err === ERR_INVALID_AUTH) {
+          fireEvent(document, "connection-status", "auth-invalid");
+          location.reload();
+        }
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
@@ -170,10 +150,12 @@ export default (superClass) =>
     hassReconnected() {
       super.hassReconnected();
       this._updateHass({ connected: true });
+      fireEvent(document, "connection-status", "connected");
     }
 
     hassDisconnected() {
       super.hassDisconnected();
       this._updateHass({ connected: false });
+      fireEvent(document, "connection-status", "disconnected");
     }
   };

@@ -121,6 +121,44 @@ export const swapCard = (
   };
 };
 
+export const moveCard = (
+  config: LovelaceConfig,
+  fromPath: [number, number],
+  toPath: [number]
+): LovelaceConfig => {
+  if (fromPath[0] === toPath[0]) {
+    throw new Error("You can not move a card to the view it is in.");
+  }
+  const fromView = config.views[fromPath[0]];
+  const card = fromView.cards![fromPath[1]];
+
+  const newView1 = {
+    ...fromView,
+    cards: (fromView.cards || []).filter(
+      (_origConf, ind) => ind !== fromPath[1]
+    ),
+  };
+
+  const toView = config.views[toPath[0]];
+  const cards = toView.cards ? [...toView.cards, card] : [card];
+
+  const newView2 = {
+    ...toView,
+    cards,
+  };
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === toPath[0]
+        ? newView2
+        : index === fromPath[0]
+        ? newView1
+        : origView
+    ),
+  };
+};
+
 export const addView = (
   config: LovelaceConfig,
   viewConfig: LovelaceViewConfig
@@ -139,6 +177,22 @@ export const replaceView = (
     index === viewIndex ? viewConfig : origView
   ),
 });
+
+export const swapView = (
+  config: LovelaceConfig,
+  path1: number,
+  path2: number
+): LovelaceConfig => {
+  const view1 = config.views[path1];
+  const view2 = config.views[path2];
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === path2 ? view1 : index === path1 ? view2 : origView
+    ),
+  };
+};
 
 export const deleteView = (
   config: LovelaceConfig,

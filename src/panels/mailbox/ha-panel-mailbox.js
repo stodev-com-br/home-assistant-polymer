@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item-body";
@@ -80,10 +80,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.mailbox')]]</div>
           </app-toolbar>
           <div sticky hidden$="[[areTabsHidden(platforms)]]">
@@ -135,16 +132,6 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       platforms: {
         type: Array,
       },
@@ -167,7 +154,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-audio-message-dialog",
         dialogTag: "ha-dialog-show-audio-message",
-        dialogImport: () => import("./ha-dialog-show-audio-message"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-dialog-show-audio-message" */ "./ha-dialog-show-audio-message"),
       });
     }
     this.hassChanged = this.hassChanged.bind(this);

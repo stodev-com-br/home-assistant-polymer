@@ -1,7 +1,8 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "../components/ha-form";
+import "../components/ha-markdown";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
 
 class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
@@ -21,21 +22,21 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
         }
       </style>
       <form>
-        <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "loading")]]'>
           [[localize('ui.panel.page-authorize.form.working')]]:
         </template>
-        <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "error")]]'>
           <div class="error">Error: [[_errorMsg]]</div>
         </template>
-        <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
-          <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "step")]]'>
+          <template is="dom-if" if='[[_equals(_step.type, "abort")]]'>
             [[localize('ui.panel.page-authorize.abort_intro')]]:
             <ha-markdown
               content="[[_computeStepAbortedReason(localize, _step)]]"
             ></ha-markdown>
           </template>
 
-          <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
+          <template is="dom-if" if='[[_equals(_step.type, "form")]]'>
             <template
               is="dom-if"
               if="[[_computeStepDescription(localize, _step)]]"
@@ -55,8 +56,8 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
             ></ha-form>
           </template>
           <div class="action">
-            <paper-button raised on-click="_handleSubmit"
-              >[[_computeSubmitCaption(_step.type)]]</paper-button
+            <mwc-button raised on-click="_handleSubmit"
+              >[[_computeSubmitCaption(_step.type)]]</mwc-button
             >
           </div>
         </template>
@@ -94,7 +95,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
 
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
-        this._handleSubmit();
+        this._handleSubmit(ev);
       }
     });
   }
@@ -121,6 +122,12 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       const data = await response.json();
 
       if (response.ok) {
+        // allow auth provider bypass the login form
+        if (data.type === "create_entry") {
+          this._redirect(data.result);
+          return;
+        }
+
         this._updateStep(data);
       } else {
         this.setProperties({
@@ -136,6 +143,24 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
         _errorMsg: this.localize("ui.panel.page-authorize.form.unknown_error"),
       });
     }
+  }
+
+  _redirect(authCode) {
+    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
+    let url = this.redirectUri;
+    if (!url.includes("?")) {
+      url += "?";
+    } else if (!url.endsWith("&")) {
+      url += "&";
+    }
+
+    url += `code=${encodeURIComponent(authCode)}`;
+
+    if (this.oauth2State) {
+      url += `&state=${encodeURIComponent(this.oauth2State)}`;
+    }
+
+    document.location = url;
   }
 
   _updateStep(step) {
@@ -205,7 +230,8 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       );
   }
 
-  async _handleSubmit() {
+  async _handleSubmit(ev) {
+    ev.preventDefault();
     if (this._step.type !== "form") {
       this._providerChanged(this.authProvider, null);
       return;
@@ -228,21 +254,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       const newStep = await response.json();
 
       if (newStep.type === "create_entry") {
-        // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-        let url = this.redirectUri;
-        if (!url.includes("?")) {
-          url += "?";
-        } else if (!url.endsWith("&")) {
-          url += "&";
-        }
-
-        url += `code=${encodeURIComponent(newStep.result)}`;
-
-        if (this.oauth2State) {
-          url += `&state=${encodeURIComponent(this.oauth2State)}`;
-        }
-
-        document.location = url;
+        this._redirect(newStep.result);
         return;
       }
       this._updateStep(newStep);
