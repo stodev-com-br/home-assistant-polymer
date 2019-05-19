@@ -12,7 +12,7 @@ import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import isComponentLoaded from "../../../common/config/is_component_loaded";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
@@ -111,6 +111,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             disabled$="[[playerObj.isMuted]]"
             on-mousedown="handleVolumeDown"
             on-touchstart="handleVolumeDown"
+            on-touchend="handleVolumeTouchEnd"
             icon="hass:volume-medium"
           ></paper-icon-button>
           <paper-icon-button
@@ -118,6 +119,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             disabled$="[[playerObj.isMuted]]"
             on-mousedown="handleVolumeUp"
             on-touchstart="handleVolumeUp"
+            on-touchend="handleVolumeTouchEnd"
             icon="hass:volume-high"
           ></paper-icon-button>
         </div>
@@ -355,6 +357,12 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       return;
     }
     this.playerObj.volumeMute(!this.playerObj.isMuted);
+  }
+
+  handleVolumeTouchEnd(ev) {
+    /* when touch ends, we must prevent this from
+     * becoming a mousedown, up, click by emulation */
+    ev.preventDefault();
   }
 
   handleVolumeUp() {

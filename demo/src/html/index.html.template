@@ -74,9 +74,6 @@
       content="https://www.home-assistant.io/images/default-social.png"
     />
     <title>Home Assistant Demo</title>
-    <script src="./custom-elements-es5-adapter.js"></script>
-    <script src="./compatibility.js"></script>
-    <script src="./main.js" async></script>
     <style>
       body {
         font-family: Roboto, Noto, sans-serif;
@@ -98,6 +95,21 @@
   <body>
     <div id="ha-init-skeleton"></div>
     <ha-demo></ha-demo>
+    <%= renderTemplate('_js_base') %>
+
+    <script type="module" src="<%= latestDemoJS %>"></script>
+
+    <script nomodule>
+      (function() {
+        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("/static/polyfills/custom-elements-es5-adapter.js");
+          _ls("<%= es5Compatibility %>");
+          _ls("<%= es5DemoJS %>");
+        }
+      })();
+    </script>
+
     <script>
       var _gaq = [["_setAccount", "UA-57927901-5"], ["_trackPageview"]];
       (function(d, t) {

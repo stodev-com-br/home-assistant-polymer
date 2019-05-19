@@ -6489,6 +6489,11 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
+fuse.js@^3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-3.4.4.tgz#f98f55fcb3b595cf6a3e629c5ffaf10982103e95"
+  integrity sha512-pyLQo/1oR5Ywf+a/tY8z4JygnIglmRxVUOiyFAbd11o9keUDpUJSMGRWJngcnkURj30kDHPmhoKY8ChJiz3EpQ==
+
 g-status@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/g-status/-/g-status-2.0.2.tgz#270fd32119e8fc9496f066fe5fe88e0a6bc78b97"
@@ -7237,10 +7242,10 @@ hoek@6.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
-home-assistant-js-websocket@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.4.0.tgz#3ba47cc8f8b7620619a675e7488d6108e8733a70"
-  integrity sha512-Uq5/KIAh4kF13MKzMyd0efBDoU+pNF0O1CfdGpSmT3La3tpt5h+ykpUYlq/vEBj6WwzU6iv3Czt4UK1o0IJHcA==
+home-assistant-js-websocket@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.1.2.tgz#dbcdb4b67df8d189d29bbf5603771d5bc80ef031"
+  integrity sha512-/I0m6FTDEq3LkzFc4tmgHJHTj9gWA6Wn/fgaa1ghIJJY0Yqb3x6whovN5pRNFsl6bnKzOCR+nmJ2ruVTBa5mVQ==
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
