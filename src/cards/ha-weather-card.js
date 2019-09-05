@@ -216,9 +216,11 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                       ></ha-icon>
                     </div>
                   </template>
-                  <div class="temp">
-                    [[item.temperature]] [[getUnit('temperature')]]
-                  </div>
+                  <template is="dom-if" if="[[_showValue(item.temperature)]]">
+                    <div class="temp">
+                      [[item.temperature]] [[getUnit('temperature')]]
+                    </div>
+                  </template>
                   <template is="dom-if" if="[[_showValue(item.templow)]]">
                     <div class="templow">
                       [[item.templow]] [[getUnit('temperature')]]
@@ -279,11 +281,12 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.weatherIcons = {
       "clear-night": "hass:weather-night",
       cloudy: "hass:weather-cloudy",
+      exceptional: "hass:alert-circle-outline",
       fog: "hass:weather-fog",
       hail: "hass:weather-hail",
       lightning: "hass:weather-lightning",
       "lightning-rainy": "hass:weather-lightning-rainy",
-      partlycloudy: "hass:weather-partlycloudy",
+      partlycloudy: "hass:weather-partly-cloudy",
       pouring: "hass:weather-pouring",
       rainy: "hass:weather-rainy",
       snowy: "hass:weather-snowy",

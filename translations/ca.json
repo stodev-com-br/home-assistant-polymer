@@ -7,12 +7,8 @@
         "history": "Historial",
         "mailbox": "Bústia",
         "shopping_list": "Llista de la compra",
-        "dev-services": "Serveis",
-        "dev-states": "Estats",
-        "dev-events": "Esdeveniments",
-        "dev-templates": "Plantilles",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informació",
+        "developer_tools": "Eines per a desenvolupadors",
         "calendar": "Calendari",
         "profile": "Perfil"
     },
@@ -145,7 +141,8 @@
             "high_demand": "Alta potència",
             "heat_pump": "Bomba de calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Escalfar\/Refredar"
         },
         "configurator": {
             "configure": "Configurar",
@@ -311,6 +308,28 @@
                 "add_item": "Afegir article",
                 "microphone_tip": "Clica el micròfon a la part superior dreta i digues \"Add candy to my shopping list\""
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Serveis"
+                    },
+                    "states": {
+                        "title": "Estats"
+                    },
+                    "events": {
+                        "title": "Esdeveniments"
+                    },
+                    "templates": {
+                        "title": "Plantilla"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Informació"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Mostrant entrades de",
                 "period": "Període"
@@ -330,32 +349,11 @@
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "core": {
                     "caption": "General",
-                    "description": "Valida la configuració i controla el servidor",
+                    "description": "Canviar la configuració general de Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Configuració i control del servidor",
+                            "header": "Configuració general",
                             "introduction": "Sabem que canviar la configuració pot ser un procés molest. Aquesta secció intenta facilitar-te una mica més la vida.",
-                            "validation": {
-                                "heading": "Validació de la configuració",
-                                "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que no té problemes.",
-                                "check_config": "Comprovar la configuració",
-                                "valid": "La configuració és vàlida!",
-                                "invalid": "La configuració és invàlida"
-                            },
-                            "reloading": {
-                                "heading": "Recàrrega de la configuració",
-                                "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar-les. Les opcions de sota esborraran la configuració antiga i carregaran la nova.",
-                                "core": "Recarrega el nucli",
-                                "group": "Recarrega grups",
-                                "automation": "Recarrega automatismes",
-                                "script": "Recarrega programes"
-                            },
-                            "server_management": {
-                                "heading": "Gestió del servidor",
-                                "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
-                                "restart": "Reiniciar",
-                                "stop": "Aturar"
-                            },
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
                                 "location_name": "Nom de la instal·lació de Home Assistant",
@@ -371,6 +369,29 @@
                                 "metric_example": "Celsius, quilograms",
                                 "save_button": "Desa"
                             }
+                        },
+                        "server_control": {
+                            "validation": {
+                                "heading": "Validació de la configuració",
+                                "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que no té problemes.",
+                                "check_config": "Comprova la configuració",
+                                "valid": "La configuració és vàlida!",
+                                "invalid": "La configuració és invàlida"
+                            },
+                            "reloading": {
+                                "heading": "Recàrrega de la configuració",
+                                "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar-les. Les opcions de sota esborraran la configuració antiga i carregaran la nova.",
+                                "core": "Recarrega el nucli",
+                                "group": "Recarrega grups",
+                                "automation": "Recarrega automatismes",
+                                "script": "Recarrega programes"
+                            },
+                            "server_management": {
+                                "heading": "Gestió del servidor",
+                                "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
+                                "restart": "Reinicia",
+                                "stop": "Atura"
+                            }
                         }
                     }
                 },
@@ -379,7 +400,7 @@
                     "description": "Personalitza les entitats",
                     "picker": {
                         "header": "Personalització",
-                        "introduction": "Modificació dels atributs d'entitat. Les personalitzacions afegides\/modificades apareixeran immediatament. Les personalitzacions eliminades tindran efecte quan l'entitat s'actualitzi."
+                        "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides\/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     }
                 },
                 "automation": {
@@ -387,7 +408,7 @@
                     "description": "Crea i edita automatismes",
                     "picker": {
                         "header": "Editor d'automatismes",
-                        "introduction": "L'editor d'automatismes permet crear i editar automatismes. Llegeix [les instruccions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assegurar-te que has configurat el Home Assistant correctament.",
+                        "introduction": "L'editor d'automatismes permet crear i editar automatismes. Vés a l'enllaç de sota per llegir les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "pick_automation": "Selecciona l'automatisme a editar",
                         "no_automations": "No s'ha pogut trobar cap automatisme editable",
                         "add_automation": "Afegir automatisme",
@@ -571,7 +592,51 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gestiona la teva xarxa Z-Wave"
+                    "description": "Gestiona la teva xarxa Z-Wave",
+                    "network_management": {
+                        "header": "Gestió de la xarxa Z-Wave",
+                        "introduction": "Executa ordres a la xarxa Z-Wave. No es rebrà cap resposta si la majoria de les ordres han tingut èxit, però pots consultar el registre OZW."
+                    },
+                    "network_status": {
+                        "network_stopped": "Xarxa Z-Wave aturada",
+                        "network_starting": "Iniciant xarxa Z-Wave...",
+                        "network_starting_note": "Això pot trigar una estona en funció de la mida de la teva xarxa.",
+                        "network_started": "Xarxa Z-Wave iniciada",
+                        "network_started_note_some_queried": "S'han consultat els nodes desperts. Els nodes adormits es consultaran quan es despertin.",
+                        "network_started_note_all_queried": "S'han consultat tots els nodes."
+                    },
+                    "services": {
+                        "start_network": "Inicia la xarxa",
+                        "stop_network": "Atura la xarxa",
+                        "heal_network": "Guareix la xarxa",
+                        "test_network": "Prova la xarxa",
+                        "soft_reset": "Reinici suau",
+                        "save_config": "Desa la configuració",
+                        "add_node_secure": "Afegeix node amb seguretat",
+                        "add_node": "Afegeix node",
+                        "remove_node": "Elimina node",
+                        "cancel_command": "Cancel·lar ordre"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instància",
+                        "index": "Índex",
+                        "unknown": "desconegut",
+                        "wakeup_interval": "Interval en despertar"
+                    },
+                    "values": {
+                        "header": "Valors dels node"
+                    },
+                    "node_config": {
+                        "header": "Opcions de configuració del node",
+                        "seconds": "segons",
+                        "set_wakeup": "Estableix l’interval en despertar",
+                        "config_parameter": "Paràmetre de configuració",
+                        "config_value": "Valor de configuració",
+                        "true": "Cert",
+                        "false": "Fals",
+                        "set_config_parameter": "Defineix el paràmetre de configuració"
+                    }
                 },
                 "users": {
                     "caption": "Usuaris",
@@ -615,11 +680,12 @@
                         "delete_confirm": "Estas segur que vols eliminar aquesta integració?",
                         "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
                         "manuf": "de {manufacturer}",
-                        "hub": "Connectat a través de",
+                        "via": "Connectat a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",
-                        "no_area": "Sense àrea"
+                        "no_area": "Sense àrea",
+                        "hub": "Connectat a través de"
                     },
                     "config_flow": {
                         "external_step": {
@@ -681,7 +747,10 @@
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
-                        "update": "ACTUALITZAR"
+                        "update": "ACTUALITZAR",
+                        "enabled_label": "Activa l’entitat",
+                        "enabled_cause": "Desactivat per {cause}.",
+                        "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant."
                     }
                 },
                 "person": {
@@ -692,6 +761,34 @@
                         "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
                         "device_tracker_picked": "Seguint dispositiu",
                         "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment"
+                    }
+                },
+                "server_control": {
+                    "caption": "Control del servidor",
+                    "description": "Reinicia o atura el servidor de Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validació de la configuració",
+                            "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que sigui vàlida.",
+                            "check_config": "Comprova la configuració",
+                            "valid": "Configuració vàlida!",
+                            "invalid": "Configuració invàlida"
+                        },
+                        "reloading": {
+                            "heading": "Tornant a carregar configuració",
+                            "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
+                            "core": "Actualitza el nucli",
+                            "group": "Actualitza grups",
+                            "automation": "Actualitza automatismes",
+                            "script": "Actualitza programes",
+                            "scene": "Actualitza escenes"
+                        },
+                        "server_management": {
+                            "heading": "Gestió del servidor",
+                            "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
+                            "restart": "Reinicia",
+                            "stop": "Atura"
+                        }
                     }
                 }
             },
@@ -743,7 +840,6 @@
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
                 "is_owner": "Ets propietari.",
-                "logout": "Tancar sessió",
                 "change_password": {
                     "header": "Canvi de contrasenya",
                     "current_password": "Contrasenya actual",
@@ -764,6 +860,11 @@
                     "step_done": "Configuració feta per a {step}",
                     "close": "Tanca",
                     "submit": "Envia"
+                },
+                "logout": "Tanca la sessió",
+                "force_narrow": {
+                    "header": "Amaga sempre la barra lateral",
+                    "description": "Això ocultarà la barra lateral per defecte, de manera similar als mòbils i tablets."
                 }
             },
             "page-authorize": {
@@ -966,15 +1067,57 @@
                     "entity_non_numeric": "Entitat no numèrica: {entity}"
                 },
                 "changed_toast": {
-                    "message": "S'ha actualitzat la configuració de Lovelace, vols refrescar-ho?",
+                    "message": "S'ha actualitzat la configuració de Lovelace, vols actualitzar la pàgina?",
                     "refresh": "Actualitza"
                 },
                 "reload_lovelace": "Recarrega Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "per {name}",
+                        "next_demo": "Següent mostra",
+                        "introduction": "Benvingut a casa! Has arribat a la demo de Home Assistant on es mostren algunes de les millors interfícies d’usuari creades per la comunitat.",
+                        "learn_more": "Més informació sobre Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Pis superior",
+                            "family_room": "Sala d'estar",
+                            "kitchen": "Cuina",
+                            "patio": "Pati",
+                            "hallway": "Passadís",
+                            "master_bedroom": "Dormitori principal",
+                            "left": "Esquerra",
+                            "right": "Dreta",
+                            "mirror": "Mirall"
+                        },
+                        "labels": {
+                            "lights": "Llums",
+                            "information": "Informació",
+                            "morning_commute": "Desplaçament al matí",
+                            "commute_home": "Tornada cap a casa",
+                            "entertainment": "Entreteniment",
+                            "activity": "Activitat",
+                            "hdmi_input": "Entrada HDMI",
+                            "hdmi_switcher": "Commutador HDMI",
+                            "volume": "Volum",
+                            "total_tv_time": "Temps de visualització",
+                            "turn_tv_off": "Apaga la televisió",
+                            "air": "Aire"
+                        },
+                        "unit": {
+                            "watching": "visualitzant",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
             "log_out": "Desconnectar",
-            "developer_tools": "Eines per a desenvolupadors",
             "external_app_configuration": "Configuració de l’aplicació"
         },
         "common": {
@@ -1078,7 +1221,8 @@
                 "fan_mode": "Mode ventilació",
                 "swing_mode": "Mode oscil·lació",
                 "away_mode": "Mode absent",
-                "aux_heat": "Calefactor auxiliar"
+                "aux_heat": "Calefactor auxiliar",
+                "preset_mode": "Programat"
             },
             "lock": {
                 "code": "Codi",
@@ -1153,6 +1297,19 @@
                 "updater": {
                     "title": "Instruccions d'actualització"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opcions"
+                },
+                "success": {
+                    "description": "Opcions guardades amb èxit."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Opcions de sistema",
+                "enable_new_entities_label": "Activa entitats afegides recentment.",
+                "enable_new_entities_description": "Si està desactivat, les entitats descobertes recentment no s’afegiran automàticament a Home Assistant."
             }
         },
         "auth_store": {
@@ -1223,6 +1380,24 @@
                 "off": "Desactivat",
                 "on": "Activat",
                 "auto": "Automàtic"
+            },
+            "preset_mode": {
+                "none": "Cap",
+                "eco": "Econòmic",
+                "away": "Absent",
+                "boost": "Incrementat",
+                "comfort": "Confort",
+                "home": "A casa",
+                "sleep": "Dormint",
+                "activity": "Activitat"
+            },
+            "hvac_action": {
+                "off": "Apagat",
+                "heating": "Escalfant",
+                "cooling": "Refredant",
+                "drying": "Assecant",
+                "idle": "Inactiu",
+                "fan": "Ventilació"
             }
         }
     },
@@ -1230,5 +1405,12 @@
         "system-admin": "Administradors",
         "system-users": "Usuaris",
         "system-read-only": "Usuaris de només lectura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuari",
+            "integration": "Integració",
+            "config_entry": "Entrada de configuració"
+        }
     }
 }

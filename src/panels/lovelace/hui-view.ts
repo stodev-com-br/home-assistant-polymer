@@ -24,6 +24,7 @@ import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "./cards/hui-error-card";
 
 import { computeRTL } from "../../common/util/compute_rtl";
+import { processConfigEntities } from "./common/process-config-entities";
 
 let editCodeLoaded = false;
 
@@ -57,8 +58,8 @@ export class HUIView extends LitElement {
     return {
       hass: {},
       lovelace: {},
-      columns: {},
-      index: {},
+      columns: { type: Number },
+      index: { type: Number },
       _cards: {},
       _badges: {},
     };
@@ -116,10 +117,11 @@ export class HUIView extends LitElement {
       <style>
         :host {
           display: block;
+          box-sizing: border-box;
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
-          min-height: calc(100vh - 155px);
+          background: var(--lovelace-background);
         }
 
         #badges {
@@ -184,6 +186,7 @@ export class HUIView extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    const hass = this.hass!;
     const lovelace = this.lovelace!;
 
     if (lovelace.editMode && !editCodeLoaded) {
@@ -191,10 +194,13 @@ export class HUIView extends LitElement {
       import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
     }
 
+    const hassChanged = changedProperties.has("hass");
     let editModeChanged = false;
     let configChanged = false;
 
-    if (changedProperties.has("lovelace")) {
+    if (changedProperties.has("index")) {
+      configChanged = true;
+    } else if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as Lovelace;
       editModeChanged =
         !oldLovelace || lovelace.editMode !== oldLovelace.editMode;
@@ -203,20 +209,37 @@ export class HUIView extends LitElement {
 
     if (configChanged) {
       this._createBadges(lovelace.config.views[this.index!]);
-    } else if (changedProperties.has("hass")) {
+    } else if (hassChanged) {
       this._badges.forEach((badge) => {
         const { element, entityId } = badge;
-        element.hass = this.hass!;
-        element.state = this.hass!.states[entityId];
+        element.hass = hass;
+        element.state = hass.states[entityId];
       });
     }
 
     if (configChanged || editModeChanged || changedProperties.has("columns")) {
       this._createCards(lovelace.config.views[this.index!]);
-    } else if (changedProperties.has("hass")) {
+    } else if (hassChanged) {
       this._cards.forEach((element) => {
         element.hass = this.hass;
       });
+    }
+
+    const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
+
+    if (
+      configChanged ||
+      editModeChanged ||
+      (hassChanged &&
+        oldHass &&
+        (hass.themes !== oldHass.themes ||
+          hass.selectedTheme !== oldHass.selectedTheme))
+    ) {
+      applyThemesOnElement(
+        this,
+        hass.themes,
+        lovelace.config.views[this.index!].theme
+      );
     }
   }
 
@@ -241,10 +264,15 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    for (const entityId of config.badges) {
+    const badges = processConfigEntities(config.badges);
+    for (const badge of badges) {
       const element = document.createElement("ha-state-label-badge");
+      const entityId = badge.entity;
       element.hass = this.hass;
       element.state = this.hass!.states[entityId];
+      element.name = badge.name;
+      element.icon = badge.icon;
+      element.image = badge.image;
       elements.push({ element, entityId });
       root.appendChild(element);
     }
@@ -309,10 +337,6 @@ export class HUIView extends LitElement {
     });
 
     this._cards = elements;
-
-    if ("theme" in config) {
-      applyThemesOnElement(root, this.hass!.themes, config.theme);
-    }
   }
 
   private _rebuildCard(

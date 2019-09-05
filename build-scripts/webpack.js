@@ -19,7 +19,7 @@ version = version[0];
 
 const genMode = (isProdBuild) => (isProdBuild ? "production" : "development");
 const genDevTool = (isProdBuild) =>
-  isProdBuild ? "cheap-source-map" : "inline-cheap-module-source-map";
+  isProdBuild ? "source-map" : "inline-cheap-module-source-map";
 const genFilename = (isProdBuild, dontHash = new Set()) => ({ chunk }) => {
   if (!isProdBuild || dontHash.has(chunk.name)) {
     return `${chunk.name}.js`;
@@ -81,6 +81,7 @@ const optimization = (latestBuild) => ({
       cache: true,
       parallel: true,
       extractComments: true,
+      sourceMap: true,
       terserOptions: {
         safari10: true,
         ecma: latestBuild ? undefined : 5,
@@ -95,7 +96,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
   // Create an object mapping browser urls to their paths during build
   const translationMetadata = require("../build-translations/translationMetadata.json");
   const workBoxTranslationsTemplatedURLs = {};
-  const englishFP = translationMetadata["translations"]["en"]["fingerprints"];
+  const englishFP = translationMetadata.translations.en.fingerprints;
   Object.keys(englishFP).forEach((key) => {
     workBoxTranslationsTemplatedURLs[
       `/static/translations/${englishFP[key]}`
@@ -153,14 +154,14 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
             ...workBoxTranslationsTemplatedURLs,
             "/static/icons/favicon-192x192.png":
               "public/icons/favicon-192x192.png",
-            "/static/fonts/roboto/Roboto-Light.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf",
-            "/static/fonts/roboto/Roboto-Medium.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf",
-            "/static/fonts/roboto/Roboto-Regular.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf",
-            "/static/fonts/roboto/Roboto-Bold.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf",
+            "/static/fonts/roboto/Roboto-Light.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Light.woff2",
+            "/static/fonts/roboto/Roboto-Medium.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff2",
+            "/static/fonts/roboto/Roboto-Regular.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff2",
+            "/static/fonts/roboto/Roboto-Bold.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Bold.woff2",
           },
         }),
     ].filter(Boolean),
@@ -169,6 +170,8 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: latestBuild ? paths.output : paths.output_es5,
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
     },
     resolve,
   };
@@ -191,7 +194,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
-        __VERSION__: JSON.stringify("DEMO"),
+        __VERSION__: JSON.stringify(`DEMO-${version}`),
         __DEMO__: true,
         __STATIC_PATH__: "/static/",
         "process.env.NODE_ENV": JSON.stringify(
@@ -209,6 +212,55 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         latestBuild ? "frontend_latest" : "frontend_es5"
       ),
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
+    },
+  };
+};
+
+const createCastConfig = ({ isProdBuild, latestBuild }) => {
+  const isStatsBuild = false;
+  const entry = {
+    launcher: "./cast/src/launcher/entrypoint.ts",
+  };
+
+  if (latestBuild) {
+    entry.receiver = "./cast/src/receiver/entrypoint.ts";
+  }
+
+  return {
+    mode: genMode(isProdBuild),
+    devtool: genDevTool(isProdBuild),
+    entry,
+    module: {
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+    },
+    optimization: optimization(latestBuild),
+    plugins: [
+      new ManifestPlugin(),
+      new webpack.DefinePlugin({
+        __DEV__: !isProdBuild,
+        __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
+        __VERSION__: JSON.stringify(version),
+        __DEMO__: false,
+        __STATIC_PATH__: "/static/",
+        "process.env.NODE_ENV": JSON.stringify(
+          isProdBuild ? "production" : "development"
+        ),
+      }),
+      ...plugins,
+    ].filter(Boolean),
+    resolve,
+    output: {
+      filename: genFilename(isProdBuild),
+      chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
+      path: path.resolve(
+        paths.cast_root,
+        latestBuild ? "frontend_latest" : "frontend_es5"
+      ),
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
     },
   };
 };
@@ -219,4 +271,5 @@ module.exports = {
   optimization,
   createAppConfig,
   createDemoConfig,
+  createCastConfig,
 };

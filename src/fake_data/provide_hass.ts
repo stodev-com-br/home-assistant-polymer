@@ -24,7 +24,10 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
-  mockWS(type: string, callback: (msg: any) => any);
+  mockWS(
+    type: string,
+    callback: (msg: any, onChange?: (response: any) => void) => any
+  );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
   mockTheme(theme: { [key: string]: string } | null);
@@ -90,14 +93,46 @@ export const provideHass = (
 
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
-    auth: {} as any,
+    auth: {
+      data: {
+        hassUrl: "",
+      },
+    } as any,
     connection: {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
-      sendMessagePromise: () =>
-        new Promise(() => {
-          /* we never resolve */
-        }),
+      sendMessage: (msg) => {
+        const callback = wsCommands[msg.type];
+
+        if (callback) {
+          callback(msg);
+        } else {
+          // tslint:disable-next-line
+          console.error(`Unknown WS command: ${msg.type}`);
+        }
+      },
+      sendMessagePromise: async (msg) => {
+        const callback = wsCommands[msg.type];
+        return callback
+          ? callback(msg)
+          : Promise.reject({
+              code: "command_not_mocked",
+              message: `WS Command ${
+                msg.type
+              } is not implemented in provide_hass.`,
+            });
+      },
+      subscribeMessage: async (onChange, msg) => {
+        const callback = wsCommands[msg.type];
+        return callback
+          ? callback(msg, onChange)
+          : Promise.reject({
+              code: "command_not_mocked",
+              message: `WS Command ${
+                msg.type
+              } is not implemented in provide_hass.`,
+            });
+      },
       subscribeEvents: async (
         // @ts-ignore
         callback,
@@ -142,7 +177,7 @@ export const provideHass = (
     localize: () => "",
 
     translationMetadata: translationMetadata as any,
-    dockedSidebar: false,
+    dockedSidebar: "auto",
     moreInfoEntityId: null as any,
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
@@ -165,30 +200,10 @@ export const provideHass = (
         ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
+    hassUrl: (path?) => path,
     fetchWithAuth: () => Promise.reject("Not implemented"),
-    async sendWS(msg) {
-      const callback = wsCommands[msg.type];
-
-      if (callback) {
-        callback(msg);
-      } else {
-        // tslint:disable-next-line
-        console.error(`Unknown WS command: ${msg.type}`);
-      }
-      // tslint:disable-next-line
-      console.log("sendWS", msg);
-    },
-    async callWS(msg) {
-      const callback = wsCommands[msg.type];
-      return callback
-        ? callback(msg)
-        : Promise.reject({
-            code: "command_not_mocked",
-            message: `WS Command ${
-              msg.type
-            } is not implemented in provide_hass.`,
-          });
-    },
+    sendWS: (msg) => hassObj.connection.sendMessage(msg),
+    callWS: (msg) => hassObj.connection.sendMessagePromise(msg),
 
     // Mock stuff
     mockEntities: entities,

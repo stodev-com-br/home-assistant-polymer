@@ -23,7 +23,7 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { localizeConfigFlowTitle } from "../../../data/config_entries";
+import { localizeConfigFlowTitle } from "../../../data/config_flow";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -113,7 +113,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
               </div>
             </template>
             <template is="dom-repeat" items="[[entries]]">
-              <a href="/config/integrations/[[item.entry_id]]">
+              <a href="/config/integrations/config_entry/[[item.entry_id]]">
                 <paper-item>
                   <paper-item-body two-line>
                     <div>
@@ -126,10 +126,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                         items="[[_computeConfigEntryEntities(hass, item, entities)]]"
                       >
                         <span>
-                          <ha-state-icon
-                            state-obj="[[item]]"
-                            on-click="_handleMoreInfo"
-                          ></ha-state-icon>
+                          <ha-state-icon state-obj="[[item]]"></ha-state-icon>
                           <paper-tooltip position="bottom"
                             >[[_computeStateName(item)]]</paper-tooltip
                           >
@@ -175,8 +172,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
        * For example, can be discovered devices that require more config.
        */
       progress: Array,
-
-      handlers: Array,
 
       rtl: {
         type: Boolean,
@@ -230,10 +225,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 
   _computeStateName(stateObj) {
     return computeStateName(stateObj);
-  }
-
-  _handleMoreInfo(ev) {
-    this.fire("hass-more-info", { entityId: ev.model.item.entity_id });
   }
 
   _computeRTL(hass) {

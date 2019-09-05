@@ -7,12 +7,8 @@
         "history": "History",
         "mailbox": "Mailbox",
         "shopping_list": "Shopping list",
-        "dev-services": "Services",
-        "dev-states": "States",
-        "dev-events": "Events",
-        "dev-templates": "Templates",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Developer Tools",
         "calendar": "Calendar",
         "profile": "Profile"
     },
@@ -145,7 +141,8 @@
             "high_demand": "High demand",
             "heat_pump": "Heat pump",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Heat\/Cool"
         },
         "configurator": {
             "configure": "Configure",
@@ -311,6 +308,28 @@
                 "add_item": "Add item",
                 "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Services"
+                    },
+                    "states": {
+                        "title": "States"
+                    },
+                    "events": {
+                        "title": "Events"
+                    },
+                    "templates": {
+                        "title": "Template"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Showing entries for",
                 "period": "Period"
@@ -330,11 +349,28 @@
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "core": {
                     "caption": "General",
-                    "description": "Validate your configuration file and control the server",
+                    "description": "Change your general Home Assistant configuration",
                     "section": {
                         "core": {
-                            "header": "Configuration and Server Control",
+                            "header": "General Configuration",
                             "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                                "location_name": "Name of your Home Assistant installation",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Elevation",
+                                "elevation_meters": "meters",
+                                "time_zone": "Time Zone",
+                                "unit_system": "Unit System",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metric",
+                                "imperial_example": "Fahrenheit, pounds",
+                                "metric_example": "Celsius, kilograms",
+                                "save_button": "Save"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Configuration validation",
                                 "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
@@ -355,21 +391,6 @@
                                 "introduction": "Control your Home Assistant server… from Home Assistant.",
                                 "restart": "Restart",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
-                                "location_name": "Name of your Home Assistant installation",
-                                "latitude": "Latitude",
-                                "longitude": "Longitude",
-                                "elevation": "Elevation",
-                                "elevation_meters": "meters",
-                                "time_zone": "Time Zone",
-                                "unit_system": "Unit System",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metric",
-                                "imperial_example": "Fahrenheit, pounds",
-                                "metric_example": "Celsius, kilograms",
-                                "save_button": "Save"
                             }
                         }
                     }
@@ -571,7 +592,51 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Manage your Z-Wave network"
+                    "description": "Manage your Z-Wave network",
+                    "network_management": {
+                        "header": "Z-Wave Network Management",
+                        "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave Network Stopped",
+                        "network_starting": "Starting Z-Wave Network...",
+                        "network_starting_note": "This may take a while depending on the size of your network.",
+                        "network_started": "Z-Wave Network Started",
+                        "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
+                        "network_started_note_all_queried": "All nodes have been queried."
+                    },
+                    "services": {
+                        "start_network": "Start Network",
+                        "stop_network": "Stop Network",
+                        "heal_network": "Heal Network",
+                        "test_network": "Test Network",
+                        "soft_reset": "Soft Reset",
+                        "save_config": "Save Config",
+                        "add_node_secure": "Add Node Secure",
+                        "add_node": "Add Node",
+                        "remove_node": "Remove Node",
+                        "cancel_command": "Cancel Command"
+                    },
+                    "common": {
+                        "value": "Value",
+                        "instance": "Instance",
+                        "index": "Index",
+                        "unknown": "unknown",
+                        "wakeup_interval": "Wakeup Interval"
+                    },
+                    "values": {
+                        "header": "Node Values"
+                    },
+                    "node_config": {
+                        "header": "Node Config Options",
+                        "seconds": "seconds",
+                        "set_wakeup": "Set Wakeup Interval",
+                        "config_parameter": "Config Parameter",
+                        "config_value": "Config Value",
+                        "true": "True",
+                        "false": "False",
+                        "set_config_parameter": "Set Config Parameter"
+                    }
                 },
                 "users": {
                     "caption": "Users",
@@ -615,11 +680,12 @@
                         "delete_confirm": "Are you sure you want to delete this integration?",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
                         "manuf": "by {manufacturer}",
-                        "hub": "Connected via",
+                        "via": "Connected via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "device unavailable",
                         "entity_unavailable": "entity unavailable",
-                        "no_area": "No Area"
+                        "no_area": "No Area",
+                        "hub": "Connected via"
                     },
                     "config_flow": {
                         "external_step": {
@@ -681,7 +747,10 @@
                         "unavailable": "This entity is not currently available.",
                         "default_name": "New Area",
                         "delete": "DELETE",
-                        "update": "UPDATE"
+                        "update": "UPDATE",
+                        "enabled_label": "Enable entity",
+                        "enabled_cause": "Disabled by {cause}.",
+                        "enabled_description": "Disabled entities will not be added to Home Assistant."
                     }
                 },
                 "person": {
@@ -692,6 +761,34 @@
                         "device_tracker_intro": "Select the devices that belong to this person.",
                         "device_tracker_picked": "Track Device",
                         "device_tracker_pick": "Pick device to track"
+                    }
+                },
+                "server_control": {
+                    "caption": "Server Control",
+                    "description": "Restart and stop the Home Assistant server",
+                    "section": {
+                        "validation": {
+                            "heading": "Configuration validation",
+                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                            "check_config": "Check config",
+                            "valid": "Configuration valid!",
+                            "invalid": "Configuration invalid"
+                        },
+                        "reloading": {
+                            "heading": "Configuration reloading",
+                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                            "core": "Reload core",
+                            "group": "Reload groups",
+                            "automation": "Reload automations",
+                            "script": "Reload scripts",
+                            "scene": "Reload scenes"
+                        },
+                        "server_management": {
+                            "heading": "Server management",
+                            "introduction": "Control your Home Assistant server… from Home Assistant.",
+                            "restart": "Restart",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },
@@ -743,7 +840,6 @@
                 },
                 "current_user": "You are currently logged in as {fullName}.",
                 "is_owner": "You are an owner.",
-                "logout": "Log out",
                 "change_password": {
                     "header": "Change Password",
                     "current_password": "Current Password",
@@ -764,6 +860,11 @@
                     "step_done": "Setup done for {step}",
                     "close": "Close",
                     "submit": "Submit"
+                },
+                "logout": "Log out",
+                "force_narrow": {
+                    "header": "Always hide the sidebar",
+                    "description": "This will hide the sidebar by default, similar to the mobile experience."
                 }
             },
             "page-authorize": {
@@ -970,11 +1071,53 @@
                     "refresh": "Refresh"
                 },
                 "reload_lovelace": "Reload Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "by {name}",
+                        "next_demo": "Next demo",
+                        "introduction": "Welcome home! You've reached the Home Assistant demo where we showcase the best UIs created by our community.",
+                        "learn_more": "Learn more about Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Upstairs",
+                            "family_room": "Family Room",
+                            "kitchen": "Kitchen",
+                            "patio": "Patio",
+                            "hallway": "Hallway",
+                            "master_bedroom": "Master Bedroom",
+                            "left": "Left",
+                            "right": "Right",
+                            "mirror": "Mirror"
+                        },
+                        "labels": {
+                            "lights": "Lights",
+                            "information": "Information",
+                            "morning_commute": "Morning Commute",
+                            "commute_home": "Commute to Home",
+                            "entertainment": "Entertainment",
+                            "activity": "Activity",
+                            "hdmi_input": "HDMI Input",
+                            "hdmi_switcher": "HDMI Switcher",
+                            "volume": "Volume",
+                            "total_tv_time": "Total TV Time",
+                            "turn_tv_off": "Turn Television off",
+                            "air": "Air"
+                        },
+                        "unit": {
+                            "watching": "watching",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
             "log_out": "Log out",
-            "developer_tools": "Developer tools",
             "external_app_configuration": "App Configuration"
         },
         "common": {
@@ -1078,7 +1221,8 @@
                 "fan_mode": "Fan mode",
                 "swing_mode": "Swing mode",
                 "away_mode": "Away mode",
-                "aux_heat": "Aux heat"
+                "aux_heat": "Aux heat",
+                "preset_mode": "Preset"
             },
             "lock": {
                 "code": "Code",
@@ -1153,6 +1297,19 @@
                 "updater": {
                     "title": "Update Instructions"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Options"
+                },
+                "success": {
+                    "description": "Options successfully saved."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "System Options",
+                "enable_new_entities_label": "Enable newly added entities.",
+                "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
             }
         },
         "auth_store": {
@@ -1223,6 +1380,24 @@
                 "off": "Off",
                 "on": "On",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "None",
+                "eco": "Eco",
+                "away": "Away",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "home": "Home",
+                "sleep": "Sleep",
+                "activity": "Activity"
+            },
+            "hvac_action": {
+                "off": "Off",
+                "heating": "Heating",
+                "cooling": "Cooling",
+                "drying": "Drying",
+                "idle": "Idle",
+                "fan": "Fan"
             }
         }
     },
@@ -1230,5 +1405,12 @@
         "system-admin": "Administrators",
         "system-users": "Users",
         "system-read-only": "Read-Only Users"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "User",
+            "integration": "Integration",
+            "config_entry": "Config Entry"
+        }
     }
 }
