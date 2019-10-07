@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/state-history-charts";
 import "../data/ha-state-history-data";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { EventsMixin } from "../mixins/events-mixin";
 
 /*
@@ -97,14 +97,11 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
       this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0) ||
       this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)
     ) {
-      this.cacheConfig = Object.assign(
-        {},
-        {
-          refresh: stateObj.attributes.refresh || 0,
-          cacheKey: stateObj.entity_id,
-          hoursToShow: stateObj.attributes.hours_to_show || 24,
-        }
-      );
+      this.cacheConfig = {
+        refresh: stateObj.attributes.refresh || 0,
+        cacheKey: stateObj.entity_id,
+        hoursToShow: stateObj.attributes.hours_to_show || 24,
+      };
     }
   }
 

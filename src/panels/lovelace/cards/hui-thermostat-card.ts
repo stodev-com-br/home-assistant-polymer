@@ -14,7 +14,7 @@ import "../../../components/ha-icon";
 import "../components/hui-warning";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant } from "../../../types";
@@ -222,6 +222,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         sliderType,
         value: sliderValue,
         disabled: sliderValue === null,
+        min: stateObj.attributes.min_temp,
+        max: stateObj.attributes.max_temp,
       });
       this._updateSetTemp(uiValue);
     }

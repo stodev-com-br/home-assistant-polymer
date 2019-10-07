@@ -5,6 +5,8 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import yaml from "js-yaml";
+
 import "../../../resources/ha-style";
 import "./events-list";
 import "./event-subscribe-card";
@@ -45,8 +47,14 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
 
       <div class$="[[computeFormClasses(narrow)]]">
         <div class="flex">
-          <p>Fire an event on the event bus.</p>
-
+          <p>
+            Fire an event on the event bus.
+            <a
+              href="https://www.home-assistant.io/docs/configuration/events/"
+              target="_blank"
+              >Events Documentation.</a
+            >
+          </p>
           <div class="ha-form">
             <paper-input
               label="Event Type"
@@ -55,7 +63,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
               value="{{eventType}}"
             ></paper-input>
             <paper-textarea
-              label="Event Data (JSON, optional)"
+              label="Event Data (YAML, optional)"
               value="{{eventData}}"
             ></paper-textarea>
             <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
@@ -100,10 +108,10 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
     var eventData;
 
     try {
-      eventData = this.eventData ? JSON.parse(this.eventData) : {};
+      eventData = this.eventData ? yaml.safeLoad(this.eventData) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert("Error parsing JSON: " + err);
+      alert("Error parsing YAML: " + err);
       /* eslint-enable no-alert */
       return;
     }

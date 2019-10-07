@@ -9,8 +9,8 @@ import {
   query,
 } from "lit-element";
 import "../ha-icon";
-import computeStateDomain from "../../common/entity/compute_state_domain";
-import stateIcon from "../../common/entity/state_icon";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { stateIcon } from "../../common/entity/state_icon";
 import { HassEntity } from "home-assistant-js-websocket";
 // Not duplicate, this is for typing.
 // tslint:disable-next-line
@@ -21,6 +21,7 @@ class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
+  @property() public overrideImage?: string;
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult | void {
@@ -55,8 +56,11 @@ class StateBadge extends LitElement {
     };
     if (stateObj) {
       // hide icon if we have entity picture
-      if (stateObj.attributes.entity_picture && !this.overrideIcon) {
-        let imageUrl = stateObj.attributes.entity_picture;
+      if (
+        (stateObj.attributes.entity_picture && !this.overrideIcon) ||
+        this.overrideImage
+      ) {
+        let imageUrl = this.overrideImage || stateObj.attributes.entity_picture;
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }
@@ -100,6 +104,7 @@ class StateBadge extends LitElement {
         text-align: center;
         background-size: cover;
         line-height: 40px;
+        vertical-align: middle;
       }
 
       ha-icon {

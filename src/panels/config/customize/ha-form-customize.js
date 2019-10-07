@@ -7,7 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
 
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaFormCustomize extends PolymerElement {
   static get template() {
@@ -141,17 +141,15 @@ class HaFormCustomize extends PolymerElement {
   }
 
   _initOpenObject(key, value, secondary, config) {
-    return Object.assign(
-      {
-        attribute: key,
-        value: value,
-        closed: false,
-        domain: computeStateDomain(this.entity),
-        secondary: secondary,
-        description: key,
-      },
-      config
-    );
+    return {
+      attribute: key,
+      value: value,
+      closed: false,
+      domain: computeStateDomain(this.entity),
+      secondary: secondary,
+      description: key,
+      ...config,
+    };
   }
 
   loadEntity(entity) {

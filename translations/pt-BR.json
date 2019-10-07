@@ -233,8 +233,8 @@
                 "ready": "Pronto"
             },
             "query_stage": {
-                "initializing": "",
-                "dead": "Dead ({query_stage})"
+                "initializing": "Iniciando ( {query_stage} )",
+                "dead": "Morto ({query_stage})"
             }
         },
         "weather": {
@@ -251,7 +251,8 @@
             "snowy-rainy": "Neve, chuva",
             "sunny": "Ensolarado",
             "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy-variant": "Ventoso",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "Limpando",
@@ -265,18 +266,18 @@
         },
         "timer": {
             "active": "ativo",
-            "idle": "Em espera",
+            "idle": "ocioso",
             "paused": "Pausado"
         },
         "person": {
-            "home": "Home",
+            "home": "Em casa",
             "not_home": "Ausente"
         }
     },
     "state_badge": {
         "default": {
-            "unknown": "Desconhecido",
-            "unavailable": "Indisponível",
+            "unknown": "Desc",
+            "unavailable": "Indisp",
             "error": "Erro",
             "entity_not_found": "Entidade não encontrada"
         },
@@ -293,11 +294,11 @@
             "armed_custom_bypass": "Armado"
         },
         "device_tracker": {
-            "home": "Em casa",
+            "home": "Casa",
             "not_home": "Ausente"
         },
         "person": {
-            "home": "Home",
+            "home": "Em casa",
             "not_home": "Ausente"
         }
     },
@@ -320,13 +321,16 @@
                         "title": "Eventos"
                     },
                     "templates": {
-                        "title": "Modelos"
+                        "title": "Modelo"
                     },
                     "mqtt": {
                         "title": ""
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -422,7 +426,7 @@
                         "alias": "Nome",
                         "triggers": {
                             "header": "Gatilhos",
-                            "introduction": "Triggers são o que inicia o processamento de uma regra de automação. É possível especificar vários gatilhos para a mesma regra. Quando o gatilho é iniciado, o Assistente Inicial validará as condições, se houver, e chamará a ação.",
+                            "introduction": "Gatilhos são responsáveis por iniciar o processamento de uma regra de automação. É possível especificar vários gatilhos para a mesma regra. Quando o gatilho é iniciado, o Assistente Inicial validará as condições, se houver, e chamará a ação.",
                             "add": "Adicionar gatilho",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
@@ -498,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Sair"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saiba mais sobre gatilhos"
@@ -536,7 +543,7 @@
                                     "value_template": "Valor do modelo"
                                 },
                                 "time": {
-                                    "label": "Tempo",
+                                    "label": "Temporal",
                                     "after": "Depois",
                                     "before": "Antes"
                                 },
@@ -544,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entidade com localização",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saiba mais sobre condições"
@@ -578,6 +588,9 @@
                                     "label": "Iniciar evento",
                                     "event": "Evento:",
                                     "service_data": "Informações do serviço"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saiba mais sobre ações"
@@ -620,12 +633,21 @@
                     "common": {
                         "value": "Valor",
                         "instance": "Instância",
-                        "index": "Índice"
+                        "index": "Índice",
+                        "unknown": "Desconhecido",
+                        "wakeup_interval": "Intervalo de ativação"
                     },
                     "values": {
                         "header": "Valores de nó"
                     },
                     "node_config": {
+                        "header": "Opções de configuração do nó",
+                        "seconds": "Segundos",
+                        "set_wakeup": "Definir intervalo de ativação",
+                        "config_parameter": "Parâmetro de configuração",
+                        "config_value": "Valor de configuração",
+                        "true": "Verdadeiro",
+                        "false": "Falso",
                         "set_config_parameter": "Definir o parâmetro de configuração"
                     }
                 },
@@ -691,7 +713,7 @@
                     "services": {
                         "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se você estiver tendo problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele esteja ativo e aceitando comandos ao usar esse serviço.",
                         "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro de dispositivos.",
-                        "remove": "Remova um dispositivo da rede ZigBee."
+                        "remove": "Remova um dispositivo da rede Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nome dado pelo usuário",
@@ -705,10 +727,10 @@
                     }
                 },
                 "area_registry": {
-                    "caption": "Área de Registro",
-                    "description": "Visão geral de todas as áreas de sua casa.",
+                    "caption": "Registro de Áreas",
+                    "description": "Visão geral de todas as áreas da sua casa.",
                     "picker": {
-                        "header": "Registro de Área",
+                        "header": "Registro de Áreas",
                         "introduction": "Áreas são usadas para organizar os dispositivos. Essas informações serão usadas no Home Assistant para ajudá-lo a organizar sua interface, permissões e integrações com outros sistemas.",
                         "introduction2": "Para colocar dispositivos em uma área, use o link abaixo para navegar até a página de integrações e, em seguida, clique em uma integração configurada para acessar os cartões de dispositivos.",
                         "integrations_page": "Página de integrações",
@@ -738,7 +760,10 @@
                         "unavailable": "Esta entidade não está disponível no momento.",
                         "default_name": "Nova Área",
                         "delete": "APAGAR",
-                        "update": "ATUALIZAR"
+                        "update": "ATUALIZAR",
+                        "enabled_label": "Ativar entidade",
+                        "enabled_cause": "Desativado por {cause}.",
+                        "enabled_description": "As entidades desativadas não serão adicionadas ao Home Assistant."
                     }
                 },
                 "person": {
@@ -750,6 +775,40 @@
                         "device_tracker_picked": "Rastrear dispositivo",
                         "device_tracker_pick": "Escolha o dispositivo para rastrear"
                     }
+                },
+                "server_control": {
+                    "caption": "Controle do servidor",
+                    "description": "Reinicie e interrompa o servidor do Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validação da configuração",
+                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quiser certificar-se de que tudo é válido.",
+                            "check_config": "Verificar a configuração",
+                            "valid": "Configuração válida!",
+                            "invalid": "Configuração inválida"
+                        },
+                        "reloading": {
+                            "heading": "Recarregando a configuração",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Pressionar recarregar descarregará sua configuração atual e carregará a nova.",
+                            "core": "Recarregar o Core",
+                            "group": "Recarregar os grupos",
+                            "automation": "Recarregar as automações",
+                            "script": "Recarregar os scripts",
+                            "scene": "Recarregar cenas"
+                        },
+                        "server_management": {
+                            "heading": "Gerenciamento do servidor",
+                            "introduction": "Controle o seu servidor Home Assistant... a partir do Home Assistant.",
+                            "restart": "Reiniciar",
+                            "stop": "Parar",
+                            "confirm_restart": "Tem certeza de que deseja reiniciar o Home Assistant?",
+                            "confirm_stop": "Tem certeza de que deseja parar o Home Assistant?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Dispositivos",
+                    "description": "Gerenciar dispositivos conectados"
                 }
             },
             "profile": {
@@ -798,7 +857,7 @@
                     "last_used": "Usado pela última vez em {date} em {location}",
                     "not_used": "Nunca foi usado"
                 },
-                "current_user": "Você está logado como {fullName} .",
+                "current_user": "Você está logado como {fullName}.",
                 "is_owner": "Você é um proprietário.",
                 "change_password": {
                     "header": "Alterar senha",
@@ -971,7 +1030,7 @@
                         "tap": "Toque:",
                         "navigate_to": "Navegue até {location}",
                         "toggle": "Alternar {name}",
-                        "call_service": "Serviço de chamadas {name}",
+                        "call_service": "Iniciar Serviço {name}",
                         "more_info": "Mostrar mais informações: {name}"
                     }
                 },
@@ -1003,7 +1062,7 @@
                         "header": "Assuma o controle da sua interface do Lovelace",
                         "para": "Por padrão, o Home Assistant manterá sua interface de usuário, atualizando-a quando novas entidades ou componentes do Lovelace estiverem disponíveis. Se você assumir o controle, não faremos mais alterações automaticamente para você.",
                         "para_sure": "Tem certeza de que deseja assumir o controle da sua interface de usuário?",
-                        "cancel": "Nunca",
+                        "cancel": "Esquecer",
                         "save": "Assuma o controle"
                     },
                     "menu": {
@@ -1014,6 +1073,10 @@
                         "save": "Salvar",
                         "unsaved_changes": "Alterações não salvas",
                         "saved": "Salvo"
+                    },
+                    "edit_lovelace": {
+                        "header": "Título da sua interface do Lovelace",
+                        "explanation": "Este título é mostrado acima de todas as suas visualizações no Lovelace."
                     }
                 },
                 "menu": {
@@ -1077,13 +1140,14 @@
             }
         },
         "sidebar": {
-            "log_out": "Sair",
+            "log_out": "Terminar sessão",
             "external_app_configuration": "Configuração do aplicativo"
         },
         "common": {
             "loading": "Carregando",
             "cancel": "Cancelar",
-            "save": "Salvar"
+            "save": "Salvar",
+            "successfully_saved": "Salvo com sucesso"
         },
         "duration": {
             "day": "{count} {count, plural,\none {day}\nother {days}\n}",
@@ -1159,7 +1223,9 @@
             "fan": {
                 "speed": "Velocidade",
                 "oscillate": "Oscilar",
-                "direction": "Direção"
+                "direction": "Direção",
+                "forward": "Frente",
+                "reverse": "Reverter"
             },
             "light": {
                 "brightness": "Brilho",
@@ -1204,6 +1270,14 @@
                 "target_temperature": "Temperatura alvo",
                 "operation": "Operação",
                 "away_mode": "Modo ausente"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Iniciar",
+                    "pause": "pausar",
+                    "cancel": "cancelar",
+                    "finish": "terminar"
+                }
             }
         },
         "components": {
@@ -1251,11 +1325,38 @@
                 },
                 "sun": {
                     "elevation": "Elevação",
-                    "rising": "Aumentar",
-                    "setting": "Configuração"
+                    "rising": "Nascendo",
+                    "setting": "Se pondo"
                 },
                 "updater": {
                     "title": "Atualizar Instruções"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opções"
+                },
+                "success": {
+                    "description": "Opções salvas com sucesso."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Opções do sistema",
+                "enable_new_entities_label": "Habilitar entidades recém-adicionadas.",
+                "enable_new_entities_description": "Se desativadas, as entidades recém-descobertas não serão automaticamente adicionadas ao Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "por {manufacturer}",
+                "no_area": "Sem área",
+                "services": {
+                    "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se você estiver tendo problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele esteja ativo e aceitando comandos ao usar esse serviço.",
+                    "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro de dispositivos.",
+                    "remove": "Remova um dispositivo da rede Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nome",
+                    "area_picker_label": "Área",
+                    "update_name_button": "Atualizar Nome"
                 }
             }
         },
@@ -1285,9 +1386,9 @@
         "history_graph": "Gráfico de histórico",
         "group": "Grupo",
         "image_processing": "Processamento de imagem",
-        "input_boolean": "Botão alternar",
+        "input_boolean": "Entrada booleana",
         "input_datetime": "Entrada de data e hora",
-        "input_select": "Selecione uma entrada",
+        "input_select": "Entrada de seleção",
         "input_number": "Entrada numérica",
         "input_text": "Entrada de texto",
         "light": "Luz",
@@ -1352,5 +1453,12 @@
         "system-admin": "Administradores",
         "system-users": "Usuários",
         "system-read-only": "Usuários somente leitura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuário",
+            "integration": "Integração",
+            "config_entry": "Entrada de configuração"
+        }
     }
 }

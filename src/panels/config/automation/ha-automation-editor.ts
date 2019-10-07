@@ -10,17 +10,17 @@ import {
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-fab/paper-fab";
 import { classMap } from "lit-html/directives/class-map";
 
 import { h, render } from "preact";
 
+import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import Automation from "../js/automation";
 import unmountPreact from "../../../common/preact/unmount";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -28,6 +28,7 @@ import {
   AutomationEntity,
   AutomationConfig,
   deleteAutomation,
+  getAutomationEditorInitData,
 } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -36,7 +37,7 @@ function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
 }
 
-class HaAutomationEditor extends LitElement {
+export class HaAutomationEditor extends LitElement {
   public hass!: HomeAssistant;
   public automation!: AutomationEntity;
   public isWide?: boolean;
@@ -113,7 +114,7 @@ class HaAutomationEditor extends LitElement {
             })}"
           ></div>
         </div>
-        <paper-fab
+        <ha-fab
           slot="fab"
           ?is-wide="${this.isWide}"
           ?dirty="${this._dirty}"
@@ -125,7 +126,7 @@ class HaAutomationEditor extends LitElement {
           class="${classMap({
             rtl: computeRTL(this.hass),
           })}"
-        ></paper-fab>
+        ></ha-fab>
       </ha-app-layout>
     `;
   }
@@ -183,9 +184,11 @@ class HaAutomationEditor extends LitElement {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"
         ),
+        description: "",
         trigger: [{ platform: "state" }],
         condition: [],
         action: [{ service: "" }],
+        ...getAutomationEditorInitData(),
       };
     }
 
@@ -301,7 +304,7 @@ class HaAutomationEditor extends LitElement {
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
@@ -310,21 +313,21 @@ class HaAutomationEditor extends LitElement {
           transition: margin-bottom 0.3s;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[dirty] {
+        ha-fab[dirty] {
           margin-bottom: 0;
         }
 
-        paper-fab.rtl {
+        ha-fab.rtl {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[is-wide].rtl {
+        ha-fab[is-wide].rtl {
           bottom: 24px;
           right: auto;
           left: 24px;

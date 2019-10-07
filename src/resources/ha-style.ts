@@ -72,7 +72,7 @@ documentContainer.innerHTML = `<custom-style>
         from paper-styles/color.html to here.
       */
 
-      --paper-grey-50: #fafafa; /* default for: --paper-toggle-button-unchecked-button-color */
+      --paper-grey-50: #fafafa; /* default for: --mwc-switch-unchecked-button-color */
       --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
       --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
 
@@ -123,8 +123,23 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
 
+      /* rgb */
+      --rgb-primary-color: 3, 169, 244;
+      --rgb-accent-color: 255, 152, 0;
+      --rgb-primary-text-color: 33, 33, 33;
+      --rgb-secondary-text-color: 114, 114, 114;
+      --rgb-text-primary-color: 255, 255, 255;
+
       /* mwc */
       --mdc-theme-primary: var(--primary-color);
+      --mdc-theme-secondary: var(--accent-color);
+      --mdc-theme-background: var(--primary-background-color);
+      --mdc-theme-surface: var(--paper-card-background-color, var(--card-background-color));
+
+      /* mwc text styles */
+      --mdc-theme-on-primary: var(--text-primary-color);
+      --mdc-theme-on-secondary: var(--text-primary-color);
+      --mdc-theme-on-surface: var(--primary-text-color);
     }
   </style>
 

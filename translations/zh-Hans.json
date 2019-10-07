@@ -234,7 +234,7 @@
             },
             "query_stage": {
                 "initializing": "初始化 ({query_stage})",
-                "dead": "断线 ({query_stage})"
+                "dead": "断开 ({query_stage})"
             }
         },
         "weather": {
@@ -327,6 +327,9 @@
                     },
                     "info": {
                         "title": "信息"
+                    },
+                    "logs": {
+                        "title": "日志"
                     }
                 }
             },
@@ -498,6 +501,9 @@
                                     "event": "事件：",
                                     "enter": "进入",
                                     "leave": "离开"
+                                },
+                                "device": {
+                                    "label": "设备"
                                 }
                             },
                             "learn_more": "详细了解触发条件"
@@ -578,6 +584,9 @@
                                     "label": "触发事件",
                                     "event": "事件：",
                                     "service_data": "服务数据"
+                                },
+                                "device_id": {
+                                    "label": "设备"
                                 }
                             },
                             "learn_more": "详细了解动作"
@@ -594,13 +603,14 @@
                     "caption": "Z-Wave",
                     "description": "管理 Z-Wave 网络",
                     "network_management": {
-                        "header": "Z-Wave网络管理"
+                        "header": "Z-Wave 网络管理",
+                        "introduction": "运行影响 Z-Wave 网络的命令。大多数命令无法反馈是否执行成功，但您可以尝试检查 OZW 日志来确认。"
                     },
                     "network_status": {
-                        "network_stopped": "Z-Wave网络已停止",
-                        "network_starting": "启动Z-Wave网络......",
+                        "network_stopped": "Z-Wave 网络已停止",
+                        "network_starting": "启动 Z-Wave 网络......",
                         "network_starting_note": "这可能需要一段时间，具体取决于您的网络规模。",
-                        "network_started": "Z-Wave网络开始",
+                        "network_started": "Z-Wave 网络已启动",
                         "network_started_note_some_queried": "已查询唤醒节点。睡眠节点将在唤醒时被查询。",
                         "network_started_note_all_queried": "已查询所有节点。"
                     },
@@ -696,7 +706,7 @@
                     "services": {
                         "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                         "updateDeviceName": "在设备注册表中为此设备设置自定义名称。",
-                        "remove": "从 ZigBee 网络中删除设备。"
+                        "remove": "从 Zigbee 网络中删除设备。"
                     },
                     "device_card": {
                         "device_name_placeholder": "用户指定的名称",
@@ -746,7 +756,7 @@
                         "update": "更新",
                         "enabled_label": "启用实体",
                         "enabled_cause": "被{cause}禁用。",
-                        "enabled_description": "已禁用的实体不再添加到Home Assistant。"
+                        "enabled_description": "已禁用的实体不再添加到 Home Assistant。"
                     }
                 },
                 "person": {
@@ -761,18 +771,18 @@
                 },
                 "server_control": {
                     "caption": "服务器控制",
-                    "description": "重新启动或停止Home Assistant服务器",
+                    "description": "重新启动或停止 Home Assistant 服务",
                     "section": {
                         "validation": {
                             "heading": "配置有效性",
                             "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
-                            "check_config": "配置检查",
+                            "check_config": "检查配置",
                             "valid": "配置有效！",
                             "invalid": "配置无效"
                         },
                         "reloading": {
-                            "heading": "配置重载中",
-                            "introduction": "Home Assistant 中的部分设定可以直接重载，无需重启服务器。点击重载按钮将重新载入新的设定。",
+                            "heading": "配置重载",
+                            "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "core": "重载核心模块",
                             "group": "重载分组",
                             "automation": "重载自动化",
@@ -783,9 +793,15 @@
                             "heading": "服务器管理",
                             "introduction": "在这里即可控制 Home Assistant 服务。",
                             "restart": "重新启动",
-                            "stop": "停止服务"
+                            "stop": "停止服务",
+                            "confirm_restart": "您确定要重新启动 Home Assistant 吗？",
+                            "confirm_stop": "您确定要停止 Home Assistant 吗？"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "设备",
+                    "description": "已连接设备管理"
                 }
             },
             "profile": {
@@ -860,7 +876,7 @@
                 "logout": "退出",
                 "force_narrow": {
                     "header": "始终隐藏侧边栏",
-                    "description": "这将默认隐藏侧边栏，类似于移动设备上的体验。"
+                    "description": "这将默认隐藏侧边栏，体验与手机版类似。"
                 }
             },
             "page-authorize": {
@@ -1050,6 +1066,9 @@
                         "save": "保存",
                         "unsaved_changes": "未保存的更改",
                         "saved": "已保存"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace UI标题"
                     }
                 },
                 "menu": {
@@ -1097,8 +1116,8 @@
                             "commute_home": "下班",
                             "entertainment": "娱乐",
                             "activity": "活动",
-                            "hdmi_input": "HDMI输入",
-                            "hdmi_switcher": "HDMI切换",
+                            "hdmi_input": "HDMI 输入",
+                            "hdmi_switcher": "HDMI 切换",
                             "volume": "音量",
                             "total_tv_time": "观看总时长",
                             "turn_tv_off": "关闭电视",
@@ -1119,7 +1138,8 @@
         "common": {
             "loading": "加载中",
             "cancel": "取消",
-            "save": "保存"
+            "save": "保存",
+            "successfully_saved": "保存成功"
         },
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
@@ -1240,6 +1260,12 @@
                 "target_temperature": "设定温度",
                 "operation": "操作",
                 "away_mode": "离开模式"
+            },
+            "timer": {
+                "actions": {
+                    "start": "开始",
+                    "pause": "暂停"
+                }
             }
         },
         "components": {
@@ -1305,7 +1331,7 @@
             "config_entry_system_options": {
                 "title": "系统选项",
                 "enable_new_entities_label": "启用新添加的实体。",
-                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到Home Assistant。"
+                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到 Home Assistant。"
             }
         },
         "auth_store": {
@@ -1393,7 +1419,7 @@
                 "cooling": "制冷",
                 "drying": "除湿",
                 "idle": "空闲",
-                "fan": "风扇"
+                "fan": "送风"
             }
         }
     },

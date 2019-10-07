@@ -3,7 +3,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
     throw Error("latestBuild not defined for babel loader config");
   }
   return {
-    test: /\.m?js$|\.tsx?$/,
+    test: /\.m?js$/,
     use: {
       loader: "babel-loader",
       options: {
@@ -11,12 +11,6 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
           !latestBuild && [
             require("@babel/preset-env").default,
             { modules: false },
-          ],
-          [
-            require("@babel/preset-typescript").default,
-            {
-              jsxPragma: "h",
-            },
           ],
         ].filter(Boolean),
         plugins: [
@@ -27,12 +21,6 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
           ],
           // Only support the syntax, Webpack will handle it.
           "@babel/syntax-dynamic-import",
-          [
-            "@babel/transform-react-jsx",
-            {
-              pragma: "h",
-            },
-          ],
           [
             require("@babel/plugin-proposal-decorators").default,
             { decoratorsBeforeExport: true },

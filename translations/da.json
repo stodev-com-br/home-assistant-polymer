@@ -142,7 +142,7 @@
             "heat_pump": "Varmepumpe",
             "gas": "Gas",
             "manual": "Manual",
-            "heat_cool": "Varme\/køl"
+            "heat_cool": "Opvarm\/køl"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -233,7 +233,7 @@
                 "ready": "Klar"
             },
             "query_stage": {
-                "initializing": "Initialiserer ({query_stage})",
+                "initializing": "Initialiserer ( {query_stage} )",
                 "dead": "Død ({query_stage})"
             }
         },
@@ -251,7 +251,8 @@
             "snowy-rainy": "Snedækket, regnfuldt",
             "sunny": "Solrig",
             "windy": "Blæsende",
-            "windy-variant": "Blæsende"
+            "windy-variant": "Blæsende",
+            "exceptional": "Enestående"
         },
         "vacuum": {
             "cleaning": "Rengøring",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Udvikler Information"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Begivenhed",
                                     "enter": "Ankommer",
                                     "leave": "Forlad"
+                                },
+                                "device": {
+                                    "label": "Enhed"
                                 }
                             },
                             "learn_more": "Lær om udløsere"
@@ -544,6 +551,9 @@
                                     "label": "Zone",
                                     "entity": "Enhed med placering",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Enhed"
                                 }
                             },
                             "learn_more": "Lær om betingelser"
@@ -578,12 +588,15 @@
                                     "label": "Afsend hændelse",
                                     "event": "Hændelse:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Enhed"
                                 }
                             },
                             "learn_more": "Lær om handlinger"
                         },
                         "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
-                        "load_error_unknown": "Fejl ved indlæsning af automatisering ( {err_no} )."
+                        "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no})."
                     }
                 },
                 "script": {
@@ -700,7 +713,7 @@
                     "services": {
                         "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
                         "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen",
-                        "remove": "Fjern en enhed fra ZigBee netværket."
+                        "remove": "Fjern en enhed fra Zigbee netværket."
                     },
                     "device_card": {
                         "device_name_placeholder": "Navn",
@@ -787,9 +800,15 @@
                             "heading": "Serveradministration",
                             "introduction": "Administrer din Home Assistant server... fra Home Assistant.",
                             "restart": "Genstart",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Er du sikker på, at du vil genstarte Home Assistant?",
+                            "confirm_stop": "Er du sikker på, at du vil stoppe Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Enheder",
+                    "description": "Administrer tilsluttede enheder"
                 }
             },
             "profile": {
@@ -1010,9 +1029,9 @@
                         "hold": "Hold:",
                         "tap": "Tryk på:",
                         "navigate_to": "Naviger til {location}",
-                        "toggle": "Skift {navn}",
+                        "toggle": "Skift {name}",
                         "call_service": "Kald service {name}",
-                        "more_info": "Vis mere-info: {Name}"
+                        "more_info": "Vis mere-info: {name}"
                     }
                 },
                 "editor": {
@@ -1029,7 +1048,7 @@
                     "migrate": {
                         "header": "Konfiguration ikke færdiggjort",
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i \"ui-lovelace.yaml\".",
-                        "para_migrate": "Hjem assistent kan tilføje id'er til alle dine kort og oversigter automatisk for dig ved at trykke på knappen 'Overfør configuration'.",
+                        "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og oversigter automatisk for dig ved at trykke på knappen 'Overfør configuration'.",
                         "migrate": "Migrer opsætning"
                     },
                     "header": "Rediger UI",
@@ -1054,6 +1073,10 @@
                         "save": "Gem",
                         "unsaved_changes": "Ikke gemte ændringer",
                         "saved": "Gemt"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titel på din Lovelace UI",
+                        "explanation": "Denne titel vises over alle dine visninger i Lovelace."
                     }
                 },
                 "menu": {
@@ -1077,8 +1100,8 @@
                     "demo": {
                         "demo_by": "af {name}",
                         "next_demo": "Næste demo",
-                        "introduction": "Velkommen hjem! Du er kommet til Home assistant's demo hvor vi viser de bedste bruger interfaces lavet i bruger gruppen.\n",
-                        "learn_more": "Læs mere om Home-Assistent"
+                        "introduction": "Velkommen hjem! Du er kommet til Home Assistant's demo hvor vi viser de bedste bruger interfaces lavet i bruger gruppen.",
+                        "learn_more": "Læs mere om Home Assistant"
                     }
                 },
                 "config": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Indlæser",
             "cancel": "Annuller",
-            "save": "Gem"
+            "save": "Gem",
+            "successfully_saved": "Gemt med succes"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Hastighed",
                 "oscillate": "Sving",
-                "direction": "Retning"
+                "direction": "Retning",
+                "forward": "Frem",
+                "reverse": "Baglæns"
             },
             "light": {
                 "brightness": "Lysstyrke",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Ønsket temperatur",
                 "operation": "Drift",
                 "away_mode": "Ikke til stede"
+            },
+            "timer": {
+                "actions": {
+                    "start": "start",
+                    "pause": "pause",
+                    "cancel": "annuller",
+                    "finish": "afslut"
+                }
             }
         },
         "components": {
@@ -1273,7 +1307,7 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Tændte for {entity} .",
+            "entity_turned_on": "Tændte for {entity}.",
             "entity_turned_off": "Slukkede for {entity}.",
             "service_called": "Servicen {service} kaldes.",
             "service_call_failed": "Kunne ikke få forbindelse til servicen {service} .",
@@ -1310,6 +1344,20 @@
                 "title": "Systemindstillinger",
                 "enable_new_entities_label": "Aktivér nyligt tilføjede enheder.",
                 "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede enheder ikke automatisk til Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "af {manufacturer}",
+                "no_area": "Intet område",
+                "services": {
+                    "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
+                    "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen",
+                    "remove": "Fjern en enhed fra Zigbee-netværket."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Navn",
+                    "area_picker_label": "Område",
+                    "update_name_button": "Opdater navn"
+                }
             }
         },
         "auth_store": {
@@ -1393,9 +1441,9 @@
             },
             "hvac_action": {
                 "off": "Fra",
-                "heating": "Varmer",
-                "cooling": "Køler",
-                "drying": "Tørrer",
+                "heating": "Opvarmning",
+                "cooling": "Køling",
+                "drying": "Tørring",
                 "idle": "Inaktiv",
                 "fan": "Ventilator"
             }
@@ -1409,7 +1457,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Bruger",
-            "integration": "Integration"
+            "integration": "Integration",
+            "config_entry": "Konfigurationstilstand"
         }
     }
 }

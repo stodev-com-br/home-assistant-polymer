@@ -16,8 +16,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-
-import computeStateDisplay from "../../../common/entity/compute_state_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 interface SensorEntityConfig extends EntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
@@ -62,7 +61,8 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
-          ${stateObj.attributes.device_class === "timestamp"
+          ${stateObj.attributes.device_class === "timestamp" &&
+          stateObj.state !== "unavailable"
             ? html`
                 <hui-timestamp-display
                   .hass="${this.hass}"

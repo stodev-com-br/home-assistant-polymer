@@ -15,7 +15,7 @@ import "../components/hui-warning";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -37,7 +37,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-gauge-card-editor");
   }
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;
