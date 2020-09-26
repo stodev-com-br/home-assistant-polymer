@@ -1,18 +1,16 @@
-import "@polymer/app-layout/app-drawer/app-drawer";
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/app-layout/app-drawer/app-drawer";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "./notification-item";
-import "../../components/ha-paper-icon-button-prev";
-
+import { computeDomain } from "../../common/entity/compute_domain";
+import "../../components/ha-icon-button-prev";
+import { subscribeNotifications } from "../../data/persistent_notification";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { subscribeNotifications } from "../../data/persistent_notification";
-import { computeDomain } from "../../common/entity/compute_domain";
+import "./notification-item";
+
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -31,9 +29,17 @@ export class HuiNotificationDrawer extends EventsMixin(
         width: calc(100% - 32px);
       }
 
+      div[main-title] {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+
       .notifications {
         overflow-y: auto;
         padding-top: 16px;
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
         height: calc(100% - 65px);
         box-sizing: border-box;
         background-color: var(--primary-background-color);
@@ -49,10 +55,10 @@ export class HuiNotificationDrawer extends EventsMixin(
         text-align: center;
       }
     </style>
-    <app-drawer id='drawer' opened="{{open}}" disable-swipe align="start">
+    <app-drawer id="drawer" opened="{{open}}" disable-swipe align="start">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <ha-paper-icon-button-prev on-click="_closeDrawer"></paper-icon-button>
+        <ha-icon-button-prev on-click="_closeDrawer" aria-label$="[[localize('ui.notification_drawer.close')]]"></ha-icon-button-prev>
       </app-toolbar>
       <div class="notifications">
         <template is="dom-if" if="[[!_empty(notifications)]]">

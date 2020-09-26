@@ -1,13 +1,17 @@
 // Run HA develop mode
 const gulp = require("gulp");
 
+const env = require("../env");
+
 require("./clean.js");
 require("./translations.js");
-require("./gen-icons.js");
+require("./gen-icons-json.js");
 require("./gather-static.js");
+require("./compress.js");
 require("./webpack.js");
 require("./service-worker.js");
 require("./entry-html.js");
+require("./rollup.js");
 
 gulp.task(
   "develop-app",
@@ -17,14 +21,14 @@ gulp.task(
     },
     "clean",
     gulp.parallel(
-      "gen-service-worker-dev",
-      "gen-icons",
+      "gen-service-worker-app-dev",
+      "gen-icons-json",
       "gen-pages-dev",
       "gen-index-app-dev",
-      gulp.series("create-test-translation", "build-translations")
+      "build-translations"
     ),
-    "copy-static",
-    "webpack-watch-app"
+    "copy-static-app",
+    env.useRollup() ? "rollup-watch-app" : "webpack-watch-app"
   )
 );
 
@@ -35,17 +39,15 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean",
-    gulp.parallel("gen-icons", "build-translations"),
-    "copy-static",
-    gulp.parallel(
-      "webpack-prod-app",
-      // Do not compress static files in CI, it's SLOW.
-      ...(process.env.CI === "true" ? [] : ["compress-static"])
-    ),
+    gulp.parallel("gen-icons-json", "build-translations"),
+    "copy-static-app",
+    env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
+    ...// Don't compress running tests
+    (env.isTest() ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
-      "gen-service-worker-prod"
+      "gen-service-worker-app-prod"
     )
   )
 );

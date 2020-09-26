@@ -1,25 +1,27 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  internalProperty,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -32,17 +34,33 @@ const SENSORS = {
 @customElement("hui-plant-status-card")
 class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-plant-status-card-editor" */ "../editor/config-elements/hui-plant-status-card-editor");
+    await import(
+      /* webpackChunkName: "hui-plant-status-card-editor" */ "../editor/config-elements/hui-plant-status-card-editor"
+    );
     return document.createElement("hui-plant-status-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): PlantStatusCardConfig {
+    const includeDomains = ["plant"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains
+    );
+
+    return { type: "plant-status", entity: foundEntities[0] || "" };
   }
 
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PlantStatusCardConfig;
+  @internalProperty() private _config?: PlantStatusCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -60,7 +78,27 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | PlantStatusCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -69,13 +107,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -96,7 +130,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
             (item) => html`
               <div
                 class="attributes"
-                @click="${this._handleMoreInfo}"
+                @action=${this._handleMoreInfo}
+                .actionHandler=${actionHandler()}
+                tabindex="0"
                 .value="${item}"
               >
                 <div>
@@ -183,12 +219,18 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
         cursor: pointer;
       }
 
+      .attributes:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
+
       .attributes div {
         text-align: center;
       }
 
       .problem {
-        color: var(--google-red-500);
+        color: var(--error-color);
         font-weight: bold;
       }
 

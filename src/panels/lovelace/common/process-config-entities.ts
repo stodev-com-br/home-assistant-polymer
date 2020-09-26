@@ -1,5 +1,5 @@
 // Parse array of entity objects from config
-import isValidEntityId from "../../../common/entity/valid_entity_id";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { EntityConfig } from "../entity-rows/types";
 
 export const processConfigEntities = <T extends EntityConfig>(
@@ -22,7 +22,6 @@ export const processConfigEntities = <T extends EntityConfig>(
       let config: T;
 
       if (typeof entityConf === "string") {
-        // tslint:disable-next-line:no-object-literal-type-assertion
         config = { entity: entityConf } as T;
       } else if (typeof entityConf === "object" && !Array.isArray(entityConf)) {
         if (!entityConf.entity) {

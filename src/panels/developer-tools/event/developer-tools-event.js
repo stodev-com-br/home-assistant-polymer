@@ -1,21 +1,25 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@material/mwc-button";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import yaml from "js-yaml";
-
-import "../../../resources/ha-style";
-import "./events-list";
-import "./event-subscribe-card";
+import { safeLoad } from "js-yaml";
+import "../../../components/ha-code-editor";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import { documentationUrl } from "../../../util/documentation-url";
+import "../../../styles/polymer-ha-style";
+import "./event-subscribe-card";
+import "./events-list";
 
+const ERROR_SENTINEL = {};
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelDevEvent extends EventsMixin(PolymerElement) {
+class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="ha-style iron-flex iron-positioning"></style>
@@ -26,12 +30,16 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
           -moz-user-select: initial;
           @apply --paper-font-body1;
           padding: 16px;
-          direction: ltr;
           display: block;
         }
 
         .ha-form {
           margin-right: 16px;
+          max-width: 400px;
+        }
+
+        mwc-button {
+          margin-top: 8px;
         }
 
         .header {
@@ -43,35 +51,55 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
           max-width: 800px;
           margin: 16px auto;
         }
+
+        a {
+          color: var(--primary-color);
+        }
       </style>
 
       <div class$="[[computeFormClasses(narrow)]]">
         <div class="flex">
           <p>
-            Fire an event on the event bus.
+            [[localize( 'ui.panel.developer-tools.tabs.events.description' )]]
             <a
-              href="https://www.home-assistant.io/docs/configuration/events/"
+              href="[[_computeDocumentationUrl(hass)]]"
               target="_blank"
-              >Events Documentation.</a
+              rel="noreferrer"
             >
+              [[localize( 'ui.panel.developer-tools.tabs.events.documentation'
+              )]]
+            </a>
           </p>
           <div class="ha-form">
             <paper-input
-              label="Event Type"
+              label="[[localize(
+                'ui.panel.developer-tools.tabs.events.type'
+              )]]"
               autofocus
               required
               value="{{eventType}}"
             ></paper-input>
-            <paper-textarea
-              label="Event Data (YAML, optional)"
-              value="{{eventData}}"
-            ></paper-textarea>
-            <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
+            <p>
+              [[localize( 'ui.panel.developer-tools.tabs.events.data' )]]
+            </p>
+            <ha-code-editor
+              mode="yaml"
+              value="[[eventData]]"
+              error="[[!validJSON]]"
+              on-value-changed="_yamlChanged"
+            ></ha-code-editor>
+            <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
+              >[[localize( 'ui.panel.developer-tools.tabs.events.fire_event'
+              )]]</mwc-button
+            >
           </div>
         </div>
 
         <div>
-          <div class="header">Available Events</div>
+          <div class="header">
+            [[localize( 'ui.panel.developer-tools.tabs.events.available_events'
+            )]]
+          </div>
           <events-list
             on-event-selected="eventSelected"
             hass="[[hass]]"
@@ -97,6 +125,16 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         type: String,
         value: "",
       },
+
+      parsedJSON: {
+        type: Object,
+        computed: "_computeParsedEventData(eventData)",
+      },
+
+      validJSON: {
+        type: Boolean,
+        computed: "_computeValidJSON(parsedJSON)",
+      },
     };
   }
 
@@ -104,22 +142,43 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
     this.eventType = ev.detail.eventType;
   }
 
-  fireEvent() {
-    var eventData;
-
+  _computeParsedEventData(eventData) {
     try {
-      eventData = this.eventData ? yaml.safeLoad(this.eventData) : {};
+      return eventData.trim() ? safeLoad(eventData) : {};
     } catch (err) {
-      /* eslint-disable no-alert */
-      alert("Error parsing YAML: " + err);
-      /* eslint-enable no-alert */
+      return ERROR_SENTINEL;
+    }
+  }
+
+  _computeDocumentationUrl(hass) {
+    return documentationUrl(hass, "/docs/configuration/events/");
+  }
+
+  _computeValidJSON(parsedJSON) {
+    return parsedJSON !== ERROR_SENTINEL;
+  }
+
+  _yamlChanged(ev) {
+    this.eventData = ev.detail.value;
+  }
+
+  fireEvent() {
+    if (!this.eventType) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.events.alert_event_type"
+        ),
+      });
       return;
     }
-
-    this.hass.callApi("POST", "events/" + this.eventType, eventData).then(
-      function() {
+    this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(
+      function () {
         this.fire("hass-notification", {
-          message: "Event " + this.eventType + " successful fired!",
+          message: this.hass.localize(
+            "ui.panel.developer-tools.tabs.events.notification_event_fired",
+            "type",
+            this.eventType
+          ),
         });
       }.bind(this)
     );

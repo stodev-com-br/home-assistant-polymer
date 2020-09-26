@@ -1,43 +1,46 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
-
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
+import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
+import { assert, object, string, optional, array } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  entity: "string?",
-  name: "string?",
-  states: "array?",
+const cardConfigStruct = object({
+  type: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  states: optional(array()),
+  theme: optional(string()),
 });
+
+const includeDomains = ["alarm_control_panel"];
 
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: AlarmPanelCardConfig;
+  @internalProperty() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -53,8 +56,12 @@ export class HuiAlarmPanelCardEditor extends LitElement
     return this._config!.states || [];
   }
 
-  protected render(): TemplateResult | void {
-    if (!this.hass) {
+  get _theme(): string {
+    return this._config!.theme || "";
+  }
+
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -69,10 +76,10 @@ export class HuiAlarmPanelCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="alarm_control_panel"
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
@@ -101,18 +108,22 @@ export class HuiAlarmPanelCardEditor extends LitElement
         })}
         <paper-dropdown-menu
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.alarm_panel.available_states"
+            "ui.panel.lovelace.editor.card.alarm-panel.available_states"
           )}"
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
             ${states.map((state) => {
-              return html`
-                <paper-item>${state}</paper-item>
-              `;
+              return html` <paper-item>${state}</paper-item> `;
             })}
           </paper-listbox>
         </paper-dropdown-menu>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @value-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }
@@ -143,13 +154,14 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const target = ev.target! as EditorTarget;
     const index = Number(target.value);
     if (index > -1) {
-      const newStates = this._states;
+      const newStates = [...this._states];
       newStates.splice(index, 1);
-      this._config = {
-        ...this._config,
-        states: newStates,
-      };
-      fireEvent(this, "config-changed", { config: this._config });
+      fireEvent(this, "config-changed", {
+        config: {
+          ...this._config,
+          states: newStates,
+        },
+      });
     }
   }
 
@@ -158,17 +170,18 @@ export class HuiAlarmPanelCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (!target.value || this._states.indexOf(target.value) >= 0) {
+    if (!target.value || this._states.indexOf(target.value) !== -1) {
       return;
     }
-    const newStates = this._states;
+    const newStates = [...this._states];
     newStates.push(target.value);
-    this._config = {
-      ...this._config,
-      states: newStates,
-    };
     target.value = "";
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        states: newStates,
+      },
+    });
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
@@ -181,6 +194,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     }
     if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

@@ -1,14 +1,12 @@
 const { createAppConfig } = require("./build-scripts/webpack.js");
+const { isProdBuild, isStatsBuild } = require("./build-scripts/env.js");
 
 // This file exists because we haven't migrated the stats script yet
 
-const isProdBuild = process.env.NODE_ENV === "production";
-const isStatsBuild = process.env.STATS === "1";
-
 const configs = [
   createAppConfig({
-    isProdBuild,
-    isStatsBuild,
+    isProdBuild: isProdBuild(),
+    isStatsBuild: isStatsBuild(),
     latestBuild: true,
   }),
 ];
@@ -16,8 +14,8 @@ const configs = [
 if (isProdBuild && !isStatsBuild) {
   configs.push(
     createAppConfig({
-      isProdBuild,
-      isStatsBuild,
+      isProdBuild: isProdBuild(),
+      isStatsBuild: isStatsBuild(),
       latestBuild: false,
     })
   );

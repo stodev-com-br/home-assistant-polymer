@@ -1,32 +1,41 @@
-import {
-  LitElement,
-  html,
-  property,
-  PropertyValues,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@material/mwc-button";
-import "../components/ha-form";
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  internalProperty,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { AuthProvider } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
 type State = "loading" | "error" | "step";
 
 class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @property() public authProvider?: AuthProvider;
+
   @property() public clientId?: string;
+
   @property() public redirectUri?: string;
+
   @property() public oauth2State?: string;
-  @property() private _state: State = "loading";
-  @property() private _stepData: any = {};
-  @property() private _step?: DataEntryFlowStep;
-  @property() private _errorMessage?: string;
+
+  @internalProperty() private _state: State = "loading";
+
+  @internalProperty() private _stepData: any = {};
+
+  @internalProperty() private _step?: DataEntryFlowStep;
+
+  @internalProperty() private _errorMessage?: string;
 
   protected render() {
     return html`
@@ -40,7 +49,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     super.firstUpdated(changedProps);
 
     if (this.clientId == null || this.redirectUri == null) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.error(
         "clientId and redirectUri must not be null",
         this.clientId,
@@ -58,14 +67,14 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     });
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (changedProps.has("authProvider")) {
       this._providerChanged(this.authProvider);
     }
   }
 
-  private _renderForm() {
+  private _renderForm(): TemplateResult {
     switch (this._state) {
       case "step":
         if (this._step == null) {
@@ -75,32 +84,41 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this._renderStep(this._step)}
           <div class="action">
             <mwc-button raised @click=${this._handleSubmit}
-              >${this._step.type === "form" ? "Next" : "Start over"}</mwc-button
+              >${this._step.type === "form"
+                ? this.localize("ui.panel.page-authorize.form.next")
+                : this.localize(
+                    "ui.panel.page-authorize.form.start_over"
+                  )}</mwc-button
             >
           </div>
         `;
       case "error":
         return html`
-          <div class="error">Error: ${this._errorMessage}</div>
+          <div class="error">
+            ${this.localize(
+              "ui.panel.page-authorize.form.error",
+              "error",
+              this._errorMessage
+            )}
+          </div>
         `;
       case "loading":
-        return html`
-          ${this.localize("ui.panel.page-authorize.form.working")}
-        `;
+        return html` ${this.localize("ui.panel.page-authorize.form.working")} `;
+      default:
+        return html``;
     }
   }
 
-  private _renderStep(step: DataEntryFlowStep) {
+  private _renderStep(step: DataEntryFlowStep): TemplateResult {
     switch (step.type) {
       case "abort":
         return html`
           ${this.localize("ui.panel.page-authorize.abort_intro")}:
           <ha-markdown
             allowsvg
+            breaks
             .content=${this.localize(
-              `ui.panel.page-authorize.form.providers.${
-                step.handler[0]
-              }.abort.${step.reason}`
+              `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
             )}
           ></ha-markdown>
         `;
@@ -109,6 +127,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this._computeStepDescription(step)
             ? html`
                 <ha-markdown
+                  breaks
                   .content=${this._computeStepDescription(step)}
                 ></ha-markdown>
               `
@@ -119,6 +138,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .error=${step.errors}
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
+            @value-changed=${this._stepDataChanged}
           ></ha-form>
         `;
       default:
@@ -132,13 +152,13 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         method: "DELETE",
         credentials: "same-origin",
       }).catch((err) => {
-        // tslint:disable-next-line: no-console
+        // eslint-disable-next-line no-console
         console.error("Error delete obsoleted auth flow", err);
       });
     }
 
     if (newProvider == null) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.error("No auth provider");
       this._state = "error";
       this._errorMessage = this._unknownError();
@@ -171,7 +191,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._errorMessage = data.message;
       }
     } catch (err) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.error("Error starting auth flow", err);
       this._state = "error";
       this._errorMessage = this._unknownError();
@@ -223,10 +243,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }, 100);
   }
 
+  private _stepDataChanged(ev: CustomEvent) {
+    this._stepData = ev.detail.value;
+  }
+
   private _computeStepDescription(step: DataEntryFlowStepForm) {
-    const resourceKey = `ui.panel.page-authorize.form.providers.${
-      step.handler[0]
-    }.step.${step.step_id}.description`;
+    const resourceKey = `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`;
     const args: string[] = [];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
@@ -240,9 +262,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       this.localize(
-        `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${
-          step.step_id
-        }.data.${schema.name}`
+        `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.data.${schema.name}`
       );
   }
 
@@ -250,9 +270,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // Returns a callback for ha-form to calculate error messages
     return (error) =>
       this.localize(
-        `ui.panel.page-authorize.form.providers.${
-          step.handler[0]
-        }.error.${error}`
+        `ui.panel.page-authorize.form.providers.${step.handler[0]}.error.${error}`
       );
   }
 
@@ -290,7 +308,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       }
       await this._updateStep(newStep);
     } catch (err) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.error("Error submitting step", err);
       this._state = "error";
       this._errorMessage = this._unknownError();

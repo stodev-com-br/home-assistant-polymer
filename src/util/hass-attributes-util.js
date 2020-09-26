@@ -37,6 +37,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "shutter",
     "window",
   ],
+  humidifier: ["dehumidifier", "humidifier"],
   sensor: [
     "battery",
     "humidity",
@@ -45,6 +46,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "pressure",
     "power",
     "signal_strength",
+    "timestamp",
   ],
   switch: ["switch", "outlet"],
 };
@@ -79,19 +81,17 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
   },
   haaska_hidden: undefined,
   haaska_name: undefined,
-  homebridge_hidden: { type: "boolean" },
-  homebridge_name: { type: "string" },
   supported_features: undefined,
   attribution: undefined,
+  restored: undefined,
   custom_ui_more_info: { type: "string" },
   custom_ui_state_card: { type: "string" },
   device_class: {
     type: "array",
     options: hassAttributeUtil.DOMAIN_DEVICE_CLASS,
     description: "Device class",
-    domains: ["binary_sensor", "cover", "sensor", "switch"],
+    domains: ["binary_sensor", "cover", "humidifier", "sensor", "switch"],
   },
-  hidden: { type: "boolean", description: "Hide from UI" },
   assumed_state: {
     type: "boolean",
     domains: [
@@ -100,6 +100,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
       "cover",
       "climate",
       "fan",
+      "humidifier",
       "group",
       "water_heater",
     ],

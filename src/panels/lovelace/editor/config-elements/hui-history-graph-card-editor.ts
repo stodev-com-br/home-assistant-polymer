@@ -1,51 +1,59 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  internalProperty,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-entity-editor";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HistoryGraphCardConfig } from "../../cards/hui-history-graph-card";
+import { HomeAssistant } from "../../../../types";
+import { HistoryGraphCardConfig } from "../../cards/types";
+import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import {
+  assert,
+  union,
+  optional,
+  string,
+  object,
+  array,
+  number,
+} from "superstruct";
+import { EntityId } from "../../common/structs/is-entity-id";
 
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-  },
-  "entity-id",
+const entitiesConfigStruct = union([
+  object({
+    entity: EntityId,
+    name: optional(string()),
+  }),
+  EntityId,
 ]);
 
-const cardConfigStruct = struct({
-  type: "string",
-  entities: [entitiesConfigStruct],
-  title: "string?",
-  hours_to_show: "number?",
-  refresh_interval: "number?",
+const cardConfigStruct = object({
+  type: string(),
+  entities: array(entitiesConfigStruct),
+  title: optional(string()),
+  hours_to_show: optional(number()),
+  refresh_interval: optional(number()),
 });
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: HistoryGraphCardConfig;
+  @internalProperty() private _config?: HistoryGraphCardConfig;
 
-  @property() private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: HistoryGraphCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -59,15 +67,15 @@ export class HuiHistoryGraphCardEditor extends LitElement
   }
 
   get _hours_to_show(): number {
-    return this._config!.number || 24;
+    return this._config!.hours_to_show || 24;
   }
 
   get _refresh_interval(): number {
-    return this._config!.number || 0;
+    return this._config!.refresh_interval || 0;
   }
 
-  protected render(): TemplateResult | void {
-    if (!this.hass) {
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -109,7 +117,7 @@ export class HuiHistoryGraphCardEditor extends LitElement
           ></paper-input>
         </div>
         <hui-entity-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
@@ -128,10 +136,11 @@ export class HuiHistoryGraphCardEditor extends LitElement
     }
 
     if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
+      this._config = { ...this._config, entities: ev.detail.entities };
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       if (target.value === "") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;

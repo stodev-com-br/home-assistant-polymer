@@ -33,6 +33,12 @@
   "en": {
     "nativeName": "English"
   },
+  "en-GB": {
+    "nativeName": "English (GB)"
+  },
+  "eo": {
+    "nativeName": "Esperanto"
+  },
   "es": {
     "nativeName": "Español"
   },
@@ -46,13 +52,20 @@
     "nativeName": "Euskara"
   },
   "fa": {
-    "nativeName": "فارسی"
+    "nativeName": "فارسی",
+    "isRTL": true
   },
   "fi": {
     "nativeName": "Suomi"
   },
+  "fy": {
+    "nativeName": "Frysk"
+  },
   "fr": {
     "nativeName": "Français"
+  },
+  "gl": {
+    "nativeName": "Galego"
   },
   "gsw": {
     "nativeName": "Schwiizerdütsch"

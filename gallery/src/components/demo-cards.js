@@ -1,9 +1,10 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-
-import "./demo-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../src/components/ha-switch";
+import "../../../src/components/ha-formfield";
+import "./demo-card";
 
 class DemoCards extends PolymerElement {
   static get template() {
@@ -26,7 +27,10 @@ class DemoCards extends PolymerElement {
       </style>
       <app-toolbar>
         <div class="filters">
-          <ha-switch checked="{{_showConfig}}">Show config</ha-switch>
+          <ha-formfield label="Show config">
+            <ha-switch checked="[[_showConfig]]" on-change="_showConfigToggled">
+            </ha-switch>
+          </ha-formfield>
         </div>
       </app-toolbar>
       <div class="cards">
@@ -50,6 +54,10 @@ class DemoCards extends PolymerElement {
         value: false,
       },
     };
+  }
+
+  _showConfigToggled(ev) {
+    this._showConfig = ev.target.checked;
   }
 }
 

@@ -1,12 +1,15 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { compare } from "../../../common/string/compare";
 import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class EventsList extends EventsMixin(PolymerElement) {
+class EventsList extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -21,7 +24,7 @@ class EventsList extends EventsMixin(PolymerElement) {
         }
 
         a {
-          color: var(--dark-primary-color);
+          color: var(--primary-color);
         }
       </style>
 
@@ -29,8 +32,11 @@ class EventsList extends EventsMixin(PolymerElement) {
         <template is="dom-repeat" items="[[events]]" as="event">
           <li>
             <a href="#" on-click="eventSelected">{{event.event}}</a>
-            <span> (</span><span>{{event.listener_count}}</span
-            ><span> listeners)</span>
+            <span>
+              [[localize(
+              "ui.panel.developer-tools.tabs.events.count_listeners", "count",
+              event.listener_count )]]</span
+            >
           </li>
         </template>
       </ul>
@@ -52,8 +58,8 @@ class EventsList extends EventsMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     this.hass.callApi("GET", "events").then(
-      function(events) {
-        this.events = events;
+      function (events) {
+        this.events = events.sort((e1, e2) => compare(e1.event, e2.event));
       }.bind(this)
     );
   }

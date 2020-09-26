@@ -1,33 +1,27 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
-  PropertyDeclarations,
+  property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
-  public value?: string;
-  public icon?: string;
-  public label?: string;
-  public description?: string;
-  public image?: string;
+  @property() public value?: string;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      value: {},
-      icon: {},
-      label: {},
-      description: {},
-      image: {},
-    };
-  }
+  @property() public icon?: string;
 
-  protected render(): TemplateResult | void {
+  @property() public label?: string;
+
+  @property() public description?: string;
+
+  @property() public image?: string;
+
+  protected render(): TemplateResult {
     return html`
       <div class="badge-container">
         <div class="label-badge" id="badge">
@@ -37,16 +31,14 @@ class HaLabelBadge extends LitElement {
               big: Boolean(this.value && this.value.length > 4),
             })}"
           >
-            ${this.icon && !this.value && !this.image
-              ? html`
-                  <ha-icon .icon="${this.icon}"></ha-icon>
-                `
-              : ""}
-            ${this.value && !this.image
-              ? html`
-                  <span>${this.value}</span>
-                `
-              : ""}
+            <slot>
+              ${this.icon && !this.value && !this.image
+                ? html` <ha-icon .icon=${this.icon}></ha-icon> `
+                : ""}
+              ${this.value && !this.image
+                ? html` <span>${this.value}</span> `
+                : ""}
+            </slot>
           </div>
           ${this.label
             ? html`
@@ -62,9 +54,7 @@ class HaLabelBadge extends LitElement {
             : ""}
         </div>
         ${this.description
-          ? html`
-              <div class="title">${this.description}</div>
-            `
+          ? html` <div class="title">${this.description}</div> `
           : ""}
       </div>
     `;
@@ -77,6 +67,7 @@ class HaLabelBadge extends LitElement {
           display: inline-block;
           text-align: center;
           vertical-align: top;
+          padding: var(--ha-label-badge-padding, 0 0 0 0);
         }
         .label-badge {
           position: relative;

@@ -1,54 +1,67 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-  CSSResult,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { HomeAssistant } from "../../../../types";
+import { MapCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
-
-import { struct } from "../../common/structs/struct";
+import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
+import { processEditorEntities } from "../process-editor-entities";
 import {
-  EntitiesEditorEvent,
   EditorTarget,
   entitiesConfigStruct,
+  EntitiesEditorEvent,
 } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
-import { processEditorEntities } from "../process-editor-entities";
-import { EntityConfig } from "../../entity-rows/types";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { MapCardConfig } from "../../cards/types";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import {
+  string,
+  optional,
+  object,
+  number,
+  boolean,
+  array,
+  assert,
+} from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  aspect_ratio: "string?",
-  default_zoom: "number?",
-  dark_mode: "boolean?",
-  entities: [entitiesConfigStruct],
-  geo_location_sources: "array?",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  aspect_ratio: optional(string()),
+  default_zoom: optional(number()),
+  dark_mode: optional(boolean()),
+  entities: array(entitiesConfigStruct),
+  hours_to_show: optional(number()),
+  geo_location_sources: optional(array()),
 });
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: MapCardConfig;
+  @internalProperty() private _config?: MapCardConfig;
 
-  @property() private _configEntities?: EntityConfig[];
+  @internalProperty() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    this._configEntities = config.entities
+      ? processEditorEntities(config.entities)
+      : [];
   }
 
   get _title(): string {
@@ -67,12 +80,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.geo_location_sources || [];
   }
 
+  get _hours_to_show(): number {
+    return this._config!.hours_to_show || 0;
+  }
+
   get _dark_mode(): boolean {
     return this._config!.dark_mode || false;
   }
 
-  protected render(): TemplateResult | void {
-    if (!this.hass) {
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -112,16 +129,33 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <ha-switch
-          ?checked="${this._dark_mode !== false}"
-          .configValue="${"dark_mode"}"
-          @change="${this._valueChanged}"
-          >${this.hass.localize(
-            "ui.panel.lovelace.editor.card.map.dark_mode"
-          )}</ha-switch
-        >
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.dark_mode"
+            )}
+            .dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-switch
+              .checked="${this._dark_mode}"
+              .configValue="${"dark_mode"}"
+              @change="${this._valueChanged}"
+            ></ha-switch
+          ></ha-formfield>
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.hours_to_show"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value="${this._hours_to_show}"
+            .configValue="${"hours_to_show"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
         <hui-entity-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .entities="${this._configEntities}"
           @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
@@ -135,7 +169,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             inputLabel=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.source"
             )}
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._geo_location_sources}"
             .configValue="${"geo_location_sources"}"
             @value-changed="${this._valueChanged}"
@@ -150,7 +184,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
+      this._config = { ...this._config, entities: ev.detail.entities };
+
       this._configEntities = processEditorEntities(this._config.entities);
       fireEvent(this, "config-changed", { config: this._config });
     }
@@ -169,6 +204,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       value = Number(value);
     }
     if (target.value === "" || (target.type === "number" && isNaN(value))) {
+      this._config = { ...this._config };
       delete this._config[target.configValue!];
     } else if (target.configValue) {
       this._config = {

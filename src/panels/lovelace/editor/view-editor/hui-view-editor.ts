@@ -1,21 +1,25 @@
+import "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  internalProperty,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import { EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "../config-elements/config-elements-style";
-import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { slugify } from "../../../../common/string/slugify";
-
-import "../../components/hui-theme-select-editor";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-icon-input";
+import { LovelaceViewConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import "../../components/hui-theme-select-editor";
+import { configElementStyle } from "../config-elements/config-elements-style";
+import { EditorTarget } from "../types";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 declare global {
   interface HASSDomEvents {
@@ -27,9 +31,12 @@ declare global {
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public isNew!: boolean;
-  @property() private _config!: LovelaceViewConfig;
+
+  @internalProperty() private _config!: LovelaceViewConfig;
+
   private _suggestedPath = false;
 
   get _path(): string {
@@ -71,7 +78,7 @@ export class HuiViewEditor extends LitElement {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -80,20 +87,33 @@ export class HuiViewEditor extends LitElement {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )}  (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._title}
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
           @blur=${this._handleTitleBlur}
         ></paper-input>
-        <paper-input
-          label="Icon"
+        <ha-icon-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.icon"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._icon}
+          .placeholder=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-        ></paper-input>
+        ></ha-icon-input>
         <paper-input
-          label="URL Path"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.url"
+          )}  (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._path}
           .configValue=${"path"}
           @value-changed=${this._valueChanged}
@@ -102,14 +122,25 @@ export class HuiViewEditor extends LitElement {
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
-          @theme-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <ha-switch
-          ?checked=${this._panel !== false}
-          .configValue=${"panel"}
-          @change=${this._valueChanged}
-          >Panel Mode?</ha-switch
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.view.panel_mode.title"
+          )}
+          .dir=${computeRTLDirection(this.hass)}
         >
+          <ha-switch
+            .checked=${this._panel !== false}
+            .configValue=${"panel"}
+            @change=${this._valueChanged}
+          ></ha-switch
+        ></ha-formfield>
+        <span class="panel">
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.view.panel_mode.description"
+          )}
+        </span>
       </div>
     `;
   }
@@ -144,8 +175,20 @@ export class HuiViewEditor extends LitElement {
       return;
     }
 
-    const config = { ...this._config, path: slugify(ev.currentTarget.value) };
+    const config = {
+      ...this._config,
+      path: slugify(ev.currentTarget.value, "-"),
+    };
     fireEvent(this, "view-config-changed", { config });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .panel {
+        color: var(--secondary-text-color);
+        display: block;
+      }
+    `;
   }
 }
 

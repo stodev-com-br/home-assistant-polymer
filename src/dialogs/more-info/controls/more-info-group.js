@@ -1,11 +1,10 @@
 import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../state-summary/state-card-content";
-
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import "../../../state-summary/state-card-content";
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {
@@ -54,11 +53,11 @@ class MoreInfoGroup extends PolymerElement {
   }
 
   computeStates(stateObj, hass) {
-    var states = [];
-    var entIds = stateObj.attributes.entity_id || [];
+    const states = [];
+    const entIds = stateObj.attributes.entity_id || [];
 
-    for (var i = 0; i < entIds.length; i++) {
-      var state = hass.states[entIds[i]];
+    for (let i = 0; i < entIds.length; i++) {
+      const state = hass.states[entIds[i]];
 
       if (state) {
         states.push(state);

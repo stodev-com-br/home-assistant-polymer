@@ -1,71 +1,82 @@
+import { mdiPlus } from "@mdi/js";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
-  PropertyDeclarations,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-
-import { HomeAssistant } from "../../../types";
-import {
-  Person,
-  fetchPersons,
-  updatePerson,
-  deletePerson,
-  createPerson,
-} from "../../../data/person";
-import "../../../components/ha-card";
-import "../../../components/ha-fab";
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-loading-screen";
 import { compare } from "../../../common/string/compare";
-import "../ha-config-section";
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+import "../../../components/user/ha-person-badge";
 import {
-  showPersonDetailDialog,
+  createPerson,
+  deletePerson,
+  fetchPersons,
+  Person,
+  updatePerson,
+} from "../../../data/person";
+import { fetchUsers, User } from "../../../data/user";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
+import {
   loadPersonDetailDialog,
+  showPersonDetailDialog,
 } from "./show-dialog-person-detail";
-import { User, fetchUsers } from "../../../data/user";
 
 class HaConfigPerson extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _storageItems?: Person[];
-  private _configItems?: Person[];
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property() public isWide?: boolean;
+
+  @property() public narrow?: boolean;
+
+  @property() public route!: Route;
+
+  @internalProperty() private _storageItems?: Person[];
+
+  @internalProperty() private _configItems?: Person[];
+
   private _usersLoad?: Promise<User[]>;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _storageItems: {},
-      _configItems: {},
-    };
-  }
-
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (
       !this.hass ||
       this._storageItems === undefined ||
       this._configItems === undefined
     ) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
+    const hass = this.hass;
     return html`
-      <hass-subpage header="Persons">
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        back-path="/config"
+        .tabs=${configSections.persons}
+      >
         <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">Persons</span>
+          <span slot="header"
+            >${hass.localize("ui.panel.config.person.caption")}</span
+          >
           <span slot="introduction">
-            Here you can define each person of interest in Home Assistant.
+            ${hass.localize("ui.panel.config.person.introduction")}
             ${this._configItems.length > 0
               ? html`
                   <p>
-                    Note: persons configured via configuration.yaml cannot be
-                    edited via the UI.
+                    ${hass.localize(
+                      "ui.panel.config.person.note_about_persons_configured_in_yaml"
+                    )}
                   </p>
                 `
               : ""}
@@ -73,19 +84,27 @@ class HaConfigPerson extends LitElement {
           <ha-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
-                <paper-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  <ha-person-badge
+                    slot="item-icon"
+                    .person=${entry}
+                  ></ha-person-badge>
                   <paper-item-body>
                     ${entry.name}
                   </paper-item-body>
-                </paper-item>
+                </paper-icon-item>
               `;
             })}
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
-                    Looks like you have not created any persons yet.
+                    ${hass.localize(
+                      "ui.panel.config.person.no_persons_created_yet"
+                    )}
                     <mwc-button @click=${this._createPerson}>
-                      CREATE PERSON</mwc-button
+                      ${hass.localize(
+                        "ui.panel.config.person.create_person"
+                      )}</mwc-button
                     >
                   </div>
                 `
@@ -96,25 +115,29 @@ class HaConfigPerson extends LitElement {
                 <ha-card header="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
-                      <paper-item>
+                      <paper-icon-item>
+                        <ha-person-badge
+                          slot="item-icon"
+                          .person=${entry}
+                        ></ha-person-badge>
                         <paper-item-body>
                           ${entry.name}
                         </paper-item-body>
-                      </paper-item>
+                      </paper-icon-item>
                     `;
                   })}
                 </ha-card>
               `
             : ""}
         </ha-config-section>
-      </hass-subpage>
-
-      <ha-fab
-        ?is-wide=${this.isWide}
-        icon="hass:plus"
-        title="Add Person"
-        @click=${this._createPerson}
-      ></ha-fab>
+        <mwc-fab
+          slot="fab"
+          title="${hass.localize("ui.panel.config.person.add_person")}"
+          @click=${this._createPerson}
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -168,9 +191,9 @@ class HaConfigPerson extends LitElement {
       users: this._allowedUsers(users, entry),
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
-        this._storageItems = this._storageItems!.concat(created).sort(
-          (ent1, ent2) => compare(ent1.name, ent2.name)
-        );
+        this._storageItems = this._storageItems!.concat(
+          created
+        ).sort((ent1, ent2) => compare(ent1.name, ent2.name));
       },
       updateEntry: async (values) => {
         const updated = await updatePerson(this.hass!, entry!.id, values);
@@ -180,9 +203,12 @@ class HaConfigPerson extends LitElement {
       },
       removeEntry: async () => {
         if (
-          !confirm(`Are you sure you want to delete this person?
-
-All devices belonging to this person will become unassigned.`)
+          !(await showConfirmationDialog(this, {
+            title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
+            text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
+            dismissText: this.hass!.localize("ui.common.no"),
+            confirmText: this.hass!.localize("ui.common.yes"),
+          }))
         ) {
           return false;
         }
@@ -214,23 +240,12 @@ All devices belonging to this person will become unassigned.`)
         text-align: center;
         padding: 8px;
       }
-      paper-item {
+      paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      ha-card.storage paper-item {
+      ha-card.storage paper-icon-item {
         cursor: pointer;
-      }
-      ha-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
-
-      ha-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
       }
     `;
   }

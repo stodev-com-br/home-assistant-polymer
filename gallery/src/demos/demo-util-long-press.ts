@@ -1,20 +1,19 @@
-import { html, LitElement, TemplateResult } from "lit-element";
 import "@material/mwc-button";
-
+import { html, LitElement, TemplateResult } from "lit-element";
 import "../../../src/components/ha-card";
-import { longPress } from "../../../src/panels/lovelace/common/directives/long-press-directive";
+import { ActionHandlerEvent } from "../../../src/data/lovelace";
+import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";
 
 export class DemoUtilLongPress extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
       ${[1, 2, 3].map(
         () => html`
           <ha-card>
             <mwc-button
-              @ha-click="${this._handleTap}"
-              @ha-hold="${this._handleHold}"
-              .longPress="${longPress()}"
+              @action=${this._handleAction}
+              .actionHandler=${actionHandler({})}
             >
               (long) press me!
             </mwc-button>
@@ -28,12 +27,8 @@ export class DemoUtilLongPress extends LitElement {
     `;
   }
 
-  private _handleTap(ev: Event) {
-    this._addValue(ev, "tap");
-  }
-
-  private _handleHold(ev: Event) {
-    this._addValue(ev, "hold");
+  private _handleAction(ev: ActionHandlerEvent) {
+    this._addValue(ev, ev.detail.action!);
   }
 
   private _addValue(ev: Event, value: string) {

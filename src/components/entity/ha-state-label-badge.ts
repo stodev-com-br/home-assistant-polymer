@@ -1,31 +1,30 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
-  PropertyValues,
-  TemplateResult,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  internalProperty,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { HassEntity } from "home-assistant-js-websocket";
 import { classMap } from "lit-html/directives/class-map";
-import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
-
+import secondsToDuration from "../../common/datetime/seconds_to_duration";
+import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
-import secondsToDuration from "../../common/datetime/seconds_to_duration";
-
+import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public state?: HassEntity;
 
@@ -35,7 +34,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
-  @property() private _timerTimeRemaining?: number;
+  @internalProperty() private _timerTimeRemaining?: number;
 
   private _connected?: boolean;
 
@@ -53,7 +52,7 @@ export class HaStateLabelBadge extends LitElement {
     this.clearInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const state = this.state;
 
     if (!state) {
@@ -83,21 +82,12 @@ export class HaStateLabelBadge extends LitElement {
           ? ""
           : this.image
           ? this.image
-          : state.attributes.entity_picture}"
+          : state.attributes.entity_picture_local ||
+            state.attributes.entity_picture}"
         .label="${this._computeLabel(domain, state, this._timerTimeRemaining)}"
         .description="${this.name ? this.name : computeStateName(state)}"
       ></ha-label-badge>
     `;
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    this.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (this.state) {
-        fireEvent(this, "hass-more-info", { entityId: this.state.entity_id });
-      }
-    });
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -120,15 +110,20 @@ export class HaStateLabelBadge extends LitElement {
         return null;
       case "sensor":
       default:
-        return state.state === "unknown"
+        return state.state === UNKNOWN
           ? "-"
-          : this.hass!.localize(`component.${domain}.state.${state.state}`) ||
-              state.state;
+          : state.attributes.unit_of_measurement
+          ? state.state
+          : computeStateDisplay(
+              this.hass!.localize,
+              state,
+              this.hass!.language
+            );
     }
   }
 
   private _computeIcon(domain: string, state: HassEntity) {
-    if (state.state === "unavailable") {
+    if (state.state === UNAVAILABLE) {
       return null;
     }
     switch (domain) {
@@ -163,7 +158,9 @@ export class HaStateLabelBadge extends LitElement {
           ? domainIcon(domain)
           : "hass:brightness-3";
       case "timer":
-        return state.state === "active" ? "hass:timer" : "hass:timer-off";
+        return state.state === "active"
+          ? "hass:timer-outline"
+          : "hass:timer-off-outline";
       default:
         return null;
     }
@@ -171,7 +168,7 @@ export class HaStateLabelBadge extends LitElement {
 
   private _computeLabel(domain, state, _timerTimeRemaining) {
     if (
-      state.state === "unavailable" ||
+      state.state === UNAVAILABLE ||
       ["device_tracker", "alarm_control_panel", "person"].includes(domain)
     ) {
       // Localize the state with a special state_badge namespace, which has variations of

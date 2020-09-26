@@ -1,4 +1,5 @@
-import { LitElement, html } from "lit-element";
+/* eslint-disable */
+import { html, LitElement } from "lit-element";
 
 if (!window.cardTools) {
   const version = 0.2;
@@ -161,8 +162,8 @@ if (!window.cardTools) {
   };
 
   cardTools.longpress = (element) => {
-    customElements.whenDefined("long-press").then(() => {
-      const longpress = document.body.querySelector("long-press");
+    customElements.whenDefined("action-handler").then(() => {
+      const longpress = document.body.querySelector("action-handler");
       longpress.bind(element);
     });
     return element;

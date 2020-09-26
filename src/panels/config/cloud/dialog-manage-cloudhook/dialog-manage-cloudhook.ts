@@ -1,36 +1,28 @@
+import "@material/mwc-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  html,
-  LitElement,
-  PropertyDeclarations,
   css,
   CSSResult,
+  html,
+  LitElement,
+  internalProperty,
 } from "lit-element";
-
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../../../components/dialog/ha-paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-
-import { HomeAssistant } from "../../../../types";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
 import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
-  private _params?: WebhookDialogParams;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      _params: {},
-    };
-  }
+  @internalProperty() private _params?: WebhookDialogParams;
 
   public async showDialog(params: WebhookDialogParams) {
     this._params = params;
@@ -46,13 +38,26 @@ export class DialogManageCloudhook extends LitElement {
     const { webhook, cloudhook } = this._params;
     const docsUrl =
       webhook.domain === "automation"
-        ? "https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger"
-        : `https://www.home-assistant.io/integrations/${webhook.domain}/`;
+        ? documentationUrl(
+            this.hass!,
+            "/docs/automation/trigger/#webhook-trigger"
+          )
+        : documentationUrl(this.hass!, `/integrations/${webhook.domain}/`);
     return html`
       <ha-paper-dialog with-backdrop>
-        <h2>Webhook for ${webhook.name}</h2>
+        <h2>
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
+            "name",
+            webhook.name
+          )}
+        </h2>
         <div>
-          <p>The webhook is available at the following url:</p>
+          <p>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.available_at"
+            )}
+          </p>
           <paper-input
             label="${inputLabel}"
             value="${cloudhook.cloudhook_url}"
@@ -62,23 +67,36 @@ export class DialogManageCloudhook extends LitElement {
           <p>
             ${cloudhook.managed
               ? html`
-                  This webhook is managed by an integration and cannot be
-                  disabled.
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"
+                  )}
                 `
               : html`
-                  If you no longer want to use this webhook, you can
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.dialog_cloudhook.info_disable_webhook"
+                  )}
                   <button class="link" @click="${this._disableWebhook}">
-                    disable it</button
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.dialog_cloudhook.link_disable_webhook"
+                    )}</button
                   >.
                 `}
           </p>
         </div>
 
         <div class="paper-dialog-buttons">
-          <a href="${docsUrl}" target="_blank">
-            <mwc-button>VIEW DOCUMENTATION</mwc-button>
+          <a href="${docsUrl}" target="_blank" rel="noreferrer">
+            <mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+              )}</mwc-button
+            >
           </a>
-          <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.close"
+            )}</mwc-button
+          >
         </div>
       </ha-paper-dialog>
     `;
@@ -97,12 +115,17 @@ export class DialogManageCloudhook extends LitElement {
   }
 
   private async _disableWebhook() {
-    if (!confirm("Are you sure you want to disable this webhook?")) {
-      return;
-    }
-
-    this._params!.disableHook();
-    this._closeDialog();
+    showConfirmationDialog(this, {
+      text: this.hass!.localize(
+        "ui.panel.config.cloud.dialog_cloudhook.confirm_disable"
+      ),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      confirm: () => {
+        this._params!.disableHook();
+        this._closeDialog();
+      },
+    });
   }
 
   private _copyClipboard(ev: FocusEvent) {
@@ -113,7 +136,9 @@ export class DialogManageCloudhook extends LitElement {
     input.setSelectionRange(0, input.value.length);
     try {
       document.execCommand("copy");
-      paperInput.label = "COPIED TO CLIPBOARD";
+      paperInput.label = this.hass!.localize(
+        "ui.panel.config.cloud.dialog_cloudhook.copied_to_clipboard"
+      );
     } catch (err) {
       // Copying failed. Oh no
     }

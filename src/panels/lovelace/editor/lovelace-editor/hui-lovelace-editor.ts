@@ -1,18 +1,16 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import { EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "../config-elements/config-elements-style";
-
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { configElementStyle } from "../config-elements/config-elements-style";
+import { EditorTarget } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -24,7 +22,7 @@ declare global {
 
 @customElement("hui-lovelace-editor")
 export class HuiLovelaceEditor extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public config?: LovelaceConfig;
 
@@ -35,12 +33,14 @@ export class HuiLovelaceEditor extends LitElement {
     return this.config.title || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_lovelace.title"
+          )}
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"

@@ -1,37 +1,25 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-service-picker";
-
-import { HomeAssistant } from "../../../types";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { EditorTarget } from "../editor/types";
 import {
   ActionConfig,
-  NavigateActionConfig,
   CallServiceActionConfig,
+  NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "action-changed": undefined;
-  }
-  // for add event listener
-  interface HTMLElementEventMap {
-    "action-changed": HASSDomEvent<undefined>;
-  }
-}
+import { HomeAssistant } from "../../../types";
+import { EditorTarget } from "../editor/types";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -44,25 +32,25 @@ export class HuiActionEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
 
   get _action(): string {
-    return this.config!.action || "";
+    return this.config?.action || "";
   }
 
   get _navigation_path(): string {
-    const config = this.config! as NavigateActionConfig;
+    const config = this.config as NavigateActionConfig;
     return config.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config! as UrlActionConfig;
+    const config = this.config as UrlActionConfig;
     return config.url_path || "";
   }
 
   get _service(): string {
-    const config = this.config! as CallServiceActionConfig;
+    const config = this.config as CallServiceActionConfig;
     return config.service || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
       return html``;
     }
@@ -77,9 +65,7 @@ export class HuiActionEditor extends LitElement {
           .selected="${this.actions.indexOf(this._action)}"
         >
           ${this.actions.map((action) => {
-            return html`
-              <paper-item>${action}</paper-item>
-            `;
+            return html` <paper-item>${action}</paper-item> `;
           })}
         </paper-listbox>
       </paper-dropdown-menu>
@@ -106,18 +92,19 @@ export class HuiActionEditor extends LitElement {
       ${this.config && this.config.action === "call-service"
         ? html`
             <ha-service-picker
-              .hass="${this.hass}"
+              .hass=${this.hass}
               .value="${this._service}"
               .configValue="${"service"}"
               @value-changed="${this._valueChanged}"
             ></ha-service-picker>
-            <h3>Toggle Editor to input Service Data</h3>
+            <b>Service data can only be entered in the code editor</b>
           `
         : ""}
     `;
   }
 
   private _valueChanged(ev: Event): void {
+    ev.stopPropagation();
     if (!this.hass) {
       return;
     }
@@ -125,12 +112,12 @@ export class HuiActionEditor extends LitElement {
     if (this[`_${target.configValue}`] === target.value) {
       return;
     }
-    if (target.configValue === "action") {
-      this.config = { action: "none" };
-    }
     if (target.configValue) {
-      this.config = { ...this.config!, [target.configValue!]: target.value };
-      fireEvent(this, "action-changed");
+      const newConfig =
+        target.configValue === "action"
+          ? { action: target.value }
+          : { ...this.config!, [target.configValue!]: target.value };
+      fireEvent(this, "value-changed", { value: newConfig });
     }
   }
 }

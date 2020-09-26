@@ -1,11 +1,10 @@
 import "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "./entity/ha-chart-base";
-
+import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 import LocalizeMixin from "../mixins/localize-mixin";
-import formatDateTime from "../common/datetime/format_date_time";
+import "./entity/ha-chart-base";
 
 class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -20,6 +19,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       </style>
       <ha-chart-base
         id="chart"
+        hass="[[hass]]"
         data="[[chartData]]"
         identifier="[[identifier]]"
         rendered="{{rendered}}"
@@ -29,6 +29,9 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
+      hass: {
+        type: Object,
+      },
       chartData: Object,
       data: Object,
       names: Object,
@@ -59,12 +62,22 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
     this.drawChart();
   }
 
+  ready() {
+    super.ready();
+    // safari doesn't always render the canvas when we animate it, so we remove overflow hidden when the animation is complete
+    this.addEventListener("transitionend", () => {
+      this.style.overflow = "auto";
+    });
+  }
+
   dataChanged() {
     this.drawChart();
   }
 
   _onRenderedChanged(rendered) {
-    if (rendered) this.animateHeight();
+    if (rendered) {
+      this.animateHeight();
+    }
   }
 
   animateHeight() {
@@ -76,14 +89,14 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   }
 
   drawChart() {
+    if (!this._isAttached) {
+      return;
+    }
+
     const unit = this.unit;
     const deviceStates = this.data;
     const datasets = [];
     let endTime;
-
-    if (!this._isAttached) {
-      return;
-    }
 
     if (deviceStates.length === 0) {
       return;
@@ -181,23 +194,63 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
               state.attributes.target_temp_low
         );
 
-        addColumn(name + " current temperature", true);
+        addColumn(
+          `${this.hass.localize(
+            "ui.card.climate.current_temperature",
+            "name",
+            name
+          )}`,
+          true
+        );
         if (hasHeat) {
-          addColumn(name + " heating", true, true);
+          addColumn(
+            `${this.hass.localize("ui.card.climate.heating", "name", name)}`,
+            true,
+            true
+          );
           // The "heating" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
         if (hasCool) {
-          addColumn(name + " cooling", true, true);
+          addColumn(
+            `${this.hass.localize("ui.card.climate.cooling", "name", name)}`,
+            true,
+            true
+          );
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
 
         if (hasTargetRange) {
-          addColumn(name + " target temperature high", true);
-          addColumn(name + " target temperature low", true);
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.high")
+            )}`,
+            true
+          );
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.low")
+            )}`,
+            true
+          );
         } else {
-          addColumn(name + " target temperature", true);
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_entity",
+              "name",
+              name
+            )}`,
+            true
+          );
         }
 
         states.states.forEach((state) => {
@@ -222,6 +275,28 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
             series.push(target);
             pushData(new Date(state.last_changed), series);
           }
+        });
+      } else if (domain === "humidifier") {
+        addColumn(
+          `${this.hass.localize(
+            "ui.card.humidifier.target_humidity_entity",
+            "name",
+            name
+          )}`,
+          true
+        );
+        addColumn(
+          `${this.hass.localize("ui.card.humidifier.on_entity", "name", name)}`,
+          true,
+          true
+        );
+
+        states.states.forEach((state) => {
+          if (!state.attributes) return;
+          const target = safeParseFloat(state.attributes.humidity);
+          const series = [target];
+          series.push(state.state === "on" ? target : null);
+          pushData(new Date(state.last_changed), series);
         });
       } else {
         // Only disable interpolation for sensors
@@ -277,7 +352,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
-      return formatDateTime(date, this.hass.language);
+      return formatDateTimeWithSeconds(date, this.hass.language);
     };
 
     const chartOptions = {

@@ -1,23 +1,22 @@
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../../components/ha-card";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/buttons/ha-call-api-button";
+import "../../../../components/ha-card";
+import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
-import "../../../../resources/ha-style";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
-import "./cloud-webhooks";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
-
-import { EventsMixin } from "../../../../mixins/events-mixin";
-import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
-
-import formatDateTime from "../../../../common/datetime/format_date_time";
-import LocalizeMixin from "../../../../mixins/localize-mixin";
+import "./cloud-webhooks";
 
 /*
  * @appliesMixin EventsMixin
@@ -35,7 +34,6 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
         .content {
           padding-bottom: 24px;
-          direction: ltr;
         }
         .account-row {
           display: flex;
@@ -63,19 +61,21 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <hass-subpage header="Home Assistant Cloud">
+      <hass-subpage header="[[localize('ui.panel.config.cloud.caption')]]">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header">Home Assistant Cloud</span>
+            <span slot="header"
+              >[[localize('ui.panel.config.cloud.caption')]]</span
+            >
             <div slot="introduction">
               <p>
-                Thank you for being part of Home Assistant Cloud. It's because
-                of people like you that we are able to make a great home
-                automation experience for everyone. Thank you!
+                [[localize('ui.panel.config.cloud.account.thank_you_note')]]
               </p>
             </div>
 
-            <ha-card header="Nabu Casa Account">
+            <ha-card
+              header="[[localize('ui.panel.config.cloud.account.nabu_casa_account')]]"
+            >
               <div class="account-row">
                 <paper-item-body two-line="">
                   [[cloudStatus.email]]
@@ -86,33 +86,45 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               </div>
 
               <div class="account-row">
-                <paper-item-body> Cloud connection status </paper-item-body>
+                <paper-item-body
+                  >[[localize('ui.panel.config.cloud.account.connection_status')]]</paper-item-body
+                >
                 <div class="status">[[cloudStatus.cloud]]</div>
               </div>
 
               <div class="card-actions">
-                <a href="https://account.nabucasa.com" target="_blank"
-                  ><mwc-button>Manage Account</mwc-button></a
+                <a
+                  href="https://account.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
                 >
+                  <mwc-button
+                    >[[localize('ui.panel.config.cloud.account.manage_account')]]</mwc-button
+                  >
+                </a>
                 <mwc-button style="float: right" on-click="handleLogout"
-                  >Sign out</mwc-button
+                  >[[localize('ui.panel.config.cloud.account.sign_out')]]</mwc-button
                 >
               </div>
             </ha-card>
           </ha-config-section>
 
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header">Integrations</span>
+            <span slot="header"
+              >[[localize('ui.panel.config.cloud.account.integrations')]]</span
+            >
             <div slot="introduction">
               <p>
-                Integrations for Home Assistant Cloud allow you to connect with
-                services in the cloud without having to expose your Home
-                Assistant instance publicly on the internet.
+                [[localize('ui.panel.config.cloud.account.integrations_introduction')]]
               </p>
               <p>
-                Check the website for
-                <a href="https://www.nabucasa.com" target="_blank"
-                  >all available features</a
+                [[localize('ui.panel.config.cloud.account.integrations_introduction2')]]
+                <a
+                  href="https://www.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  [[localize('ui.panel.config.cloud.account.integrations_link_all_features')]] </a
                 >.
               </p>
             </div>
@@ -120,21 +132,25 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <cloud-remote-pref
               hass="[[hass]]"
               cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
             ></cloud-remote-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"
               cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
             ></cloud-alexa-pref>
 
             <cloud-google-pref
               hass="[[hass]]"
               cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
             ></cloud-google-pref>
 
             <cloud-webhooks
               hass="[[hass]]"
               cloud-status="[[cloudStatus]]"
+              dir="[[_rtlDirection]]"
             ></cloud-webhooks>
           </ha-config-section>
         </div>
@@ -151,6 +167,10 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Object,
         value: null,
       },
+      _rtlDirection: {
+        type: Boolean,
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -160,7 +180,9 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _computeRemoteConnected(connected) {
-    return connected ? "Connected" : "Not Connected";
+    return connected
+      ? this.hass.localize("ui.panel.config.cloud.account.connected")
+      : this.hass.localize("ui.panel.config.cloud.account.not_connected");
   }
 
   async _fetchSubscriptionInfo() {
@@ -182,7 +204,9 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _formatSubscription(subInfo) {
     if (subInfo === null) {
-      return "Fetching subscription…";
+      return this.hass.localize(
+        "ui.panel.config.cloud.account.fetching_subscription"
+      );
     }
 
     let description = subInfo.human_description;
@@ -198,6 +222,10 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
 
     return description;
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTLDirection(hass);
   }
 }
 

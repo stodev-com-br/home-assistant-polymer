@@ -1,21 +1,23 @@
-import { STATES_OFF } from "../../../common/const";
-
-import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
   PropertyValues,
   query,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant, CameraEntity } from "../../../types";
-import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
+import { STATES_OFF } from "../../../common/const";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
+import { UNAVAILABLE } from "../../../data/entity";
+import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -26,7 +28,7 @@ export interface StateSpecificConfig {
 
 @customElement("hui-image")
 export class HuiImage extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public entity?: string;
 
@@ -44,9 +46,9 @@ export class HuiImage extends LitElement {
 
   @property() public stateFilter?: StateSpecificConfig;
 
-  @property() private _loadError?: boolean;
+  @internalProperty() private _loadError?: boolean;
 
-  @property() private _cameraImageSrc?: string;
+  @internalProperty() private _cameraImageSrc?: string;
 
   @query("img") private _image!: HTMLImageElement;
 
@@ -54,11 +56,8 @@ export class HuiImage extends LitElement {
 
   private _cameraUpdater?: number;
 
-  private _attached?: boolean;
-
   public connectedCallback(): void {
     super.connectedCallback();
-    this._attached = true;
     if (this.cameraImage && this.cameraView !== "live") {
       this._startUpdateCameraInterval();
     }
@@ -66,15 +65,16 @@ export class HuiImage extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._attached = false;
     this._stopUpdateCameraInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
-    const stateObj =
-      this.hass && this.entity ? this.hass.states[this.entity] : undefined;
-    const state = stateObj ? stateObj.state : "unavailable";
+    const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
+    const state = stateObj ? stateObj.state : UNAVAILABLE;
 
     // Figure out image source to use
     let imageSrc: string | undefined;
@@ -84,8 +84,7 @@ export class HuiImage extends LitElement {
 
     if (this.cameraImage) {
       if (this.cameraView === "live") {
-        cameraObj =
-          this.hass && (this.hass.states[this.cameraImage] as CameraEntity);
+        cameraObj = this.hass.states[this.cameraImage] as CameraEntity;
       } else {
         imageSrc = this._cameraImageSrc;
       }
@@ -103,7 +102,7 @@ export class HuiImage extends LitElement {
     }
 
     if (imageSrc) {
-      imageSrc = this.hass!.hassUrl(imageSrc);
+      imageSrc = this.hass.hassUrl(imageSrc);
     }
 
     // Figure out filter to use
@@ -133,8 +132,9 @@ export class HuiImage extends LitElement {
         ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
-                .hass="${this.hass}"
-                .stateObj="${cameraObj}"
+                muted
+                .hass=${this.hass}
+                .stateObj=${cameraObj}
               ></ha-camera-stream>
             `
           : html`
@@ -161,16 +161,27 @@ export class HuiImage extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("cameraImage") && this.cameraView !== "live") {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.connected !== this.hass!.connected) {
+        if (this.hass!.connected && this.cameraView !== "live") {
+          this._updateCameraImageSrc();
+          this._startUpdateCameraInterval();
+        } else if (!this.hass!.connected) {
+          this._stopUpdateCameraInterval();
+          this._cameraImageSrc = undefined;
+          this._loadError = true;
+        }
+      }
+    } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
-      return;
     }
   }
 
   private _startUpdateCameraInterval(): void {
     this._stopUpdateCameraInterval();
-    if (this.cameraImage && this._attached) {
+    if (this.cameraImage && this.isConnected) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
         UPDATE_INTERVAL
@@ -181,6 +192,7 @@ export class HuiImage extends LitElement {
   private _stopUpdateCameraInterval(): void {
     if (this._cameraUpdater) {
       clearInterval(this._cameraUpdater);
+      this._cameraUpdater = undefined;
     }
   }
 

@@ -1,28 +1,30 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
-import "../../../../src/panels/lovelace/views/hui-view";
-import "../../../../src/panels/lovelace/views/hui-panel-view";
-import { HomeAssistant } from "../../../../src/types";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
+import "../../../../src/panels/lovelace/views/hui-panel-view";
+import "../../../../src/panels/lovelace/views/hui-view";
+import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
 
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public lovelaceConfig!: LovelaceConfig;
+  @property({ attribute: false }) public lovelaceConfig!: LovelaceConfig;
 
   @property() public viewPath?: string | number;
 
-  protected render(): TemplateResult | void {
+  public urlPath?: string | null;
+
+  protected render(): TemplateResult {
     const index = this._viewIndex;
     if (index === undefined) {
       return html`
@@ -35,16 +37,19 @@ class HcLovelace extends LitElement {
     const lovelace: Lovelace = {
       config: this.lovelaceConfig,
       editMode: false,
+      urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,
       mode: "storage",
       language: "en",
       saveConfig: async () => undefined,
+      deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
     return this.lovelaceConfig.views[index].panel
       ? html`
           <hui-panel-view
             .hass=${this.hass}
+            .lovelace=${lovelace}
             .config=${this.lovelaceConfig.views[index]}
           ></hui-panel-view>
         `

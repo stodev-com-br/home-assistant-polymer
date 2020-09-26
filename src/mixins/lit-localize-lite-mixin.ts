@@ -1,67 +1,80 @@
-import {
-  Constructor,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-} from "lit-element";
-import { getLocalLanguage } from "../util/hass-translation";
-import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
+import { LitElement, property, PropertyValues } from "lit-element";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
+import { Constructor, Resources } from "../types";
+import { getLocalLanguage, getTranslation } from "../util/hass-translation";
 
 const empty = () => "";
 
-interface LitLocalizeLiteMixin {
-  language: string;
-  resources: {};
-  translationFragment: string;
-  localize: LocalizeFunc;
-}
+export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
+  superClass: T
+) => {
+  class LitLocalizeLiteClass extends superClass {
+    // Initialized to empty will prevent undefined errors if called before connected to DOM.
+    @property() public localize: LocalizeFunc = empty;
 
-export const litLocalizeLiteMixin = <T extends LitElement>(
-  superClass: Constructor<T>
-): Constructor<T & LitLocalizeLiteMixin> =>
-  // @ts-ignore
-  class extends localizeLiteBaseMixin(superClass) {
-    public localize: LocalizeFunc;
+    @property() public resources?: Resources;
 
-    static get properties(): PropertyDeclarations {
-      return {
-        localize: {},
-        language: {},
-        resources: {},
-        translationFragment: {},
-      };
-    }
+    // Use browser language setup before login.
+    @property() public language?: string = getLocalLanguage();
 
-    constructor() {
-      super();
-      // This will prevent undefined errors if called before connected to DOM.
-      this.localize = empty;
-      // Use browser language setup before login.
-      this.language = getLocalLanguage();
-    }
+    @property() public translationFragment?: string;
 
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
-      this.localize = computeLocalize(
-        this.constructor.prototype,
-        this.language!,
-        this.resources!
-      );
     }
 
-    public updated(changedProperties: PropertyValues) {
+    protected updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);
+      if (changedProperties.get("translationFragment")) {
+        this._initializeLocalizeLite();
+      }
+
       if (
-        changedProperties.has("language") ||
-        changedProperties.has("resources")
+        this.language &&
+        this.resources &&
+        (changedProperties.has("language") ||
+          changedProperties.has("resources"))
       ) {
         this.localize = computeLocalize(
           this.constructor.prototype,
-          this.language!,
-          this.resources!
+          this.language,
+          this.resources
         );
       }
     }
-  };
+
+    protected async _initializeLocalizeLite() {
+      if (this.resources) {
+        return;
+      }
+
+      if (!this.translationFragment) {
+        // In dev mode, we will issue a warning if after a second we are still
+        // not configured correctly.
+        if (__DEV__) {
+          setTimeout(
+            () =>
+              !this.resources &&
+              // eslint-disable-next-line
+              console.error(
+                "Forgot to pass in resources or set translationFragment for",
+                this.nodeName
+              ),
+            1000
+          );
+        }
+        return;
+      }
+
+      const { language, data } = await getTranslation(
+        this.translationFragment!,
+        this.language!
+      );
+      this.resources = {
+        [language]: data,
+      };
+    }
+  }
+  return LitLocalizeLiteClass;
+};

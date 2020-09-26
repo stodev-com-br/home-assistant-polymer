@@ -1,10 +1,13 @@
 import { property, PropertyValues, UpdatingElement } from "lit-element";
-import { loadCustomPanel } from "../../util/custom-panel/load-custom-panel";
-import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
-import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
-import { HomeAssistant, Route } from "../../types";
-import { CustomPanelInfo } from "../../data/panel_custom";
 import { navigate } from "../../common/navigate";
+import { CustomPanelInfo } from "../../data/panel_custom";
+import { HomeAssistant, Route } from "../../types";
+import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
+import {
+  loadCustomPanel,
+  getUrl,
+} from "../../util/custom-panel/load-custom-panel";
+import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 
 declare global {
   interface Window {
@@ -13,10 +16,14 @@ declare global {
 }
 
 export class HaPanelCustom extends UpdatingElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public panel!: CustomPanelInfo;
+
   private _setProperties?: (props: {}) => void | undefined;
 
   // Since navigate fires events on `window`, we need to expose this as a function
@@ -39,7 +46,8 @@ export class HaPanelCustom extends UpdatingElement {
     this._cleanupPanel();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
     if (changedProps.has("panel")) {
       // Clean up old things if we had a panel
       if (changedProps.get("panel")) {
@@ -69,22 +77,33 @@ export class HaPanelCustom extends UpdatingElement {
 
   private _createPanel(panel: CustomPanelInfo) {
     const config = panel.config!._panel_custom;
+    const panelUrl = getUrl(config);
 
     const tempA = document.createElement("a");
-    tempA.href = config.html_url || config.js_url || config.module_url || "";
+    tempA.href = panelUrl.url;
 
     if (
       !config.trust_external &&
       !["localhost", "127.0.0.1", location.hostname].includes(tempA.hostname)
     ) {
       if (
-        !confirm(`Do you trust the external panel "${config.name}" at "${
-          tempA.href
-        }"?
+        !confirm(
+          `${this.hass.localize(
+            "ui.panel.custom.external_panel.question_trust",
+            "name",
+            config.name,
+            "link",
+            tempA.href
+          )}
 
-It will have access to all data in Home Assistant.
+           ${this.hass.localize(
+             "ui.panel.custom.external_panel.complete_access"
+           )}
 
-(Check docs for the panel_custom component to hide this message)`)
+           (${this.hass.localize(
+             "ui.panel.custom.external_panel.hide_message"
+           )})`
+        )
       ) {
         return;
       }
@@ -119,6 +138,7 @@ It will have access to all data in Home Assistant.
         width: 100%;
         height: 100%;
         display: block;
+        background-color: var(--primary-background-color);
       }
     </style>
     <iframe></iframe>

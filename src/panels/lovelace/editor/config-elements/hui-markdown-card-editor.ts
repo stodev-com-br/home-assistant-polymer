@@ -1,36 +1,38 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  internalProperty,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
+import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
+import { string, assert, object, optional } from "superstruct";
 
-const cardConfigStruct = struct({
-  type: "string",
-  title: "string?",
-  content: "string",
+const cardConfigStruct = object({
+  type: string(),
+  title: optional(string()),
+  content: string(),
+  theme: optional(string()),
 });
 
 @customElement("hui-markdown-card-editor")
 export class HuiMarkdownCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: MarkdownCardConfig;
+  @internalProperty() private _config?: MarkdownCardConfig;
 
   public setConfig(config: MarkdownCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -42,8 +44,12 @@ export class HuiMarkdownCardEditor extends LitElement
     return this._config!.content || "";
   }
 
-  protected render(): TemplateResult | void {
-    if (!this.hass) {
+  get _theme(): string {
+    return this._config!.theme || "";
+  }
+
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -68,13 +74,24 @@ export class HuiMarkdownCardEditor extends LitElement
           )})"
           .value="${this._content}"
           .configValue="${"content"}"
+          @keydown=${this._ignoreKeydown}
           @value-changed="${this._valueChanged}"
           autocapitalize="none"
           autocomplete="off"
           spellcheck="false"
         ></paper-textarea>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @value-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
@@ -87,7 +104,8 @@ export class HuiMarkdownCardEditor extends LitElement
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (target.value === "" && target.configValue !== "content") {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {

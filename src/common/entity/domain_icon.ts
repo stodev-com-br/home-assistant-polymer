@@ -8,25 +8,27 @@ import { DEFAULT_DOMAIN_ICON } from "../const";
 const fixedIcons = {
   alert: "hass:alert",
   alexa: "hass:amazon-alexa",
-  automation: "hass:playlist-play",
+  air_quality: "hass:air-filter",
+  automation: "hass:robot",
   calendar: "hass:calendar",
   camera: "hass:video",
   climate: "hass:thermostat",
-  configurator: "hass:settings",
+  configurator: "hass:cog",
   conversation: "hass:text-to-speech",
+  counter: "hass:counter",
   device_tracker: "hass:account",
   fan: "hass:fan",
   google_assistant: "hass:google-assistant",
   group: "hass:google-circles-communities",
-  history_graph: "hass:chart-line",
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
+  humidifier: "hass:air-humidifier",
   image_processing: "hass:image-filter-frames",
-  input_boolean: "hass:drawing",
+  input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",
-  input_text: "hass:textbox",
+  input_text: "hass:form-textbox",
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
@@ -35,19 +37,18 @@ const fixedIcons = {
   plant: "hass:flower",
   proximity: "hass:apple-safari",
   remote: "hass:remote",
-  scene: "hass:google-pages",
-  script: "hass:file-document",
+  scene: "hass:palette",
+  script: "hass:script-text",
   sensor: "hass:eye",
   simple_alarm: "hass:bell",
   sun: "hass:white-balance-sunny",
   switch: "hass:flash",
-  timer: "hass:timer",
+  timer: "hass:timer-outline",
   updater: "hass:cloud-upload",
   vacuum: "hass:robot-vacuum",
   water_heater: "hass:thermometer",
   weather: "hass:weather-cloudy",
-  weblink: "hass:open-in-new",
-  zone: "hass:map-marker",
+  zone: "hass:map-marker-radius",
 };
 
 export const domainIcon = (domain: string, state?: string): string => {
@@ -76,15 +77,22 @@ export const domainIcon = (domain: string, state?: string): string => {
         : "hass:checkbox-marked-circle";
 
     case "cover":
-      return state === "closed" ? "hass:window-closed" : "hass:window-open";
+      switch (state) {
+        case "opening":
+          return "hass:arrow-up-box";
+        case "closing":
+          return "hass:arrow-down-box";
+        case "closed":
+          return "hass:window-closed";
+        default:
+          return "hass:window-open";
+      }
 
     case "lock":
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
 
     case "media_player":
-      return state && state !== "off" && state !== "idle"
-        ? "hass:cast-connected"
-        : "hass:cast";
+      return state && state === "playing" ? "hass:cast-connected" : "hass:cast";
 
     case "zwave":
       switch (state) {
@@ -99,7 +107,7 @@ export const domainIcon = (domain: string, state?: string): string => {
       }
 
     default:
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.warn(
         "Unable to find icon for domain " + domain + " (" + state + ")"
       );

@@ -1,43 +1,40 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-action-editor";
-
-import { struct } from "../../common/structs/struct";
 import {
-  EntitiesEditorEvent,
-  EditorTarget,
-  actionConfigStruct,
-} from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
+import "../../components/hui-action-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct, EditorTarget } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = struct({
-  type: "string",
-  image: "string?",
-  tap_action: struct.optional(actionConfigStruct),
-  hold_action: struct.optional(actionConfigStruct),
+const cardConfigStruct = object({
+  type: string(),
+  image: optional(string()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  theme: optional(string()),
 });
 
 @customElement("hui-picture-card-editor")
 export class HuiPictureCardEditor extends LitElement
   implements LovelaceCardEditor {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() private _config?: PictureCardConfig;
+  @internalProperty() private _config?: PictureCardConfig;
 
   public setConfig(config: PictureCardConfig): void {
-    config = cardConfigStruct(config);
+    assert(config, cardConfigStruct);
     this._config = config;
   }
 
@@ -53,8 +50,12 @@ export class HuiPictureCardEditor extends LitElement
     return this._config!.hold_action || { action: "none" };
   }
 
-  protected render(): TemplateResult | void {
-    if (!this.hass) {
+  get _theme(): string {
+    return this._config!.theme || "";
+  }
+
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -80,11 +81,11 @@ export class HuiPictureCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -92,36 +93,41 @@ export class HuiPictureCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
-            @action-changed="${this._valueChanged}"
+            @value-changed="${this._valueChanged}"
           ></hui-action-editor>
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value="${this._theme}"
+            .configValue="${"theme"}"
+            @value-changed="${this._valueChanged}"
+          ></hui-theme-select-editor>
         </div>
       </div>
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
+    const value = ev.detail.value;
 
-    if (
-      this[`_${target.configValue}`] === target.value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value !== false && !value) {
+        this._config = { ...this._config };
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value ? target.value : target.config,
+          [target.configValue!]: value,
         };
       }
     }

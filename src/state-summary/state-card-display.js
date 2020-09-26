@@ -1,14 +1,12 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../components/entity/state-info";
-
-import LocalizeMixin from "../mixins/localize-mixin";
-
 import { attributeClassNames } from "../common/entity/attribute_class_names";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
+import "../components/entity/state-info";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -39,6 +37,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
           text-align: right;
           max-width: 40%;
           flex: 0 0 auto;
+          overflow-wrap: break-word;
         }
         :host([rtl]) .state {
           margin-right: 16px;

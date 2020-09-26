@@ -1,33 +1,60 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  html,
+  internalProperty,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
-
-import "../../../components/dialog/ha-paper-dialog";
-
+import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-picture-upload";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/user/ha-user-picker";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import { PersonMutableParams } from "../../../data/person";
+import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { PersonMutableParams } from "../../../data/person";
+import { documentationUrl } from "../../../util/documentation-url";
+import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+
+const includeDomains = ["device_tracker"];
+
+const cropOptions: CropOptions = {
+  round: true,
+  type: "image/jpeg",
+  quality: 0.75,
+  aspectRatio: 1,
+};
 
 class DialogPersonDetail extends LitElement {
-  @property() public hass!: HomeAssistant;
-  @property() private _name!: string;
-  @property() private _userId?: string;
-  @property() private _deviceTrackers!: string[];
-  @property() private _error?: string;
-  @property() private _params?: PersonDetailDialogParams;
-  @property() private _submitting: boolean = false;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @internalProperty() private _name!: string;
+
+  @internalProperty() private _userId?: string;
+
+  @internalProperty() private _deviceTrackers!: string[];
+
+  @internalProperty() private _picture!: string | null;
+
+  @internalProperty() private _error?: string;
+
+  @internalProperty() private _params?: PersonDetailDialogParams;
+
+  @internalProperty() private _submitting = false;
+
+  private _deviceTrackersAvailable = memoizeOne((hass) => {
+    return Object.keys(hass.states).some(
+      (entityId) =>
+        entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
+    );
+  });
 
   public async showDialog(params: PersonDetailDialogParams): Promise<void> {
     this._params = params;
@@ -36,87 +63,149 @@ class DialogPersonDetail extends LitElement {
       this._name = this._params.entry.name || "";
       this._userId = this._params.entry.user_id || undefined;
       this._deviceTrackers = this._params.entry.device_trackers || [];
+      this._picture = this._params.entry.picture || null;
     } else {
       this._name = "";
       this._userId = undefined;
       this._deviceTrackers = [];
+      this._picture = null;
     }
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        @closed=${this._close}
+        scrimClickAction
+        escapeKeyAction
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")
+        )}
       >
-        <h2>${this._params.entry ? this._params.entry.name : "New Person"}</h2>
-        <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+        <div>
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
+              dialogInitialFocus
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
-              error-message="Name is required"
-              .invalid=${nameInvalid}
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.name"
+              )}"
+              error-message="${this.hass!.localize(
+                "ui.panel.config.person.detail.name_error_msg"
+              )}"
+              required
+              auto-validate
             ></paper-input>
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
+
             <ha-user-picker
-              label="Linked User"
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.linked_user"
+              )}"
               .hass=${this.hass}
               .value=${this._userId}
               .users=${this._params.users}
               @value-changed=${this._userChanged}
             ></ha-user-picker>
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_intro"
-              )}
-            </p>
-            <ha-entities-picker
-              .hass=${this.hass}
-              .value=${this._deviceTrackers}
-              domain-filter="device_tracker"
-              .pickedEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_picked"
-              )}
-              .pickEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_pick"
-              )}
-              @value-changed=${this._deviceTrackersChanged}
-            ></ha-entities-picker>
+            ${this._deviceTrackersAvailable(this.hass)
+              ? html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_intro"
+                    )}
+                  </p>
+                  <ha-entities-picker
+                    .hass=${this.hass}
+                    .value=${this._deviceTrackers}
+                    .includeDomains=${includeDomains}
+                    .pickedEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_picked"
+                    )}
+                    .pickEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_pick"
+                    )}
+                    @value-changed=${this._deviceTrackersChanged}
+                  >
+                  </ha-entities-picker>
+                `
+              : html`
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                    )}
+                  </p>
+                  <ul>
+                    <li>
+                      <a
+                        href="${documentationUrl(
+                          this.hass,
+                          "/integrations/#presence-detection"
+                        )}"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_presence_detection_integrations"
+                        )}</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        @click="${this._closeDialog}"
+                        href="/config/integrations"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_integrations_page"
+                        )}</a
+                      >
+                    </li>
+                  </ul>
+                `}
           </div>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          ${this._params.entry
-            ? html`
-                <mwc-button
-                  class="warning"
-                  @click="${this._deleteEntry}"
-                  .disabled=${this._submitting}
-                >
-                  DELETE
-                </mwc-button>
-              `
-            : html``}
-          <mwc-button
-            @click="${this._updateEntry}"
-            .disabled=${nameInvalid || this._submitting}
-          >
-            ${this._params.entry ? "UPDATE" : "CREATE"}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        ${this._params.entry
+          ? html`
+              <mwc-button
+                slot="secondaryAction"
+                class="warning"
+                @click="${this._deleteEntry}"
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.panel.config.person.detail.delete")}
+              </mwc-button>
+            `
+          : html``}
+        <mwc-button
+          slot="primaryAction"
+          @click="${this._updateEntry}"
+          .disabled=${nameInvalid || this._submitting}
+        >
+          ${this._params.entry
+            ? this.hass!.localize("ui.panel.config.person.detail.update")
+            : this.hass!.localize("ui.panel.config.person.detail.create")}
+        </mwc-button>
+      </ha-dialog>
     `;
+  }
+
+  private _closeDialog() {
+    this._params = undefined;
   }
 
   private _nameChanged(ev: PolymerChangedEvent<string>) {
@@ -134,6 +223,11 @@ class DialogPersonDetail extends LitElement {
     this._deviceTrackers = ev.detail.value;
   }
 
+  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+    this._error = undefined;
+    this._picture = (ev.target as HaPictureUpload).value;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
@@ -141,6 +235,7 @@ class DialogPersonDetail extends LitElement {
         name: this._name.trim(),
         device_trackers: this._deviceTrackers,
         user_id: this._userId || null,
+        picture: this._picture,
       };
       if (this._params!.entry) {
         await this._params!.updateEntry(values);
@@ -166,30 +261,28 @@ class DialogPersonDetail extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
+  private _close(): void {
+    this._params = undefined;
   }
 
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          min-width: 400px;
-        }
         .form {
           padding-bottom: 24px;
+        }
+        ha-picture-upload {
+          display: block;
         }
         ha-user-picker {
           margin-top: 16px;
         }
-        mwc-button.warning {
-          margin-right: auto;
+        a {
+          color: var(--primary-color);
         }
-        .error {
-          color: var(--google-red-500);
+        p {
+          color: var(--primary-text-color);
         }
       `,
     ];

@@ -1,36 +1,50 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  property,
-  html,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button-light";
-
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
 import { fireEvent } from "../../common/dom/fire_event";
-import isValidEntityId from "../../common/entity/valid_entity_id";
-
+import { isValidEntityId } from "../../common/entity/valid_entity_id";
+import type { PolymerChangedEvent } from "../../polymer-types";
+import type { HomeAssistant } from "../../types";
 import "./ha-entity-picker";
-// Not a duplicate, type import
-// tslint:disable-next-line
-import { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property() public value?: string[];
-  @property({ attribute: "domain-filter" }) public domainFilter?: string;
+
+  /**
+   * Show entities from specific domains.
+   * @type {string}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+
+  /**
+   * Show no entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
+
   @property({ attribute: "picked-entity-label" })
   public pickedEntityLabel?: string;
+
   @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
+
     const currentEntities = this._currentEntities;
     return html`
       ${currentEntities.map(
@@ -40,7 +54,8 @@ class HaEntitiesPickerLight extends LitElement {
               allow-custom-entity
               .curValue=${entityId}
               .hass=${this.hass}
-              .domainFilter=${this.domainFilter}
+              .includeDomains=${this.includeDomains}
+              .excludeDomains=${this.excludeDomains}
               .entityFilter=${this._entityFilter}
               .value=${entityId}
               .label=${this.pickedEntityLabel}
@@ -52,7 +67,8 @@ class HaEntitiesPickerLight extends LitElement {
       <div>
         <ha-entity-picker
           .hass=${this.hass}
-          .domainFilter=${this.domainFilter}
+          .includeDomains=${this.includeDomains}
+          .excludeDomains=${this.excludeDomains}
           .entityFilter=${this._entityFilter}
           .label=${this.pickEntityLabel}
           @value-changed=${this._addEntity}

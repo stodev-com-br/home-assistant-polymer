@@ -1,18 +1,23 @@
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import yaml from "js-yaml";
-
-import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
+import { safeDump, safeLoad } from "js-yaml";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
-import "../../../resources/ha-style";
+import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
 
 const ERROR_SENTINEL = {};
-class HaPanelDevService extends PolymerElement {
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaPanelDevService extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="ha-style">
@@ -22,12 +27,15 @@ class HaPanelDevService extends PolymerElement {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          direction: ltr;
         }
 
         .ha-form {
           margin-right: 16px;
           max-width: 400px;
+        }
+
+        ha-progress-button {
+          margin-top: 8px;
         }
 
         .description {
@@ -43,8 +51,13 @@ class HaPanelDevService extends PolymerElement {
           text-align: left;
         }
 
+        :host([rtl]) .attributes th {
+          text-align: right;
+        }
+
         .attributes tr {
           vertical-align: top;
+          direction: ltr;
         }
 
         .attributes tr:nth-child(odd) {
@@ -73,7 +86,15 @@ class HaPanelDevService extends PolymerElement {
         }
 
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
+        }
+
+        :host([rtl]) .desc-container {
+          text-align: right;
+        }
+
+        :host([rtl]) .desc-container h3 {
+          direction: ltr;
         }
       </style>
 
@@ -90,8 +111,7 @@ class HaPanelDevService extends PolymerElement {
 
       <div class="content">
         <p>
-          The service dev tool allows you to call any available service in Home
-          Assistant.
+          [[localize('ui.panel.developer-tools.tabs.services.description')]]
         </p>
 
         <div class="ha-form">
@@ -105,46 +125,60 @@ class HaPanelDevService extends PolymerElement {
               value="[[_computeEntityValue(parsedJSON)]]"
               on-change="_entityPicked"
               disabled="[[!validJSON]]"
-              domain-filter="[[_computeEntityDomainFilter(_domain)]]"
+              include-domains="[[_computeEntityDomainFilter(_domain)]]"
               allow-custom-entity
             ></ha-entity-picker>
           </template>
-          <paper-textarea
-            always-float-label
-            label="Service Data (YAML, optional)"
-            value="{{serviceData}}"
-            autocapitalize="none"
-            autocomplete="off"
-            spellcheck="false"
-          ></paper-textarea>
-          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
-            Call Service
-          </mwc-button>
-          <template is="dom-if" if="[[!validJSON]]">
-            <span class="error">Invalid YAML</span>
-          </template>
+          <p>[[localize('ui.panel.developer-tools.tabs.services.data')]]</p>
+          <ha-code-editor
+            mode="yaml"
+            value="[[serviceData]]"
+            error="[[!validJSON]]"
+            on-value-changed="_yamlChanged"
+          ></ha-code-editor>
+          <ha-progress-button
+            on-click="_callService"
+            raised
+            disabled="[[!validJSON]]"
+          >
+            [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
+          </ha-progress-button>
         </div>
 
         <template is="dom-if" if="[[!domainService]]">
-          <h1>Select a service to see the description</h1>
+          <h1>
+            [[localize('ui.panel.developer-tools.tabs.services.select_service')]]
+          </h1>
         </template>
 
         <template is="dom-if" if="[[domainService]]">
           <template is="dom-if" if="[[!_description]]">
-            <h1>No description is available</h1>
+            <h1>
+              [[localize('ui.panel.developer-tools.tabs.services.no_description')]]
+            </h1>
           </template>
           <template is="dom-if" if="[[_description]]">
-            <h3>[[_description]]</h3>
+            <div class="desc-container">
+              <h3>[[_description]]</h3>
+            </div>
 
             <table class="attributes">
               <tr>
-                <th>Parameter</th>
-                <th>Description</th>
-                <th>Example</th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_parameter')]]
+                </th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_description')]]
+                </th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_example')]]
+                </th>
               </tr>
               <template is="dom-if" if="[[!_attributes.length]]">
                 <tr>
-                  <td colspan="3">This service takes no parameters.</td>
+                  <td colspan="3">
+                    [[localize('ui.panel.developer-tools.tabs.services.no_parameters')]]
+                  </td>
                 </tr>
               </template>
               <template is="dom-repeat" items="[[_attributes]]" as="attribute">
@@ -158,7 +192,7 @@ class HaPanelDevService extends PolymerElement {
 
             <template is="dom-if" if="[[_attributes.length]]">
               <mwc-button on-click="_fillExampleData">
-                Fill Example Data
+                [[localize('ui.panel.developer-tools.tabs.services.fill_example_data')]]
               </mwc-button>
             </template>
           </template>
@@ -212,6 +246,10 @@ class HaPanelDevService extends PolymerElement {
         type: String,
         computed: "_computeDescription(hass, _domain, _service)",
       },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -225,7 +263,7 @@ class HaPanelDevService extends PolymerElement {
     if (!(service in serviceDomains[domain])) return [];
 
     const fields = serviceDomains[domain][service].fields;
-    return Object.keys(fields).map(function(field) {
+    return Object.keys(fields).map(function (field) {
       return { key: field, ...fields[field] };
     });
   }
@@ -251,7 +289,7 @@ class HaPanelDevService extends PolymerElement {
 
   _computeParsedServiceData(serviceData) {
     try {
-      return serviceData ? yaml.safeLoad(serviceData) : {};
+      return serviceData.trim() ? safeLoad(serviceData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -270,16 +308,30 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeEntityDomainFilter(domain) {
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? domain : null;
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
 
-  _callService() {
+  _callService(ev) {
+    const button = ev.target;
     if (this.parsedJSON === ERROR_SENTINEL) {
-      // eslint-disable-next-line
-      alert(`Error parsing JSON: ${this.serviceData}`);
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.services.alert_parsing_yaml",
+          "data",
+          this.serviceData
+        ),
+      });
+      button.actionError();
+      return;
     }
-
-    this.hass.callService(this._domain, this._service, this.parsedJSON);
+    this.hass
+      .callService(this._domain, this._service, this.parsedJSON)
+      .then(() => {
+        button.actionSuccess();
+      })
+      .catch(() => {
+        button.actionError();
+      });
   }
 
   _fillExampleData() {
@@ -288,21 +340,29 @@ class HaPanelDevService extends PolymerElement {
       if (attribute.example) {
         let value = "";
         try {
-          value = yaml.safeLoad(attribute.example);
+          value = safeLoad(attribute.example);
         } catch (err) {
           value = attribute.example;
         }
         example[attribute.key] = value;
       }
     });
-    this.serviceData = yaml.safeDump(example);
+    this.serviceData = safeDump(example);
   }
 
   _entityPicked(ev) {
-    this.serviceData = yaml.safeDump({
+    this.serviceData = safeDump({
       ...this.parsedJSON,
       entity_id: ev.target.value,
     });
+  }
+
+  _yamlChanged(ev) {
+    this.serviceData = ev.detail.value;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
